@@ -1,2 +1,2 @@
 # as
-Massa Labs assembly script repo
+MassaLabs assemblyscript native implementations

@@ -1,0 +1,51 @@
+{
+  "name": "@massalabs/as",
+  "version": "1.0.0",
+  "description": "Massalabs Native Assemblyscript Implementations",
+  "main": "assembly/index.ts",
+  "types": "assembly/index.ts",
+  "type": "module",
+  "author": "Massa Labs <info@massa.net>",
+  "contributors": [
+    "Evgeni Pirianov evgeni.pirianov@gmail.com",
+    "Grégory Libert <greg_libert@yahoo.fr>"
+  ],
+  "license": "(MIT AND Apache-2.0)",
+  "homepage": "https://github.com/massalabs/as",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/massalabs/as"
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "asp --verbose",
+    "test:ci": "asp --summary",
+    "fmt": "prettier --write '{*,**/*}.{js,ts,jsx,tsx,json}'",
+    "lint:fix": "eslint --fix --ext .ts . && yarn fmt",
+    "lint": "eslint --ext .ts . && prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'"
+  },
+  "devDependencies": {
+    "@as-pect/cli": "^7.0.7",
+    "as-console": "^6.0.2",
+    "assemblyscript": "^0.21.2",
+    "@assemblyscript/loader": "^0.21.2",
+    "typescript": "^4.8.3",
+    "eslint": "^8.12.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.6.2",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/release.js",
+      "types": "./build/release.d.ts"
+    }
+  }
+}
