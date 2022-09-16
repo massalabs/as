@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/as",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Massalabs Native Assemblyscript Implementations",
   "main": "assembly/index.ts",
   "types": "assembly/index.ts",
