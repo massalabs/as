@@ -1,6 +1,12 @@
 # Installation
 yarn add 'https://gitpkg.now.sh/massalabs/as/tester?7-adds-unit-test-tooling' -D
 
+To avoid linter warning, you should add a file named `tester.d.ts` under the directory `assembly/__tests__` containing:
+
+```typescript
+/// <reference types="tester/assembly/global" />
+```
+
 # Usage
 
 ## Creating tests
