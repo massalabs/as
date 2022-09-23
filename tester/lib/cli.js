@@ -1,11 +1,11 @@
-import { green, yellow } from 'kleur/colors';
-import { URL } from 'url';
+import {green, yellow} from 'kleur/colors';
+import {URL} from 'url';
 import path from 'path';
 import arg from 'arg';
 import glob from 'glob-promise';
 import asc from 'assemblyscript/dist/asc.js';
-import { WASI } from 'wasi';
-import fs, { promises as asyncfs } from 'fs';
+import {WASI} from 'wasi';
+import fs, {promises as asyncfs} from 'fs';
 
 const SIZE_OFFSET = -4;
 const parsed = new URL(import.meta.url);
@@ -59,7 +59,7 @@ export async function main(argv = process.argv.slice(2)) {
   // const help = config["--help"];
   const basedir = config['--basedir'] ?? process.cwd();
   const target = config['--target'] ?? 'debug';
-  const imports = config['--imports'] ?? './envy.imports.js';
+  const imports = config['--imports'] ?? 'node_modules/tester/envy.imports.js';
   const ignore = config['--ignore'] ?? 'node_modules';
   // get all the entry files
   const fileSets = [];
@@ -71,7 +71,7 @@ export async function main(argv = process.argv.slice(2)) {
   };
   for (const globSet of globs) {
     fileSets.push(
-      await glob(globSet, globOptions)
+        await glob(globSet, globOptions)
     );
   }
   const fileSet = new Set([].concat.apply([assemblyEntry], fileSets));
@@ -105,7 +105,7 @@ export async function main(argv = process.argv.slice(2)) {
     },
   });
 
-  //process.stdout.write(stdout.toString() + '\n');
+  // process.stdout.write(stdout.toString() + '\n');
 
   // obtain the wasm binary
   let wasm = null;
@@ -125,8 +125,8 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const mod = new WebAssembly.Module(wasm);
-  const memory = new WebAssembly.Memory({ initial: 4 });
-  const utf16 = new TextDecoder('utf-16le', { fatal: true });
+  const memory = new WebAssembly.Memory({initial: 4});
+  const utf16 = new TextDecoder('utf-16le', {fatal: true});
 
   /** Gets a string from memory. */
   const getString = (ptr) => {
@@ -153,11 +153,11 @@ export async function main(argv = process.argv.slice(2)) {
   const wasmImportsPath = path.join(cwd, imports);
 
   const wasmImports = await asyncfs.access(wasmImportsPath)
-    .then(async () => {
-      const mod = await import('file://' + wasmImportsPath);
-      return Object.assign(mod.default(memory), wasiImports);
-    })
-    .catch(() => wasiImports);
+      .then(async () => {
+        const mod = await import('file://' + wasmImportsPath);
+        return Object.assign(mod.default(memory), wasiImports);
+      })
+      .catch(() => wasiImports);
 
 
   const instance = await WebAssembly.instantiate(mod, wasmImports);
