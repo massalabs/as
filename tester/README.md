@@ -1,16 +1,11 @@
-@external("test", "imported")
-declare function imported(): i32;
+# Installation
+yarn add 'https://gitpkg.now.sh/massalabs/as/tester?7-adds-unit-test-tooling' -D
 
-test('A test', () => {
-  assert(true, 'a test');
-});
+# Usage
 
-describe('A block', () => {
-  test('a test', () => {
-    assert(42 == 42, 'this test fails');
-  });
-});
+## Creating tests
 
+```typesscript
 describe('imports', () => {
   test('a test avoiding assert', () => {
     const got = imported();
@@ -21,3 +16,10 @@ describe('imports', () => {
     }
   });
 });
+```
+
+## Running tester
+### All test files
+yarn astester
+### Only given one
+yarn astester assembly/__tests__/example.spec.ts
