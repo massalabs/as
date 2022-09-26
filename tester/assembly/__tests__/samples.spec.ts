@@ -21,3 +21,5 @@ describe('imports', () => {
     }
   });
 });
+
+check('import works as expected.', imported, 41);
