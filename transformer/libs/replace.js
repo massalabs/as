@@ -1,5 +1,8 @@
-import {TransformVisitor} from 'visitor-as';
-import {Parser, Source, SourceKind} from 'assemblyscript/dist/assemblyscript.js';
+'use strict';
+import { TransformVisitor } from 'visitor-as';
+import { Parser, Source, SourceKind } from 'assemblyscript/dist/assemblyscript.js';
+
+
 
 /**
  * Replace a source file and parse it again after modification.
@@ -55,10 +58,10 @@ class Replacer extends TransformVisitor {
 
       // Removes from programs sources
       parser.sources = parser.sources.filter(
-          (_source) => _source !== source
+        (_source) => _source !== source
       );
       this.program.sources = this.program.sources.filter(
-          (_source) => _source !== source
+        (_source) => _source !== source
       );
 
       // Let's transform the file
@@ -73,9 +76,9 @@ class Replacer extends TransformVisitor {
 
       // Parses file and any new imports added to the source
       newParser.parseFile(
-          newContent,
-          source.normalizedPath,
-          source.range.source.sourceKind == SourceKind.USER_ENTRY,
+        newContent,
+        source.normalizedPath,
+        source.range.source.sourceKind == SourceKind.USER_ENTRY,
       );
 
       const newSource = newParser.sources.pop();
@@ -90,4 +93,4 @@ class Replacer extends TransformVisitor {
   }
 }
 
-export default Replacer;
+export { Replacer };

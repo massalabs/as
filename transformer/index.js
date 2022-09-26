@@ -1,1 +1,1 @@
-export {Replacer} from 'libs/replace.js';
+export { Replacer } from './libs/replace.js';
