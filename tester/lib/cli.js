@@ -44,6 +44,7 @@ export async function main(argv = process.argv.slice(2)) {
     '--target': String,
     '--imports': String,
     '--ignore': String,
+    '--transform': String,
   }, {
     argv,
   });
@@ -61,6 +62,7 @@ export async function main(argv = process.argv.slice(2)) {
   const target = config['--target'] ?? 'debug';
   const imports = config['--imports'] ?? 'node_modules/tester/envy.imports.js';
   const ignore = config['--ignore'] ?? 'node_modules';
+  const transformer = config['--transform'] ?? '';
   // get all the entry files
   const fileSets = [];
   const root = path.resolve(basedir);
@@ -88,13 +90,22 @@ export async function main(argv = process.argv.slice(2)) {
 
   // create an index
   const index = new Map();
-
   const {
     error,
     stats,
     stderr,
     stdout,
-  } = await asc.main([
+  } = transformer.length > 0 ? await asc.main([
+    '--importMemory',
+    '--target', target,
+    '--bindings', 'raw',
+    '--transform', transformer,
+  ].concat(files), {
+    writeFile(filename, contents, baseDir) {
+      const fullPath = path.join(baseDir, filename);
+      index.set(fullPath, contents);
+    },
+  }) : await asc.main([
     '--importMemory',
     '--target', target,
     '--bindings', 'raw',
@@ -104,6 +115,7 @@ export async function main(argv = process.argv.slice(2)) {
       index.set(fullPath, contents);
     },
   });
+
 
   // process.stdout.write(stdout.toString() + '\n');
 
