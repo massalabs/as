@@ -23,7 +23,6 @@ class CheckReplacer extends Replacer {
    */
   visitCallExpression(node) {
     if (node.expression.text == 'check') {
-      console.log('inside');
       const args = [];
       node.args.forEach((element) => {
         const content = element.range.source.text.slice(element.range.start, element.range.end);
@@ -36,17 +35,18 @@ class CheckReplacer extends Replacer {
         testingArgs.push(args[index]);
       }
 
-      const expr =
-        `describe(${args[0]}, () => {
-      const got = ${args[1]}(${testingArgs.join(',')});
-      const want = ${args.slice(-1)};
-      if (got != want) {
-        error('${args[1]}(${testingArgs.join(',')}) = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-        return;
-      }
-    });`;
+      const expr = `
+describe(${args[0]}, () => {
+  const got = ${args[1]}(${testingArgs.join(',')});
+  const want = ${args.slice(-1)};
+  if (got != want) {
+    error('${args[1]}(${testingArgs.join(',')}) = ' + got.toString() + ', ' + want.toString() + ' was expected.');
+    return;
+  }
+});`;
 
       this.addUpdate({ begin: node.range.start, end: node.range.end, content: expr });
+
     } else if (node.expression.text == 'checkTable') {
       const args = [];
       node.args.forEach((element) => {
@@ -54,15 +54,10 @@ class CheckReplacer extends Replacer {
         args.push(content);
       });
 
-      console.log(args);
-
       const name = args[0];
       const onFailure = args[1];
       const gotTemplate = args[2];
       const values = node.args[3].elementExpressions;
-
-      console.log(values);
-
 
       let expr = `describe(${name}, () => {\n`;
       let counter = 0;
@@ -77,8 +72,6 @@ class CheckReplacer extends Replacer {
 
         gotExpr = gotExpr.slice(1, -1)
 
-        console.log(gotExpr);
-
         expr += `
   test('${counter}', () => {
     const got = ${gotExpr};
@@ -89,13 +82,11 @@ class CheckReplacer extends Replacer {
     }
     return 1;
   });\n`;
-        console.log(expr);
+
         counter++;
       }
 
       expr += `});\n`;
-
-      console.log({ begin: node.range.start, end: node.range.end, content: expr });
 
       this.addUpdate({ begin: node.range.start, end: node.range.end, content: expr });
     }
