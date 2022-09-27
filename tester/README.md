@@ -1,5 +1,5 @@
 # Installation
-yarn add 'https://gitpkg.now.sh/massalabs/as/tester?7-adds-unit-test-tooling' -D
+yarn add 'https://gitpkg.now.sh/massalabs/as/tester' -D
 
 To avoid linter warning, you should add a file named `tester.d.ts` under the directory `assembly/__tests__` containing:
 
@@ -22,6 +22,9 @@ describe('imports', () => {
     }
   });
 });
+
+// or the same thing, without the test wrapper, using check. But needs to use a specific transformer.
+check('imports', import, 41);
 ```
 
 ## Running tester
@@ -29,3 +32,5 @@ describe('imports', () => {
 yarn astester
 ### Only given one
 yarn astester assembly/__tests__/example.spec.ts
+### Using transformer
+yarn astester --transform tester/check_replacer.js

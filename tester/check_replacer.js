@@ -2,9 +2,9 @@ import {Replacer} from 'transformer/index.js';
 // import {Node, Source} from 'types:assemblyscript/src/ast';
 
 /**
- * Unit test transformer.
+ * Check replacer.
  */
-class MyTransform extends Replacer {
+class CheckReplacer extends Replacer {
   /**
      * Checks all unit tests files.
      * @param {Source} src
@@ -52,4 +52,4 @@ class MyTransform extends Replacer {
   }
 }
 
-export default MyTransform;
+export default CheckReplacer;
