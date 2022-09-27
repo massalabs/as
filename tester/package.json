@@ -17,10 +17,10 @@
     "as-wasi": "^0.5.1",
     "glob": "^8.0.3",
     "glob-promise": "^5.0.0",
-    "kleur": "^4.1.5",
-    "transformer": "https://gitpkg.now.sh/massalabs/as/transformer?9-transformer-modify-and-reload-source"
+    "kleur": "^4.1.5"
   },
   "devDependencies": {
-    "assemblyscript": "^0.21.3"
+    "assemblyscript": "^0.21.3",
+    "transformer": "https://gitpkg.now.sh/massalabs/as/transformer?main"
   }
 }
