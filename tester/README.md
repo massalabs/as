@@ -1,5 +1,5 @@
 # Installation
-yarn add 'https://gitpkg.now.sh/massalabs/as/tester' -D
+yarn add 'https://gitpkg.now.sh/massalabs/as/tester?main' -D
 
 To avoid linter warning, you should add a file named `tester.d.ts` under the directory `assembly/__tests__` containing:
 
