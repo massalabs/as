@@ -25,7 +25,7 @@ This transformer loads the given file, encodes it in base64 and then replace the
 Example:
 ```typescript
 export function main(_args: string): i32 {
-    const bytes = file2base64('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in base64 and then put the result in a string used to initialize `bytes`.
+    const bytes = fileToBase64('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in base64 and then put the result in a string used to initialize `bytes`.
     const sc_addr = create_sc(bytes);
     call(sc_addr, "advance", "", 0);
     generate_event("gol SC deployed at addr: " + sc_addr);
