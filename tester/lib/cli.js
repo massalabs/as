@@ -6,12 +6,12 @@ import glob from 'glob-promise';
 import asc from 'assemblyscript/dist/asc.js';
 import {WASI} from 'wasi';
 import fs, {promises as asyncfs} from 'fs';
+import {fileURLToPath} from 'node:url';
 
 const SIZE_OFFSET = -4;
 const parsed = new URL(import.meta.url);
-const filePath = path.resolve(parsed.pathname);// .slice(1));
+const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
-console.log(fileDir);
 const assemblyEntry = path.join(fileDir, '../assembly/unittest.ts');
 const cwd = process.cwd();
 
