@@ -143,7 +143,7 @@ export async function main(argv = process.argv.slice(2)) {
   /** Gets a string from memory. */
   const getString = (ptr) => {
     const len = new Uint32Array(memory.buffer)[ptr + SIZE_OFFSET >>> 2] >>> 1;
-    const wtf16 = new Uint16Array(buffer, ptr, len);
+    const wtf16 = new Uint16Array(memory.buffer, ptr, len);
     return utf16.decode(wtf16);
   };
 
