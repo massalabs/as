@@ -4,11 +4,13 @@ import { URL } from 'url';
 import path from 'path';
 import { performance } from 'perf_hooks';
 import { green } from 'kleur/colors';
+import { fileURLToPath } from 'node:url';
 
 const binLocation = import.meta.url;
 const parsedBinLocation = new URL(binLocation);
-const binFileLocation = parsedBinLocation.pathname;// .slice(1);
-const libFileLocation = path.join(binFileLocation, '../lib/bootstrap.js');
+const binFileURL = parsedBinLocation.href;
+const fileDir = path.dirname(fileURLToPath(binFileURL));
+const libFileLocation = path.join(fileDir, '/lib/bootstrap.js');
 
 const args = [
   '--experimental-wasi-unstable-preview1',
