@@ -164,6 +164,10 @@ export async function main(argv = process.argv.slice(2)) {
     wasi_snapshot_preview1: wasi.wasiImport,
   };
   const wasmImportsPath = path.join(cwd, imports);
+
+console.log("config ", config['--imports'])
+
+if (config['--imports'] == "node_modules/@massalabs/massa-as-sdk/astester.imports.js"){
   let mod2;
   mod2 = await import('file://' + wasmImportsPath);
   const mod3 = mod2.local(memory);
@@ -180,6 +184,22 @@ export async function main(argv = process.argv.slice(2)) {
   wasi.initialize(instance);
   mod2.setExports(instance.exports);
   instance.exports._startTests();
+}
+else
+{
+  const wasmImports = await asyncfs.access(wasmImportsPath)
+    .then(async () => {
+      const mod = await import('file://' + wasmImportsPath);
+      return Object.assign(mod.default(memory), wasiImports);
+
+    })
+    .catch(() => wasiImports);
+
+  const instance = await WebAssembly.instantiate(mod, wasmImports);
+  wasi.initialize(instance);
+  instance.exports._startTests();
+}
+ 
 
   // wasi.start(instance);
   process.stdout.write(green(`All tests pass. You a green with envy.\n`));
