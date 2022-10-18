@@ -1,12 +1,12 @@
-import {green, yellow} from 'kleur/colors';
-import {URL} from 'url';
+import { green, yellow } from 'kleur/colors';
+import { URL } from 'url';
 import path from 'path';
 import arg from 'arg';
 import glob from 'glob-promise';
 import asc from 'assemblyscript/dist/asc.js';
-import {WASI} from 'wasi';
-import fs, {promises as asyncfs} from 'fs';
-import {fileURLToPath} from 'node:url';
+import { WASI } from 'wasi';
+import fs, { promises as asyncfs } from 'fs';
+import { fileURLToPath } from 'node:url';
 
 const SIZE_OFFSET = -4;
 const parsed = new URL(import.meta.url);
@@ -44,7 +44,7 @@ export async function main(argv = process.argv.slice(2)) {
     '--target': String,
     '--imports': String,
     '--ignore': String,
-    '--transform': String,
+    '--transform': String
   }, {
     argv,
   });
@@ -73,7 +73,7 @@ export async function main(argv = process.argv.slice(2)) {
   };
   for (const globSet of globs) {
     fileSets.push(
-        await glob(globSet, globOptions)
+      await glob(globSet, globOptions)
     );
   }
   const fileSet = new Set([].concat.apply([assemblyEntry], fileSets));
@@ -100,6 +100,7 @@ export async function main(argv = process.argv.slice(2)) {
     '--target', target,
     '--bindings', 'raw',
     '--transform', transformer,
+    '--exportRuntime',
   ].concat(files), {
     writeFile(filename, contents, baseDir) {
       const fullPath = path.join(baseDir, filename);
@@ -109,6 +110,7 @@ export async function main(argv = process.argv.slice(2)) {
     '--importMemory',
     '--target', target,
     '--bindings', 'raw',
+    '--exportRuntime',
   ].concat(files), {
     writeFile(filename, contents, baseDir) {
       const fullPath = path.join(baseDir, filename);
@@ -135,10 +137,9 @@ export async function main(argv = process.argv.slice(2)) {
     process.stderr.write(stderr.toString() + '\n');
     process.exit(1);
   }
-
-  const mod = new WebAssembly.Module(wasm);
-  const memory = new WebAssembly.Memory({initial: 4});
-  const utf16 = new TextDecoder('utf-16le', {fatal: true});
+  let mod = new WebAssembly.Module(wasm);
+  const memory = new WebAssembly.Memory({ initial: 4 });
+  const utf16 = new TextDecoder('utf-16le', { fatal: true });
 
   /** Gets a string from memory. */
   const getString = (ptr) => {
@@ -163,17 +164,21 @@ export async function main(argv = process.argv.slice(2)) {
     wasi_snapshot_preview1: wasi.wasiImport,
   };
   const wasmImportsPath = path.join(cwd, imports);
+  let mod2;
+  mod2 = await import('file://' + wasmImportsPath);
+  const mod3 = mod2.local(memory);
 
   const wasmImports = await asyncfs.access(wasmImportsPath)
-      .then(async () => {
-        const mod = await import('file://' + wasmImportsPath);
-        return Object.assign(mod.default(memory), wasiImports);
-      })
-      .catch(() => wasiImports);
+    .then(async () => {
+      //   const mod = await import('file://' + wasmImportsPath);
+      return Object.assign(mod3, wasiImports);
 
+    })
+    .catch(() => wasiImports);
 
   const instance = await WebAssembly.instantiate(mod, wasmImports);
   wasi.initialize(instance);
+  mod2.setExports(instance.exports);
   instance.exports._startTests();
 
   // wasi.start(instance);
