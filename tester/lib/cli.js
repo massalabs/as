@@ -9,6 +9,8 @@ import fs, { promises as asyncfs } from 'fs';
 import { fileURLToPath } from 'node:url';
 
 const SIZE_OFFSET = -4;
+//const pathAstester = "node_modules/@massalabs/massa-as-sdk/astester.imports.js"
+const pathAstester = "astester.imports.js"
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -165,32 +167,29 @@ export async function main(argv = process.argv.slice(2)) {
   };
   const wasmImportsPath = path.join(cwd, imports);
 
-console.log("config ", config['--imports'])
 
-if (config['--imports'] == "node_modules/@massalabs/massa-as-sdk/astester.imports.js"){
-  let mod2;
-  mod2 = await import('file://' + wasmImportsPath);
-  const mod3 = mod2.local(memory);
+if (config['--imports'] == pathAstester){
+  let modWasmImport;
+  modWasmImport = await import('file://' + wasmImportsPath);
+  const modExport = modWasmImport.local(memory);
 
   const wasmImports = await asyncfs.access(wasmImportsPath)
     .then(async () => {
-      //   const mod = await import('file://' + wasmImportsPath);
-      return Object.assign(mod3, wasiImports);
-
+      return Object.assign(modExport, wasiImports);
     })
     .catch(() => wasiImports);
 
   const instance = await WebAssembly.instantiate(mod, wasmImports);
   wasi.initialize(instance);
-  mod2.setExports(instance.exports);
+  modWasmImport.setExports(instance.exports);
   instance.exports._startTests();
 }
 else
 {
   const wasmImports = await asyncfs.access(wasmImportsPath)
     .then(async () => {
-      const mod = await import('file://' + wasmImportsPath);
-      return Object.assign(mod.default(memory), wasiImports);
+      const modWasmImport = await import('file://' + wasmImportsPath);
+      return Object.assign(modWasmImport.default(memory), wasiImports);
 
     })
     .catch(() => wasiImports);
