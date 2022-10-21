@@ -10,7 +10,6 @@ import { fileURLToPath } from 'node:url';
 
 const SIZE_OFFSET = -4;
 const pathAstester = "node_modules/@massalabs/massa-as-sdk/astester.imports.js"
-//const pathAstester = "astester.imports.js"
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
