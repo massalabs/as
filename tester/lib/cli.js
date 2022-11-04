@@ -1,4 +1,5 @@
-import {green, yellow} from 'kleur/colors';
+// This script is largely inspired from ENVY
+import {yellow} from 'kleur/colors';
 import {URL} from 'url';
 import path from 'path';
 import arg from 'arg';
@@ -11,24 +12,13 @@ const SIZE_OFFSET = -4;
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(parsed.pathname);// .slice(1));
 const fileDir = path.dirname(filePath);
-console.log(fileDir);
 const assemblyEntry = path.join(fileDir, '../assembly/unittest.ts');
 const cwd = process.cwd();
 
-// I am a firm believer that every good cli should have some kind of ascii text art
-const textArt = green(`
-███████ ███    ██ ██    ██ ██    ██ 
-██      ████   ██ ██    ██  ██  ██  
-█████   ██ ██  ██ ██    ██   ████   
-██      ██  ██ ██  ██  ██     ██    
-███████ ██   ████   ████      ██    
-`);
-
 
 // entry point
+// eslint-disable-next-line require-jsdoc
 export async function main(argv = process.argv.slice(2)) {
-  process.stdout.write(textArt);
-
   // check for rest argument
   let rest = [];
   const indexOfRest = argv.indexOf('--');
@@ -85,8 +75,6 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const files = Array.from(fileSet);
-
-  console.log(files);
 
   // create an index
   const index = new Map();
@@ -175,7 +163,4 @@ export async function main(argv = process.argv.slice(2)) {
   const instance = await WebAssembly.instantiate(mod, wasmImports);
   wasi.initialize(instance);
   instance.exports._startTests();
-
-  // wasi.start(instance);
-  process.stdout.write(green(`All tests pass. You a green with envy.\n`));
 }

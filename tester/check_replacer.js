@@ -1,6 +1,100 @@
-import { Replacer } from 'transformer/index.js';
-import { ASTBuilder } from 'assemblyscript';
-// import {Node, Source} from 'types:assemblyscript/src/ast';
+/* eslint-disable max-len */
+import {Replacer} from 'transformer/index.js';
+import {ASTBuilder} from 'assemblyscript';
+
+/**
+ * Generates if expression.
+ *
+ * @param {string} compare
+ * @return {string}
+ */
+function generateIfExpression(compare) {
+  switch (compare) {
+    case ('compare.Equal'):
+      return {'ifExpr': 'got != want', 'hasWant': true};
+    case ('compare.Different'):
+      return {'ifExpr': 'got == want', 'hasWant': true};
+    case ('compare.False'):
+      return {'ifExpr': 'got', 'hasWant': false};
+    case ('compare.True'):
+      return {'ifExpr': '!got', 'hasWant': false};
+    default:
+      return {'ifExpr': compare, 'hasWant': compare.search('want')>-1};
+  }
+}
+
+/**
+ * Generates a test.
+ *
+ * There is two test models:
+ * - When the result value is a boolean:
+ *   - in that case we don't need to:
+ *     - calculate a wanted value,
+ *     - add the expecting value in the error message.
+ * - Otherwise we need a wanted value.
+ *
+ * @param {string} name - test friendly name
+ * @param {string} got - got expression
+ * @param {string} ifExpression
+ * @param {string} needWant - include want in test ?
+ * @param {bool} continueOnFailure - should the test failure stop the test suite
+ * @param {Array} value - array of values to populate got template with
+ * @param {number} iValue - current index of values
+ * @return {Object}
+ */
+function generateTest(name, got, ifExpression, needWant, continueOnFailure, value, iValue) {
+  let expr;
+  if (needWant) {
+    expr = `
+    test('${name}', () => {
+      const got = ${got};
+      const want = ${ASTBuilder.build(value[iValue])};
+      if (${ifExpression}) {
+        error('${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
+        return ${continueOnFailure ? '0':'-1'};
+      }
+      return 1;
+    });\n`;
+    iValue++; // one value was used in template
+  } else {
+    expr = `
+    test('${name}', () => {
+      const got = ${got};
+      if (${ifExpression}) {
+        error('${got} was ' + got.toString() + '.');
+        return ${continueOnFailure ? '0':'-1'};
+      }
+      return 1;
+    });\n`;
+  }
+
+  return {
+    'test': expr,
+    'iValue': iValue,
+  };
+}
+
+/**
+ * Hydrates the got template by replacing the tokens (arg[0-9]+) with actual values.
+ *
+ * @param {string} template - got template
+ * @param {Array} value - array of values to populate got template with
+ * @param {number} iValue - current index of values
+ * @return {Object}
+ */
+function hydrateGot(template, value, iValue) {
+  let got = template;
+
+  while (got.search(/arg[0-9]/) > -1) {
+    got = got.replace(/arg[0-9]+/, ASTBuilder.build(value[iValue]));
+    iValue++;
+  }
+
+  return {
+    'got': got.slice(1, -1),
+    'iValue': iValue,
+  };
+}
 
 /**
  * Check replacer.
@@ -17,6 +111,8 @@ class CheckReplacer extends Replacer {
 
   /**
    * Replaces all check functions.
+   *
+   * XXX: this function is clearly too big. Feel free to split it.
    *
    * @param {Node} node
    * @return {Node}
@@ -45,9 +141,11 @@ describe(${args[0]}, () => {
   }
 });`;
 
-      this.addUpdate({ begin: node.range.start, end: node.range.end, content: expr });
-
-    } else if (node.expression.text == 'checkTable') {
+      this.addUpdate({begin: node.range.start, end: node.range.end, content: expr});
+    } else if (node.expression.text == 'unitTestTable') {
+      // Push all the arguments of the unitTestTable to args array.
+      // unitTestTable(<name>, <onFailure>, <gotTemplate>, <compare>, A, B, C, ...)
+      // => args = [<name>, <onFailure>, <gotTemplate>, <compare>, A, B, C, ...]
       const args = [];
       node.args.forEach((element) => {
         const content = element.range.source.text.slice(element.range.start, element.range.end);
@@ -57,38 +155,47 @@ describe(${args[0]}, () => {
       const name = args[0];
       const onFailure = args[1];
       const gotTemplate = args[2];
-      const values = node.args[3].elementExpressions;
+      const compare = args[3];
+      // parsed element instead of stringified content
+      const values = node.args[4].elementExpressions;
 
       let expr = `describe(${name}, () => {\n`;
-      let counter = 0;
-      let returnValue = onFailure == onFailure.Continue ? "0" : "-1";
 
-      for (let index = 0; index < values.length; index++) {
-        let gotExpr = gotTemplate;
-        while (gotExpr.search(/arg[0-9]/) > -1) {
-          gotExpr = gotExpr.replace(/arg[0-9]+/, ASTBuilder.build(values[index]));
-          index++;
-        }
+      const {ifExpr, hasWant: needWant} = generateIfExpression(compare);
 
-        gotExpr = gotExpr.slice(1, -1)
+      let gotExpr;
+      let testExpr;
 
-        expr += `
-  test('${counter}', () => {
-    const got = ${gotExpr};
-    const want = ${ASTBuilder.build(values[index])};
-    if (got != want) {
-      error('${gotExpr} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-      return ${returnValue};
-    }
-    return 1;
-  });\n`;
+      // two concepts here:
+      // - testCounter keeps track of the number of tests
+      // - iValue is the index of the values array
+      // One test can involve one or multiple values.
+      // Here we loop until all test values are used.
+      let testCounter = 0;
+      for (let iValue = 0; iValue < values.length; testCounter++) {
+        // Destructuring assignment unpacks returned object values into distinct values.
+        ({got: gotExpr, iValue} = hydrateGot(gotTemplate, values, iValue));
 
-        counter++;
+        ({test: testExpr, iValue} = generateTest(
+            testCounter, // use test counter as test name
+            gotExpr,
+            ifExpr, needWant,
+            onFailure == 'onFailure.Continue',
+            values, iValue));
+
+        expr+= testExpr;
       }
 
       expr += `});\n`;
 
-      this.addUpdate({ begin: node.range.start, end: node.range.end, content: expr });
+      // magic function define at parent level that will:
+      // - remove the code used here from the initial file content
+      // - create a new file with the generated tests
+      this.addUpdate({
+        begin: node.range.start,
+        end: node.range.end+2, // +1 to include the trailing semicolon and new line (;\n)
+        content: expr,
+      });
     }
 
     return super.visitCallExpression(node);
