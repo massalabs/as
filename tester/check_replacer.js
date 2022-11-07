@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 import {Replacer} from 'transformer/index.js';
-import {ASTBuilder} from 'assemblyscript';
 
 /**
  * Generates if expression.
@@ -48,7 +47,7 @@ function generateTest(name, got, ifExpression, needWant, continueOnFailure, valu
     expr = `
     test('${name}', () => {
       const got = ${got};
-      const want = ${ASTBuilder.build(value[iValue])};
+      const want = ${value[iValue]};
       if (${ifExpression}) {
         error('${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
         return ${continueOnFailure ? '0':'-1'};
@@ -86,7 +85,8 @@ function hydrateGot(template, value, iValue) {
   let got = template;
 
   while (got.search(/arg[0-9]/) > -1) {
-    got = got.replace(/arg[0-9]+/, ASTBuilder.build(value[iValue]));
+    console.log('value', value[iValue]);
+    got = got.replace(/arg[0-9]+/, value[iValue]);
     iValue++;
   }
 
@@ -156,8 +156,10 @@ describe(${args[0]}, () => {
       const onFailure = args[1];
       const gotTemplate = args[2];
       const compare = args[3];
-      // parsed element instead of stringified content
-      const values = node.args[4].elementExpressions;
+
+      // extract all test values and convert potential breaking single quotes to double ones.
+      const rawValues = node.args[4].elementExpressions;
+      const values = rawValues.map((e) => e.range.source.text.slice(e.range.start, e.range.end).replace(/'/g, '"'));
 
       let expr = `describe(${name}, () => {\n`;
 
