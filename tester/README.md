@@ -1,5 +1,10 @@
 # Installation
-yarn add 'https://gitpkg.now.sh/massalabs/as/tester?main'
+
+To install this module, run the following command at your project root directory :
+
+```shell
+npm install -D @massalabs/as-tester
+```
 
 To avoid linter warning, you should add a file named `tester.d.ts` under the directory `assembly/__tests__` containing:
 

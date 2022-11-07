@@ -1,4 +1,4 @@
-import {Replacer} from 'transformer/index.js';
+import {Replacer} from '@massalabs/as-transformer/index.js';
 // import {Node, Source} from 'types:assemblyscript/src/ast';
 
 /**
