@@ -156,7 +156,7 @@ describe(${args[0]}, () => {
       const gotTemplate = args[2];
       const compare = args[3];
 
-      // extract all test values and convert potential breaking single quotes to double ones.
+      // extracts all test values and converts potential breaking single quotes to double ones.
       const rawValues = node.args[4].elementExpressions;
       const values = rawValues.map((e) => e.range.source.text.slice(e.range.start, e.range.end).replace(/'/g, '"'));
 
