@@ -85,7 +85,6 @@ function hydrateGot(template, value, iValue) {
   let got = template;
 
   while (got.search(/arg[0-9]/) > -1) {
-    console.log('value', value[iValue]);
     got = got.replace(/arg[0-9]+/, value[iValue]);
     iValue++;
   }
