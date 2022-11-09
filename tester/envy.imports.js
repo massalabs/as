@@ -1,5 +1,4 @@
-export default function (memory) {
-  console.log("hit");
+export default function(memory) {
   return {
     test: {
       imported() {

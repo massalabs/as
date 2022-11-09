@@ -1,5 +1,5 @@
 // / <reference path="./global.d.ts" />
-import {fd_write} from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1.ts';
+import { fd_write } from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1.ts';
 import {
   wasi_process,
 } from '@assemblyscript/wasi-shim/assembly/wasi_process.ts';
@@ -64,9 +64,9 @@ let current: TestNode = root;
   current.children.push(t);
 }
 
-@global function error(message:string): void {
+@global function error(message: string): void {
   const stdout = wasi_process.stderr;
-  stdout.write(`\x1b[31m` + 'Error: ' + `\x1b[39m`);
+  stdout.write(' '.repeat(6) + `\x1b[31m` + 'Error: ' + `\x1b[39m`);
   stdout.write(message);
   stdout.write('\n');
 }
