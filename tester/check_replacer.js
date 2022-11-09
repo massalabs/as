@@ -50,9 +50,9 @@ function generateTest(name, got, ifExpression, needWant, continueOnFailure, valu
       const want = ${value[iValue]};
       if (${ifExpression}) {
         error('${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-        return ${continueOnFailure ? '0':'-1'};
+        return ${continueOnFailure ? 'TestResult.Failure':'TestResult.StopTestSet'};
       }
-      return 1;
+      return TestResult.Success;
     });\n`;
     iValue++; // one value was used in template
   } else {
@@ -61,9 +61,9 @@ function generateTest(name, got, ifExpression, needWant, continueOnFailure, valu
       const got = ${got};
       if (${ifExpression}) {
         error('${got} was ' + got.toString() + '.');
-        return ${continueOnFailure ? '0':'-1'};
+        return ${continueOnFailure ? 'TestResult.Failure':'TestResult.StopTestSet'};
       }
-      return 1;
+      return TestResult.Success;
     });\n`;
   }
 
@@ -134,11 +134,13 @@ class CheckReplacer extends Replacer {
 describe(${args[0]}, ():i32 => {
   const got = ${args[1]}(${testingArgs.join(',')});
   const want = ${args.slice(-1)};
+
   if (got != want) {
     error('${args[1]}(${testingArgs.join(',')}) = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-    return -1;
+    return TestResult.Failure;
   }
-  return 1;
+
+  return TestResult.Success;
 });`;
 
       this.addUpdate({begin: node.range.start, end: node.range.end, content: expr});
@@ -188,7 +190,7 @@ describe(${args[0]}, ():i32 => {
         expr+= testExpr;
       }
 
-      expr += `return 1;\n});\n`;
+      expr += `return TestResult.Success;\n});\n`;
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content

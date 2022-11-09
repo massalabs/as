@@ -7,6 +7,13 @@ export function _startTests(): i32 {
   return root.evaluate(new TestNodeReporterContext());
 }
 
+@global enum TestResult {
+  Panic = -3,
+  StopTestSet = -2,
+  Failure = -1,
+  Success = 1,
+}
+
 class TestNodeReporterContext {
   indent: i32 = 0;
 }
@@ -20,6 +27,8 @@ function write(str: string): void {
   fd_write(1, iov, 1, written_ptr);
 }
 
+
+// XXX: if you use multiple test layers, requests for early returns on failed nested tests will be ignored
 class TestNode {
   group: bool = false;
   children: TestNode[] = [];
@@ -39,36 +48,41 @@ class TestNode {
     const parent = current;
     current = this;
 
-    let returnCode = this.callback();
+    let testResult = this.callback();
 
-    if (returnCode == -1) {
-      return -1;
-    }
-
-    // once the test is run, children are determined, evaluate them
+    // Execute children tests.
+    // Tests are stopped prematurely if the failure policy is Panic or StopTestSet.
+    // Panic is propagated to the parent to stop the execution of all the tests.
     const children = this.children;
     const childrenLength = children.length;
+
     for (let i = 0; i < childrenLength; i++) {
       const child = unchecked(children[i]);
 
-      const childResultCode = child.evaluate(ctx);
+      const childTestResult = child.evaluate(ctx);
 
-      if (childResultCode == -1) {
-        returnCode = -1;
+      if (childTestResult == TestResult.Panic) {
+        testResult = TestResult.Panic;
         break;
       }
 
-      if (childResultCode == 0) {
-        returnCode = 0;
+      if (childTestResult == TestResult.StopTestSet) {
+        testResult = TestResult.Failure;
+        break;
+      }
+
+      if (childTestResult == TestResult.Failure) {
+        testResult = TestResult.Failure;
       }
     }
+
 
     current = parent;
     if (this != root) {
       ctx.indent -= 2;
     }
 
-    return returnCode;
+    return testResult;
   }
 }
 

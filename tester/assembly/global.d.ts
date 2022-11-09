@@ -33,4 +33,12 @@ declare global {
     True,
     False,
   }
+
+  @global enum TestResult {
+    Panic,
+    StopTestSet,
+    Failure,
+    Success,
+  }
+
 }
