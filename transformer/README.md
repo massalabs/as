@@ -4,12 +4,10 @@ An [AssemblyScript transformer](https://www.assemblyscript.org/compiler.html#tra
 
 ## Installation
 
-This module can be installed using [GitPkg](https://gitpkg.vercel.app/) that makes subfolders of repos directly usable with npm or yarn.
-
 To install this module, run the following command at your project root directory :
 
 ```shell
-npm install -D 'https://gitpkg.now.sh/massalabs/as/transformer?main'
+npm install -D @massalabs/as-transformer
 ```
 
 ## Usage
