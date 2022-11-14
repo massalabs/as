@@ -5,12 +5,12 @@ import path from 'path';
 import arg from 'arg';
 import glob from 'glob-promise';
 import asc from 'assemblyscript/dist/asc.js';
-import { WASI } from 'wasi';
-import fs, { promises as asyncfs } from 'fs';
-import { fileURLToPath } from 'node:url';
+import {WASI} from 'wasi';
+import fs, {promises as asyncfs} from 'fs';
+import {fileURLToPath} from 'node:url';
 
 const SIZE_OFFSET = -4;
-const pathAstester = "node_modules/@massalabs/massa-as-sdk/astester.imports.js"
+const pathAstester = 'node_modules/@massalabs/massa-as-sdk/astester.imports.js';
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -36,7 +36,7 @@ export async function main(argv = process.argv.slice(2)) {
     '--target': String,
     '--imports': String,
     '--ignore': String,
-    '--transform': String
+    '--transform': String,
   }, {
     argv,
   });
@@ -65,7 +65,7 @@ export async function main(argv = process.argv.slice(2)) {
   };
   for (const globSet of globs) {
     fileSets.push(
-      await glob(globSet, globOptions)
+        await glob(globSet, globOptions)
     );
   }
   const fileSet = new Set([].concat.apply([assemblyEntry], fileSets));
@@ -108,7 +108,6 @@ export async function main(argv = process.argv.slice(2)) {
     },
   });
 
-
   // process.stdout.write(stdout.toString() + '\n');
 
   // obtain the wasm binary
@@ -127,9 +126,9 @@ export async function main(argv = process.argv.slice(2)) {
     process.stderr.write(stderr.toString() + '\n');
     process.exit(1);
   }
-  let mod = new WebAssembly.Module(wasm);
-  const memory = new WebAssembly.Memory({ initial: 4 });
-  const utf16 = new TextDecoder('utf-16le', { fatal: true });
+  const mod = new WebAssembly.Module(wasm);
+  const memory = new WebAssembly.Memory({initial: 4});
+  const utf16 = new TextDecoder('utf-16le', {fatal: true});
 
   /** Gets a string from memory. */
   const getString = (ptr) => {
@@ -155,35 +154,33 @@ export async function main(argv = process.argv.slice(2)) {
   };
   const wasmImportsPath = path.join(cwd, imports);
 
+  if (config['--imports'] == pathAstester) {
+    let modWasmImport;
+    modWasmImport = await import('file://' + wasmImportsPath);
+    const modExport = modWasmImport.local(memory);
 
-if (config['--imports'] == pathAstester){
-  let modWasmImport;
-  modWasmImport = await import('file://' + wasmImportsPath);
-  const modExport = modWasmImport.local(memory);
+    const wasmImports = await asyncfs.access(wasmImportsPath)
+        .then(async () => {
+          return Object.assign(modExport, wasiImports);
+        })
+        .catch(() => wasiImports);
 
-  const wasmImports = await asyncfs.access(wasmImportsPath)
-    .then(async () => {
-      return Object.assign(modExport, wasiImports);
-    })
-    .catch(() => wasiImports);
+    const instance = await WebAssembly.instantiate(mod, wasmImports);
+    wasi.initialize(instance);
+    modWasmImport.setExports(instance.exports);
 
-  const instance = await WebAssembly.instantiate(mod, wasmImports);
-  wasi.initialize(instance);
-  modWasmImport.setExports(instance.exports);
-  instance.exports._startTests();
-}
-else
-{
-  const wasmImports = await asyncfs.access(wasmImportsPath)
-    .then(async () => {
-      const modWasmImport = await import('file://' + wasmImportsPath);
-      return Object.assign(modWasmImport.default(memory), wasiImports);
+    process.exitCode = instance.exports._startTests();
+  } else {
+    const wasmImports = await asyncfs.access(wasmImportsPath)
+        .then(async () => {
+          const modWasmImport = await import('file://' + wasmImportsPath);
+          return Object.assign(modWasmImport.default(memory), wasiImports);
+        })
+        .catch(() => wasiImports);
 
-    })
-    .catch(() => wasiImports);
+    const instance = await WebAssembly.instantiate(mod, wasmImports);
+    wasi.initialize(instance);
 
-  const instance = await WebAssembly.instantiate(mod, wasmImports);
-  wasi.initialize(instance);
-  instance.exports._startTests();
-
+    process.exitCode = instance.exports._startTests();
+  }
 }

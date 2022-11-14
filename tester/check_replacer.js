@@ -45,7 +45,7 @@ function generateTest(name, got, ifExpression, needWant, continueOnFailure, valu
   let expr;
   if (needWant) {
     expr = `
-    test('${name}', () => {
+    test('${name}', ():i32 => {
       const got = ${got};
       const want = ${value[iValue]};
       if (${ifExpression}) {
@@ -57,7 +57,7 @@ function generateTest(name, got, ifExpression, needWant, continueOnFailure, valu
     iValue++; // one value was used in template
   } else {
     expr = `
-    test('${name}', () => {
+    test('${name}', ():i32 => {
       const got = ${got};
       if (${ifExpression}) {
         error('${got} was ' + got.toString() + '.');
@@ -131,13 +131,14 @@ class CheckReplacer extends Replacer {
       }
 
       const expr = `
-describe(${args[0]}, () => {
+describe(${args[0]}, ():i32 => {
   const got = ${args[1]}(${testingArgs.join(',')});
   const want = ${args.slice(-1)};
   if (got != want) {
     error('${args[1]}(${testingArgs.join(',')}) = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-    return;
+    return -1;
   }
+  return 1;
 });`;
 
       this.addUpdate({begin: node.range.start, end: node.range.end, content: expr});
@@ -160,7 +161,7 @@ describe(${args[0]}, () => {
       const rawValues = node.args[4].elementExpressions;
       const values = rawValues.map((e) => e.range.source.text.slice(e.range.start, e.range.end).replace(/'/g, '"'));
 
-      let expr = `describe(${name}, () => {\n`;
+      let expr = `describe(${name}, ():i32 => {\n`;
 
       const {ifExpr, hasWant: needWant} = generateIfExpression(compare);
 
@@ -187,7 +188,7 @@ describe(${args[0]}, () => {
         expr+= testExpr;
       }
 
-      expr += `});\n`;
+      expr += `return 1;\n});\n`;
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
