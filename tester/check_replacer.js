@@ -1,24 +1,31 @@
 /* eslint-disable max-len */
-import {Replacer} from 'transformer/index.js';
+import { Replacer } from '@massalabs/as-transformer/index.js';
 
 /**
  * Generates if expression.
  *
- * @param {string} compare
+ * Known criteria are :
+ * - is, isNot,
+ * - isTrue, isFalse,
+ *
+ * If the criterion is not in the list,
+ * the raw string value is taken.
+ *
+ * @param {string} criterion
  * @return {string}
  */
-function generateIfExpression(compare) {
-  switch (compare) {
-    case ('compare.Equal'):
-      return {'ifExpr': 'got != want', 'hasWant': true};
-    case ('compare.Different'):
-      return {'ifExpr': 'got == want', 'hasWant': true};
-    case ('compare.False'):
-      return {'ifExpr': 'got', 'hasWant': false};
-    case ('compare.True'):
-      return {'ifExpr': '!got', 'hasWant': false};
+function generateIfExpression(criterion) {
+  switch (criterion) {
+    case ('is'):
+      return { 'ifExpr': 'got != want', 'hasWant': true };
+    case ('isNot'):
+      return { 'ifExpr': 'got == want', 'hasWant': true };
+    case ('isFalse'):
+      return { 'ifExpr': 'got', 'hasWant': false };
+    case ('isTrue'):
+      return { 'ifExpr': '!got', 'hasWant': false };
     default:
-      return {'ifExpr': compare, 'hasWant': compare.search('want')>-1};
+      return { 'ifExpr': criterion, 'hasWant': criterion.search('want') > -1 };
   }
 }
 
@@ -34,73 +41,73 @@ function generateIfExpression(compare) {
  *
  * @param {string} name - test friendly name
  * @param {string} got - got expression
+ * @param {string} expect - expect expression
  * @param {string} ifExpression
  * @param {string} needWant - include want in test ?
- * @param {bool} continueOnFailure - should the test failure stop the test suite
- * @param {Array} value - array of values to populate got template with
- * @param {number} iValue - current index of values
+ * @param {bool} continueOnFailure - should the test failure stop the test set
  * @return {Object}
  */
-function generateTest(name, got, ifExpression, needWant, continueOnFailure, value, iValue) {
-  let expr;
+function generateTest(name, got, expect, ifExpression, needWant, continueOnFailure) {
   if (needWant) {
-    expr = `
-    test('${name}', ():i32 => {
-      const got = ${got};
-      const want = ${value[iValue]};
-      if (${ifExpression}) {
-        error('${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-        return ${continueOnFailure ? 'TestResult.Failure':'TestResult.StopTestSet'};
-      }
-      return TestResult.Success;
-    });\n`;
-    iValue++; // one value was used in template
-  } else {
-    expr = `
-    test('${name}', ():i32 => {
-      const got = ${got};
-      if (${ifExpression}) {
-        error('${got} was ' + got.toString() + '.');
-        return ${continueOnFailure ? 'TestResult.Failure':'TestResult.StopTestSet'};
-      }
-      return TestResult.Success;
-    });\n`;
+    return `
+test('${name}', ():i32 => {
+  const got = ${got};
+  const want = ${expect};
+
+  if (${ifExpression}) {
+    error('${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.');
+    return ${continueOnFailure ? 'TestResult.Failure' : 'TestResult.StopTestSet'};
   }
 
-  return {
-    'test': expr,
-    'iValue': iValue,
-  };
+  return TestResult.Success;
+});\n`;
+  }
+
+  return `
+test('${name}', ():i32 => {
+  const got = ${got};
+  
+  if (${ifExpression}) {
+    error('${got} was ' + got.toString() + '.');
+    return ${continueOnFailure ? 'TestResult.Failure' : 'TestResult.StopTestSet'};
+  }
+  
+  return TestResult.Success;
+});\n`;
 }
 
 /**
- * Hydrates the got template by replacing the tokens (arg[0-9]+) with actual values.
+ * Hydrates the template by replacing the tokens (arg[0-9]+) with actual values.
  *
- * @param {string} template - got template
- * @param {Array} value - array of values to populate got template with
+ * @param {string} template - template
+ * @param {Array} value - array of values to populate template with
  * @param {number} iValue - current index of values
  * @return {Object}
  */
-function hydrateGot(template, value, iValue) {
-  let got = template;
+function hydrateTemplate(template, value, iValue) {
+  let instanciation = template;
 
-  while (got.search(/arg[0-9]/) > -1) {
-    got = got.replace(/arg[0-9]+/, value[iValue]);
+  while (instanciation.search(/arg[0-9]/) > -1) {
+    instanciation = instanciation.replace(/arg[0-9]+/, value[iValue]);
     iValue++;
   }
 
   return {
-    'got': got.slice(1, -1),
+    'instanciation': instanciation,
     'iValue': iValue,
   };
 }
 
 /**
- * Check replacer.
+ * Checks replacer.
+ *
+ * Replace checksThatThe and checksForEachLineThatThe function calls with
+ * assemblyscript code that use unittest functions.
  */
 class CheckReplacer extends Replacer {
   /**
-     * Checks all unit tests files.
+     * Filters all standard (library) files.
+     *
      * @param {Source} src
      * @return {bool}
      */
@@ -109,7 +116,7 @@ class CheckReplacer extends Replacer {
   }
 
   /**
-   * Replaces all check functions.
+   * Replaces all checks functions.
    *
    * XXX: this function is clearly too big. Feel free to split it.
    *
@@ -117,58 +124,69 @@ class CheckReplacer extends Replacer {
    * @return {Node}
    */
   visitCallExpression(node) {
-    if (node.expression.text == 'check') {
+    if (node.expression.text == 'checksThatThe') {
+      // Push all the arguments of the checksThatThe function call to args array.
+      // The function signature is the following:
+      // checksThatThe(<test name>, <value to compute>, <comparison criterion>, <expected value>)
+      // <expected value> field is optional
       const args = [];
       node.args.forEach((element) => {
         const content = element.range.source.text.slice(element.range.start, element.range.end);
         args.push(content);
       });
 
-      const testingArgs = [];
+      const testName = args[0];
+      const got = args[1];
+      const comparisonCriterion = args[2];
+      const expected = args.length == 4 ? args[3] : '';
 
-      for (let index = 1; index < args.length - 2; index++) {
-        testingArgs.push(args[index]);
-      }
+      const { ifExpr, hasWant: needWant } = generateIfExpression(comparisonCriterion);
 
-      const expr = `
-describe(${args[0]}, ():i32 => {
-  const got = ${args[1]}(${testingArgs.join(',')});
-  const want = ${args.slice(-1)};
+      const test = generateTest(
+        testName.replace(/['`]/g, ''),
+        got.replace(/['`]/g, ''), expected.replace(/['`]/g, ''),
+        ifExpr, needWant,
+        'onFailure.Continue');
 
-  if (got != want) {
-    error('${args[1]}(${testingArgs.join(',')}) = ' + got.toString() + ', ' + want.toString() + ' was expected.');
-    return TestResult.Failure;
-  }
-
-  return TestResult.Success;
-});`;
-
-      this.addUpdate({begin: node.range.start, end: node.range.end, content: expr});
-    } else if (node.expression.text == 'unitTestTable') {
-      // Push all the arguments of the unitTestTable to args array.
-      // unitTestTable(<name>, <onFailure>, <gotTemplate>, <compare>, A, B, C, ...)
-      // => args = [<name>, <onFailure>, <gotTemplate>, <compare>, A, B, C, ...]
+      // magic function define at parent level that will:
+      // - remove the code used here from the initial file content
+      // - create a new file with the generated tests
+      this.addUpdate({
+        begin: node.range.start,
+        end: node.range.end + 2, // +2 to include the trailing semicolon and new line (;\n)
+        content: test,
+      });
+    } else if (node.expression.text == 'checksForEachLineThatThe') {
+      // Push all the arguments of the checksForEachLineThatThe function call to args array.
+      // The function signature is the following:
+      // checksForEachLineThatThe(<test set name>, <template of value to compute>, <comparison criterion>, <template of expected result>, <test failure strategy>, [<test values>...])
+      // <template of expected result>> field is optional
       const args = [];
       node.args.forEach((element) => {
         const content = element.range.source.text.slice(element.range.start, element.range.end);
         args.push(content);
       });
 
-      const name = args[0];
-      const onFailure = args[1];
-      const gotTemplate = args[2];
-      const compare = args[3];
+      const testSetName = args[0];
+      const gotTemplate = args[1];
+      const comparisonCriterion = args[2];
+      let expectedTemplate = args.length == 6 ? args[3] : '';
+      const onFailure = args[args.length - 2];
 
       // extracts all test values and converts potential breaking single quotes to double ones.
-      const rawValues = node.args[4].elementExpressions;
+      const rawValues = node.args[args.length - 1].elementExpressions;
       const values = rawValues.map((e) => e.range.source.text.slice(e.range.start, e.range.end).replace(/'/g, '"'));
 
-      let expr = `describe(${name}, ():i32 => {\n`;
+      let expr = `describe(${testSetName}, ():i32 => {\n`;
 
-      const {ifExpr, hasWant: needWant} = generateIfExpression(compare);
+      const { ifExpr, hasWant: needWant } = generateIfExpression(comparisonCriterion);
+
+      if (needWant && expectedTemplate == '') {
+        expectedTemplate = 'arg0';
+      }
 
       let gotExpr;
-      let testExpr;
+      let expectExpr;
 
       // two concepts here:
       // - testCounter keeps track of the number of tests
@@ -178,26 +196,26 @@ describe(${args[0]}, ():i32 => {
       let testCounter = 0;
       for (let iValue = 0; iValue < values.length; testCounter++) {
         // Destructuring assignment unpacks returned object values into distinct values.
-        ({got: gotExpr, iValue} = hydrateGot(gotTemplate, values, iValue));
+        ({ instanciation: gotExpr, iValue } = hydrateTemplate(gotTemplate, values, iValue));
+        ({ instanciation: expectExpr, iValue } = hydrateTemplate(expectedTemplate, values, iValue));
 
-        ({test: testExpr, iValue} = generateTest(
-            testCounter, // use test counter as test name
-            gotExpr,
-            ifExpr, needWant,
-            onFailure == 'onFailure.Continue',
-            values, iValue));
+        const test = generateTest(
+          testCounter.toString(), // use test counter as test name
+          gotExpr.replace(/['`]/g, ''), expectExpr.replace(/['`]/g, ''),
+          ifExpr, needWant,
+          onFailure == 'onFailure.Continue');
 
-        expr+= testExpr;
+        expr += test.replace(/\n/g, '\n  '); // adds static indentation
       }
 
-      expr += `return TestResult.Success;\n});\n`;
+      expr += `\n  return TestResult.Success;\n});\n`;
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
       // - create a new file with the generated tests
       this.addUpdate({
         begin: node.range.start,
-        end: node.range.end+2, // +1 to include the trailing semicolon and new line (;\n)
+        end: node.range.end + 2, // +1 to include the trailing semicolon and new line (;\n)
         content: expr,
       });
     }
