@@ -154,10 +154,10 @@ export async function main(argv = process.argv.slice(2)) {
     wasi_snapshot_preview1: wasi.wasiImport,
   };
   const wasmImportsPath = path.join(cwd, imports);
-console.log(config['--imports'] )
-console.log(config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) )
+  console.log(config['--imports'] )
+  console.log(config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) )
 
-if (config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1)  == shouldBeInPath){
+if (config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) == shouldBeInPath){
   let modWasmImport;
   modWasmImport = await import('file://' + wasmImportsPath);
   const modExport = modWasmImport.local(memory);
@@ -187,4 +187,4 @@ else
   wasi.initialize(instance);
   instance.exports._startTests();
 
-}
+}}
