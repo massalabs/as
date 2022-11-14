@@ -1,8 +1,6 @@
 // / <reference path="./global.d.ts" />
-import { fd_write } from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1.ts';
-import {
-  wasi_process,
-} from '@assemblyscript/wasi-shim/assembly/wasi_process.ts';
+import {fd_write} from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1.ts';
+import {wasi_process} from '@assemblyscript/wasi-shim/assembly/wasi_process.ts';
 
 export function _startTests(): void {
   root.evaluate(new TestNodeReporterContext());
@@ -25,16 +23,14 @@ class TestNode {
   group: bool = false;
   children: TestNode[] = [];
   success: bool = false;
-  constructor(
-    public name: string,
-    public callback: () => void,
-  ) { }
+  constructor(public name: string, public callback: () => void) {}
 
   evaluate(ctx: TestNodeReporterContext): void {
     if (this != root) {
       ctx.indent += 2;
-      if (this.group) write(' '.repeat(ctx.indent) + 'Group: ' + this.name + '\n');
-      else write(' '.repeat(ctx.indent) + 'Test: ' + this.name + '\n');
+      if (this.group) {
+        write(' '.repeat(ctx.indent) + 'Group: ' + this.name + '\n');
+      } else write(' '.repeat(ctx.indent) + 'Test: ' + this.name + '\n');
     }
 
     const parent = current;
@@ -56,23 +52,30 @@ class TestNode {
   }
 }
 
-const root: TestNode = new TestNode('Root', () => { });
+const root: TestNode = new TestNode('Root', () => {});
 let current: TestNode = root;
 
-@global function test(name: string, callback: () => void): void {
+@global function test(
+    name: string,
+    callback: () => void
+): void {
   const t = new TestNode(name, callback);
   current.children.push(t);
 }
 
-@global function error(message: string): void {
+@global function error(
+    message: string
+): void {
   const stdout = wasi_process.stderr;
   stdout.write(' '.repeat(6) + `\x1b[31m` + 'Error: ' + `\x1b[39m`);
   stdout.write(message);
   stdout.write('\n');
 }
 
-
-@global function describe(name: string, callback: () => void): void {
+@global function describe(
+    name: string,
+    callback: () => void
+): void {
   const t = new TestNode(name, callback);
   t.group = true;
   current.children.push(t);
