@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 @external("test", "imported")
-  declare function imported(): i32;
+declare function imported(): i32;
 
 test('A test', () => {
   assert(true, 'a test');
@@ -17,7 +17,13 @@ describe('imports', () => {
     const got = imported();
     const want = 42;
     if (got != want) {
-      error('imported() = ' + got.toString() + ', ' + want.toString() + ' was expected.');
+      error(
+          'imported() = ' +
+          got.toString() +
+          ', ' +
+          want.toString() +
+          ' was expected.'
+      );
       return;
     }
   });
@@ -25,13 +31,18 @@ describe('imports', () => {
 
 check('import works as expected.', imported, 42);
 
-unitTestTable('Sum', onFailure.Continue, `arg0 + arg1`, compare.Equal, [
-  1, 2, 3,
-  3, 4, 7,
-]);
+unitTestTable(
+    'Sum',
+    onFailure.Continue,
+    `arg0 + arg1`,
+    compare.Equal,
+    [1, 2, 3, 3, 4, 7]
+);
 
-unitTestTable('Greater than', onFailure.Continue, `arg0 > arg1`, compare.False, [
-  1, 2,
-  3, 4,
-]);
-
+unitTestTable(
+    'Greater than',
+    onFailure.Continue,
+    `arg0 > arg1`,
+    compare.False,
+    [1, 2, 3, 4]
+);
