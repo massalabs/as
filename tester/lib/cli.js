@@ -10,7 +10,7 @@ import fs, { promises as asyncfs } from 'fs';
 import { fileURLToPath } from 'node:url';
 
 const SIZE_OFFSET = -4;
-const pathAstester = "node_modules/@massalabs/massa-as-sdk/astester.imports.js"
+const shouldBeInPath = "astester.imports.js"
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -154,9 +154,10 @@ export async function main(argv = process.argv.slice(2)) {
     wasi_snapshot_preview1: wasi.wasiImport,
   };
   const wasmImportsPath = path.join(cwd, imports);
+console.log(config['--imports'] )
+console.log(config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) )
 
-
-if (config['--imports'] == pathAstester){
+if (config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1)  == shouldBeInPath){
   let modWasmImport;
   modWasmImport = await import('file://' + wasmImportsPath);
   const modExport = modWasmImport.local(memory);
