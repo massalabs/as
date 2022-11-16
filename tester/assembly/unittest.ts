@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
+/* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
-import { fd_write } from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1';
-import { wasi_process } from '@assemblyscript/wasi-shim/assembly/wasi_process';
+import {fd_write} from '@assemblyscript/wasi-shim/assembly/bindings/wasi_snapshot_preview1';
+import {wasi_process} from '@assemblyscript/wasi-shim/assembly/wasi_process';
 
 export function _startTests(): i32 {
   return root.evaluate(new TestNodeReporterContext());

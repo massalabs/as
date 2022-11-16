@@ -29,5 +29,4 @@ declare global {
     Failure,
     Success,
   }
-
 }

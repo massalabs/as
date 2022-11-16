@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Replacer } from '@massalabs/as-transformer/index.js';
+import {Replacer} from '@massalabs/as-transformer/index.js';
 
 /**
  * Generates if expression.
@@ -17,15 +17,15 @@ import { Replacer } from '@massalabs/as-transformer/index.js';
 function generateIfExpression(criterion) {
   switch (criterion) {
     case ('is'):
-      return { 'ifExpr': 'got != want', 'hasWant': true };
+      return {'ifExpr': 'got != want', 'hasWant': true};
     case ('isNot'):
-      return { 'ifExpr': 'got == want', 'hasWant': true };
+      return {'ifExpr': 'got == want', 'hasWant': true};
     case ('isFalse'):
-      return { 'ifExpr': 'got', 'hasWant': false };
+      return {'ifExpr': 'got', 'hasWant': false};
     case ('isTrue'):
-      return { 'ifExpr': '!got', 'hasWant': false };
+      return {'ifExpr': '!got', 'hasWant': false};
     default:
-      return { 'ifExpr': criterion, 'hasWant': criterion.search('want') > -1 };
+      return {'ifExpr': criterion, 'hasWant': criterion.search('want') > -1};
   }
 }
 
@@ -140,13 +140,13 @@ class CheckReplacer extends Replacer {
       const comparisonCriterion = args[2];
       const expected = args.length == 4 ? args[3] : '';
 
-      const { ifExpr, hasWant: needWant } = generateIfExpression(comparisonCriterion);
+      const {ifExpr, hasWant: needWant} = generateIfExpression(comparisonCriterion);
 
       const test = generateTest(
-        testName.replace(/['`]/g, ''),
-        got.replace(/['`]/g, ''), expected.replace(/['`]/g, ''),
-        ifExpr, needWant,
-        'onFailure.Continue');
+          testName.replace(/['`]/g, ''),
+          got.replace(/['`]/g, ''), expected.replace(/['`]/g, ''),
+          ifExpr, needWant,
+          'onFailure.Continue');
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
@@ -179,7 +179,7 @@ class CheckReplacer extends Replacer {
 
       let expr = `describe(${testSetName}, ():i32 => {\n`;
 
-      const { ifExpr, hasWant: needWant } = generateIfExpression(comparisonCriterion);
+      const {ifExpr, hasWant: needWant} = generateIfExpression(comparisonCriterion);
 
       if (needWant && expectedTemplate == '') {
         expectedTemplate = 'arg0';
@@ -196,14 +196,14 @@ class CheckReplacer extends Replacer {
       let testCounter = 0;
       for (let iValue = 0; iValue < values.length; testCounter++) {
         // Destructuring assignment unpacks returned object values into distinct values.
-        ({ instanciation: gotExpr, iValue } = hydrateTemplate(gotTemplate, values, iValue));
-        ({ instanciation: expectExpr, iValue } = hydrateTemplate(expectedTemplate, values, iValue));
+        ({instanciation: gotExpr, iValue} = hydrateTemplate(gotTemplate, values, iValue));
+        ({instanciation: expectExpr, iValue} = hydrateTemplate(expectedTemplate, values, iValue));
 
         const test = generateTest(
-          testCounter.toString(), // use test counter as test name
-          gotExpr.replace(/['`]/g, ''), expectExpr.replace(/['`]/g, ''),
-          ifExpr, needWant,
-          onFailure == 'onFailure.Continue');
+            testCounter.toString(), // use test counter as test name
+            gotExpr.replace(/['`]/g, ''), expectExpr.replace(/['`]/g, ''),
+            ifExpr, needWant,
+            onFailure == 'onFailure.Continue');
 
         expr += test.replace(/\n/g, '\n  '); // adds static indentation
       }
@@ -215,7 +215,7 @@ class CheckReplacer extends Replacer {
       // - create a new file with the generated tests
       this.addUpdate({
         begin: node.range.start,
-        end: node.range.end + 2, // +1 to include the trailing semicolon and new line (;\n)
+        end: node.range.end + 2, // +2 to include the trailing semicolon and new line (;\n)
         content: expr,
       });
     }
