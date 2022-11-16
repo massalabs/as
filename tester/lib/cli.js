@@ -1,6 +1,5 @@
-// This script is largely inspired from ENVY
-import {yellow} from 'kleur/colors';
-import {URL} from 'url';
+import { green, yellow } from 'kleur/colors';
+import { URL } from 'url';
 import path from 'path';
 import arg from 'arg';
 import glob from 'glob-promise';
@@ -10,7 +9,7 @@ import fs, { promises as asyncfs } from 'fs';
 import { fileURLToPath } from 'node:url';
 
 const SIZE_OFFSET = -4;
-const shouldBeInPath = "astester.imports.js"
+const ImportsInPath = "astester.imports.js"
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -19,7 +18,6 @@ const cwd = process.cwd();
 
 
 // entry point
-// eslint-disable-next-line require-jsdoc
 export async function main(argv = process.argv.slice(2)) {
   // check for rest argument
   let rest = [];
@@ -154,10 +152,10 @@ export async function main(argv = process.argv.slice(2)) {
     wasi_snapshot_preview1: wasi.wasiImport,
   };
   const wasmImportsPath = path.join(cwd, imports);
-  console.log(config['--imports'] )
-  console.log(config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) )
 
-if (config['--imports'].substring(config['--imports'].lastIndexOf('/') + 1) == shouldBeInPath){
+const searchImportInPath = imports.lastIndexOf(ImportsInPath)
+
+if (searchImportInPath  != -1 ){
   let modWasmImport;
   modWasmImport = await import('file://' + wasmImportsPath);
   const modExport = modWasmImport.local(memory);
@@ -179,12 +177,13 @@ else
     .then(async () => {
       const modWasmImport = await import('file://' + wasmImportsPath);
       return Object.assign(modWasmImport.default(memory), wasiImports);
-
     })
     .catch(() => wasiImports);
 
   const instance = await WebAssembly.instantiate(mod, wasmImports);
   wasi.initialize(instance);
   instance.exports._startTests();
-
-}}
+}
+  // wasi.start(instance);
+  process.stdout.write(green(`All tests pass. You a green with envy.\n`));
+}
