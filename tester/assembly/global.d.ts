@@ -1,44 +1,32 @@
-export {};
+/* eslint-disable no-unused-vars */
+/* eslint-disable max-len */
+export { };
 
 declare global {
   function error(message: string): void;
-  function test(name: string, callback: () => void): void;
-  function describe(name: string, callback: () => void): void;
+  function test(name: string, callback: () => i32): void;
+  function describe(name: string, callback: () => i32): void;
 
-  function check<T, U>(
-    name: string,
-    callback: (T) => V,
-    arg1: T,
-    expected: U
-  ): void;
-  function check<T>(name: string, callback: () => T, expected: T): void;
-  function check<T>(name: string, callback: T): void;
+  function checksThatThe<T>(testName: string, valueToCompute: T, comparisonCriterion: string): void;
+  function checksThatThe<T, U>(testName: string, valueToCompute: T, comparisonCriterion: string, expectedValue: U): void;
 
-  function unitTestTable<T>(
-    name: string,
-    onFailure: onFailure,
-    pattern: string,
-    compare: compare,
-    table: Array<T>
-  ): void;
+  function checksForEachLineThatThe<T>(testSetName: string, templateOfValueToCompute: string, comparisonCriterion: string, templateOfExpectedResult: string, onFailure: onFailure, table: Array<T>): void;
+  function checksForEachLineThatThe<T>(testSetName: string, templateOfValueToCompute: string, comparisonCriterion: string, onFailure: onFailure, table: Array<T>): void;
 
   enum onFailure {
     Continue,
-    Stop,
+    ExitSet,
   }
 
-  enum compare {
-    Equal,
-    Different,
-    True,
-    False,
-  }
+  const is = '';
+  const isNot = '';
+  const isTrue = '';
+  const isFalse = '';
 
-  @global enum TestResult {
+  enum TestResult {
     Panic,
     StopTestSet,
     Failure,
     Success,
   }
-
 }

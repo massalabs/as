@@ -1,8 +1,5 @@
-
-
+/* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
-@external("test", "imported")
-  declare function imported(): i32;
 
 test('A test', (): i32 => {
   assert(true, 'a test');
@@ -46,24 +43,20 @@ describe('manual test', (): i32 => {
   return TestResult.Success;
 });
 
-check('test using a template', imported, 42);
+checksThatThe('sum of two integers', 1 + 2, is, 3);
+checksThatThe('`greater than` of two integers', 2 + 1 > 3, isFalse);
+checksThatThe('`greater than or equals to` of two integers', 2 + 1 >= 3, isTrue);
 
-
-unitTestTable('Sum tests using test table format', onFailure.Continue, `arg0 + arg1`, compare.Equal, [
+checksForEachLineThatThe('sum of two integers', `arg0 + arg1`, is, `arg3`, onFailure.Continue, [
   1, 2, 3,
   3, 4, 7,
   4, 5, 9,
 ]);
 
-unitTestTable('Greater than', onFailure.Continue, `arg0 > arg1`, compare.False, [
+checksForEachLineThatThe('`greater than` of two integers', `arg0 > arg1`, isFalse, onFailure.Continue, [
   0, 1,
   2, 3,
 ]);
 
-unitTestTable(
-  'Greater than',
-  onFailure.Continue,
-  `arg0 > arg1`,
-  compare.False,
-  [1, 2, 3, 4]
-);
+@external("test", "imported")
+  declare function imported(): i32;
