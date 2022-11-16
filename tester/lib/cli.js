@@ -183,10 +183,7 @@ if (searchImportInPath  != -1 ){
 
     process.exitCode = instance.exports._startTests();
   }
-  const instance = await WebAssembly.instantiate(mod, wasmImports);
-  wasi.initialize(instance);
-  instance.exports._startTests();
-}
+
   // wasi.start(instance);
   process.stdout.write(green(`All tests pass. You a green with envy.\n`));
 }
