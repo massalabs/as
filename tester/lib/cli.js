@@ -1,6 +1,5 @@
-// This script is largely inspired from ENVY
-import {yellow} from 'kleur/colors';
-import {URL} from 'url';
+import { green, yellow } from 'kleur/colors';
+import { URL } from 'url';
 import path from 'path';
 import arg from 'arg';
 import glob from 'glob-promise';
@@ -10,7 +9,7 @@ import fs, {promises as asyncfs} from 'fs';
 import {fileURLToPath} from 'node:url';
 
 const SIZE_OFFSET = -4;
-const pathAstester = 'node_modules/@massalabs/massa-as-sdk/astester.imports.js';
+const ImportsInPath = "astester.imports.js"
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -19,7 +18,6 @@ const cwd = process.cwd();
 
 
 // entry point
-// eslint-disable-next-line require-jsdoc
 export async function main(argv = process.argv.slice(2)) {
   // check for rest argument
   let rest = [];
@@ -154,10 +152,12 @@ export async function main(argv = process.argv.slice(2)) {
   };
   const wasmImportsPath = path.join(cwd, imports);
 
-  if (config['--imports'] == pathAstester) {
-    let modWasmImport;
-    modWasmImport = await import('file://' + wasmImportsPath);
-    const modExport = modWasmImport.local(memory);
+const searchImportInPath = imports.lastIndexOf(ImportsInPath)
+
+if (searchImportInPath  != -1 ){
+  let modWasmImport;
+  modWasmImport = await import('file://' + wasmImportsPath);
+  const modExport = modWasmImport.local(memory);
 
     const wasmImports = await asyncfs.access(wasmImportsPath)
         .then(async () => {
@@ -183,4 +183,7 @@ export async function main(argv = process.argv.slice(2)) {
 
     process.exitCode = instance.exports._startTests();
   }
+
+  // wasi.start(instance);
+  process.stdout.write(green(`All tests pass. You a green with envy.\n`));
 }
