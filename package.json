@@ -24,9 +24,11 @@
   "scripts": {
     "test": "asp --verbose",
     "test:ci": "asp --summary",
-    "fmt": "as-prettier --write '{*,**/*}.{js,ts,jsx,tsx,json}' && npm run lint:fix",
-    "lint:fix": "eslint --fix --ext .ts .",
-    "lint": "eslint --ext .ts . && as-prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'"
+    "prettier": "as-prettier --check assembly \"./**/assembly\"",
+    "prettier:fix": "as-prettier --write assembly \"./**/assembly\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "fmt": "npm run prettier:fix && npm run lint:fix"
   },
   "devDependencies": {
     "@as-pect/cli": "^7.0.7",
@@ -42,6 +44,7 @@
     "eslint": "^8.12.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.6.2",
     "typescript": "^4.8.3"
