@@ -52,7 +52,13 @@ export async function main(argv = process.argv.slice(2)) {
   const target = config['--target'] ?? 'debug';
   const imports = config['--imports'] ?? 'node_modules/tester/envy.imports.js';
   const ignore = config['--ignore'] ?? 'node_modules';
-  const transformer = config['--transform'] ?? '';
+
+  // Adds default custom transformers
+  let transformer = path.join(fileDir, "..", "check_replacer.js");
+  if(config['--transform']) {
+    transformer += " " + config['--transform'];
+  }
+
   // get all the entry files
   const fileSets = [];
   const root = path.resolve(basedir);
@@ -83,21 +89,11 @@ export async function main(argv = process.argv.slice(2)) {
     stats,
     stderr,
     stdout,
-  } = transformer.length > 0 ? await asc.main([
+  } = await asc.main([
     '--importMemory',
     '--target', target,
     '--bindings', 'raw',
     '--transform', transformer,
-    '--exportRuntime',
-  ].concat(files), {
-    writeFile(filename, contents, baseDir) {
-      const fullPath = path.join(baseDir, filename);
-      index.set(fullPath, contents);
-    },
-  }) : await asc.main([
-    '--importMemory',
-    '--target', target,
-    '--bindings', 'raw',
     '--exportRuntime',
   ].concat(files), {
     writeFile(filename, contents, baseDir) {
