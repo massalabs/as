@@ -28,6 +28,7 @@
     "prettier:fix": "as-prettier --write assembly \"./**/assembly\"",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "fmt:check": "npm run prettier && npm run lint",
     "fmt": "npm run prettier:fix && npm run lint:fix"
   },
   "devDependencies": {
