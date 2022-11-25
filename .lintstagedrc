@@ -1,0 +1,8 @@
+{
+    "*.{js,ts,jsx,tsx,json}": [
+        "npm run lint"
+    ],
+    "*.ts": [
+        "npm run prettier"
+    ]
+}
