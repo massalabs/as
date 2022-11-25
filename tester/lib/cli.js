@@ -1,3 +1,4 @@
+/* global WebAssembly */
 import { green, yellow } from 'kleur/colors';
 import { URL } from 'url';
 import path from 'path';
