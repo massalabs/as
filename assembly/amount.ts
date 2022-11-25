@@ -27,9 +27,9 @@ export class Amount implements Valider {
    * @param {bool} isValid - Is a valid currency
    */
   constructor(
-      value: u64 = 0,
-      currency: Currency = new Currency(),
-      isValid: bool = true
+    value: u64 = 0,
+    currency: Currency = new Currency(),
+    isValid: bool = true,
   ) {
     this._value = value;
     this._currency = currency;

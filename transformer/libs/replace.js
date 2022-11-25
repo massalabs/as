@@ -1,8 +1,6 @@
 'use strict';
-import { TransformVisitor } from 'visitor-as';
-import { Parser, Source, SourceKind } from 'assemblyscript/dist/assemblyscript.js';
-
-
+import {TransformVisitor} from 'visitor-as';
+import {Parser, Source, SourceKind} from 'assemblyscript';
 
 /**
  * Replace a source file and parse it again after modification.
@@ -24,19 +22,19 @@ class Replacer extends TransformVisitor {
   }
 
   /**
-   * Function returning if a source is to be processed or nor.
-   *
-   * @param {Source} _
-   * @return {boolean} true if the source is to be visited.
-   */
+     * Function returning if a source is to be processed or nor.
+     *
+     * @param {Source} _
+     * @return {boolean} true if the source is to be visited.
+     */
   isToTransform(_) {
     return false;
   }
 
   /**
-   * Use AS compilation hook.
-   * @param {Parser} parser
-   */
+     * Use AS compilation hook.
+     * @param {Parser} parser
+     */
   afterParse(parser) {
     const newParser = new Parser(parser.diagnostics);
 
@@ -58,10 +56,10 @@ class Replacer extends TransformVisitor {
 
       // Removes from programs sources
       parser.sources = parser.sources.filter(
-        (_source) => _source !== source
+        (_source) => _source !== source,
       );
       this.program.sources = this.program.sources.filter(
-        (_source) => _source !== source
+        (_source) => _source !== source,
       );
 
       // Let's transform the file
@@ -69,7 +67,10 @@ class Replacer extends TransformVisitor {
 
       // we need to do it bottom up to avoid index conflicts
       for (let index = this.updates.length - 1; index >= 0; index--) {
-        newContent = newContent.slice(0, this.updates[index].begin) + this.updates[index].content + newContent.slice(this.updates[index].end);
+        newContent =
+                    newContent.slice(0, this.updates[index].begin) +
+                    this.updates[index].content +
+                    newContent.slice(this.updates[index].end);
       }
 
       console.log('after', newContent);
@@ -83,7 +84,10 @@ class Replacer extends TransformVisitor {
 
       const newSource = newParser.sources.pop();
 
-      if (newSource === undefined) throw new Error('Source is undefined after effective transform.');
+      if (newSource === undefined)
+        throw new Error(
+          'Source is undefined after effective transform.',
+        );
 
       this.program.sources.push(newSource);
       parser.donelog.add(source.internalPath);
@@ -93,4 +97,4 @@ class Replacer extends TransformVisitor {
   }
 }
 
-export { Replacer };
+export {Replacer};

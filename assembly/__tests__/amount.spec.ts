@@ -51,7 +51,7 @@ describe('Blackbox tests', () => {
     expect<u64>(a.value()).toBe(100, 'value method');
     expect<bool>(a.isValid()).toBeTruthy('isValid method');
     expect<bool>(a.currency().equals(new Currency())).toBeTruthy(
-        'currency method'
+      'currency method',
     );
   });
   test('under/overflow', () => {
