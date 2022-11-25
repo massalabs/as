@@ -27,7 +27,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run test:ci
-    - run: npm run lint
-      continue-on-error: true
+    - run: |
+        npm ci
+        npm run fmt:check
+        npm run test:ci
