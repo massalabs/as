@@ -10,7 +10,7 @@ import fs, {promises as asyncfs} from 'fs';
 import {fileURLToPath} from 'node:url';
 
 const SIZE_OFFSET = -4;
-const ImportsInPath = "astester.imports.js"
+const ImportsInPath = "astester.imports.js";
 const parsed = new URL(import.meta.url);
 const filePath = path.resolve(fileURLToPath(parsed));
 const fileDir = path.dirname(filePath);
@@ -70,7 +70,7 @@ export async function main(argv = process.argv.slice(2)) {
   };
   for (const globSet of globs) {
     fileSets.push(
-        await glob(globSet, globOptions)
+      await glob(globSet, globOptions)
     );
   }
   const fileSet = new Set([].concat.apply([assemblyEntry], fileSets));
@@ -149,18 +149,18 @@ export async function main(argv = process.argv.slice(2)) {
   };
   const wasmImportsPath = path.join(cwd, imports);
 
-const searchImportInPath = imports.lastIndexOf(ImportsInPath)
+  const searchImportInPath = imports.lastIndexOf(ImportsInPath);
 
-if (searchImportInPath  != -1 ){
-  let modWasmImport;
-  modWasmImport = await import('file://' + wasmImportsPath);
-  const modExport = modWasmImport.local(memory);
+  if (searchImportInPath  != -1 ){
+    let modWasmImport;
+    modWasmImport = await import('file://' + wasmImportsPath);
+    const modExport = modWasmImport.local(memory);
 
     const wasmImports = await asyncfs.access(wasmImportsPath)
-        .then(async () => {
-          return Object.assign(modExport, wasiImports);
-        })
-        .catch(() => wasiImports);
+      .then(async () => {
+        return Object.assign(modExport, wasiImports);
+      })
+      .catch(() => wasiImports);
 
     const instance = await WebAssembly.instantiate(mod, wasmImports);
     wasi.initialize(instance);
@@ -169,11 +169,11 @@ if (searchImportInPath  != -1 ){
     process.exitCode = instance.exports._startTests();
   } else {
     const wasmImports = await asyncfs.access(wasmImportsPath)
-        .then(async () => {
-          const modWasmImport = await import('file://' + wasmImportsPath);
-          return Object.assign(modWasmImport.default(memory), wasiImports);
-        })
-        .catch(() => wasiImports);
+      .then(async () => {
+        const modWasmImport = await import('file://' + wasmImportsPath);
+        return Object.assign(modWasmImport.default(memory), wasiImports);
+      })
+      .catch(() => wasiImports);
 
     const instance = await WebAssembly.instantiate(mod, wasmImports);
     wasi.initialize(instance);

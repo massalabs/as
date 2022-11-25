@@ -143,10 +143,10 @@ class CheckReplacer extends Replacer {
       const {ifExpr, hasWant: needWant} = generateIfExpression(comparisonCriterion);
 
       const test = generateTest(
-          testName.replace(/['`]/g, ''),
-          got.replace(/['`]/g, ''), expected.replace(/['`]/g, ''),
-          ifExpr, needWant,
-          'onFailure.Continue');
+        testName.replace(/['`]/g, ''),
+        got.replace(/['`]/g, ''), expected.replace(/['`]/g, ''),
+        ifExpr, needWant,
+        'onFailure.Continue');
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
@@ -200,10 +200,10 @@ class CheckReplacer extends Replacer {
         ({instanciation: expectExpr, iValue} = hydrateTemplate(expectedTemplate, values, iValue));
 
         const test = generateTest(
-            testCounter.toString(), // use test counter as test name
-            gotExpr.replace(/['`]/g, ''), expectExpr.replace(/['`]/g, ''),
-            ifExpr, needWant,
-            onFailure == 'onFailure.Continue');
+          testCounter.toString(), // use test counter as test name
+          gotExpr.replace(/['`]/g, ''), expectExpr.replace(/['`]/g, ''),
+          ifExpr, needWant,
+          onFailure == 'onFailure.Continue');
 
         expr += test.replace(/\n/g, '\n  '); // adds static indentation
       }
