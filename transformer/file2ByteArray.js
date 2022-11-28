@@ -1,7 +1,7 @@
 import {TransformVisitor, SimpleParser} from 'visitor-as';
 import * as fs from 'fs';
 
-class File2ByteArr extends TransformVisitor {
+class File2ByteArray extends TransformVisitor {
   visitArrayLiteralExpression(node) {
     if (node.expression.text == 'fileToByteArray') {
       // reads file and encodes it to byteArray
