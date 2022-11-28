@@ -24,4 +24,4 @@ class File2ByteArray extends TransformVisitor {
   }
 }
 
-export default File2ByteArr;
+export default File2ByteArray;
