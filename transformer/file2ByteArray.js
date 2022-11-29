@@ -31,7 +31,7 @@ class File2ByteArray extends Replacer {
     if (node.expression.text == 'fileToByteArray') {      
 
       const data = JSON.stringify(fs.readFileSync(node.args[0].value).toJSON().data);  
-      const   result = `const bytes : StaticArray<u8> = ${data} `;
+      const result = `const bytes : StaticArray<u8> = ${data} `;
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
       // - create a new file with the generated tests
