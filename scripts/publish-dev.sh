@@ -15,6 +15,8 @@ case $PACKAGE in
             NPM_PACKAGE=@massalabs/as-$PACKAGE
             pushd $1
         fi
+        # remove husky install script
+        npm pkg delete scripts.prepare
         npm version --preid dev --no-git-tag-version --no-commit-hooks prepatch
         #Use timestamp as package suffix
         TIME=$(date -u +%Y%m%d%H%M%S)
