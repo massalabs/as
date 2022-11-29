@@ -18,12 +18,12 @@ npm install -D @massalabs/as-transformer
 
 ##### Transformations
 
-This transformer loads the given file, encodes it to Uint8 Array and then replace the call to `file2ByteArray` by the encoded content.
+This transformer loads the given file, encodes it to StaticArray<u8> and then replace the call to `file2ByteArray` by a staticArray including the content
 
 Example:
 ```typescript
 export function main(_args: string): i32 {
-    const bytes = fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in uint8 Array and then put the result in a string used to initialize `bytes`.
+   fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in Static uint8 Array and then put the result in a staticArray
     const sc_addr = create_sc(bytes);
     call(sc_addr, "advance", "", 0);
     generate_event("gol SC deployed at addr: " + sc_addr);

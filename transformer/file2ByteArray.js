@@ -1,30 +1,49 @@
-import {TransformVisitor, SimpleParser} from 'visitor-as';
+/* eslint-disable max-len */
+import {Replacer} from './index.js';
 import * as fs from 'fs';
 
-class File2Base64 extends TransformVisitor {
-  visitCallExpression(node) {
-    if (node.expression.text == 'fileToByteArray') {
-      // console.log(node)
-      // reads file and encodes it in base64
-      // args is the argument of fileToBase64 function call.
-      const data = fs.readFileSync(node.args[0].value);
-      // removes the call to include_base64 and inserts encoded data.
-      const res = SimpleParser.parseExpression(JSON.stringify(data).slice(24,-1));
-      // console.log(JSON.stringify(data).slice(24,-1))
-
-      res.range = node.range;
-      return res;
-    }
-    return super.visitCallExpression(node);
+/**
+ * File2ByteArray
+ *
+ * Replace the fileToByteArray call by a Static Array<u8> including the file 
+ * assemblyscript code that use unittest functions.
+ */
+class File2ByteArray extends Replacer {
+  /**
+     * Filters all standard (library) files.
+     *
+     * @param {Source} src
+     * @return {bool}
+     */
+  isToTransform(src) {
+    return !src.isLibrary && !src.internalPath.startsWith(`~lib/`);
   }
-  afterParse(parser) {
-    for (const source of parser.sources) {
-      // Ignore all lib (std lib). Visit everything else.
-      if (!source.isLibrary && !source.internalPath.startsWith(`~lib/`)) {
-        this.visit(source);
-      }
-    }
+
+  /**
+   * Replaces the fileToByteArray Call
+   *
+   * 
+   *
+   * @param {Node} node
+   * @return {Node}
+   */
+  visitCallExpression(node) {
+    if (node.expression.text == 'fileToByteArray') {      
+
+      const data = JSON.stringify(fs.readFileSync(node.args[0].value).toJSON().data);  
+      const   result = `const bytes : StaticArray<u8> = ${data} `;
+      // magic function define at parent level that will:
+      // - remove the code used here from the initial file content
+      // - create a new file with the generated tests
+      this.addUpdate({
+        begin: node.range.start,
+        end: node.range.end + 2, // +2 to include the trailing semicolon and new line (;\n)
+        content: result,
+      });
+    } 
+
+    return super.visitCallExpression(node);
   }
 }
 
-export default File2Base64;
+export default File2ByteArray;
