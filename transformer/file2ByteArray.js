@@ -1,18 +1,21 @@
 import {TransformVisitor, SimpleParser} from 'visitor-as';
 import * as fs from 'fs';
 
-class File2ByteArray extends TransformVisitor {
-  visitArrayLiteralExpression(node) {
+class File2Base64 extends TransformVisitor {
+  visitCallExpression(node) {
     if (node.expression.text == 'fileToByteArray') {
-      // reads file and encodes it to byteArray
-      // args is the argument of fileToByteArray function call.
+      // console.log(node)
+      // reads file and encodes it in base64
+      // args is the argument of fileToBase64 function call.
       const data = fs.readFileSync(node.args[0].value);
-      // removes the call to include_ByteArr and inserts encoded data.
-      const res = SimpleParser.parseExpression(data);
+      // removes the call to include_base64 and inserts encoded data.
+      const res = SimpleParser.parseExpression(JSON.stringify(data).slice(24,-1));
+      // console.log(JSON.stringify(data).slice(24,-1))
+
       res.range = node.range;
       return res;
     }
-    return super.visitArrayLiteralExpression(node);
+    return super.visitCallExpression(node);
   }
   afterParse(parser) {
     for (const source of parser.sources) {
@@ -24,4 +27,4 @@ class File2ByteArray extends TransformVisitor {
   }
 }
 
-export default File2ByteArray;
+export default File2Base64;
