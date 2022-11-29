@@ -5,7 +5,7 @@ import * as fs from 'fs';
 /**
  * File2ByteArray
  *
- * Replace the fileToByteArray call by an Array<u8> encoded file 
+ * Replaces the fileToByteArray call by an Array<u8> encoded file
  * assemblyscript code that use unittest functions.
  */
 class File2ByteArray extends Replacer {
@@ -20,17 +20,18 @@ class File2ByteArray extends Replacer {
   }
 
   /**
-   * Replaces the fileToByteArray Call
-   *
-   * 
-   *
-   * @param {Node} node
-   * @return {Node}
-   */
+     * Replaces the fileToByteArray Call
+     *
+     * @param {Node} node
+     * @return {Node}
+     */
   visitCallExpression(node) {
-    if (node.expression.text == 'fileToByteArray') {      
-
-      const data = JSON.stringify(fs.readFileSync(node.args[0].value).toJSON().data);  
+    if (node.expression.text == 'fileToByteArray') {
+      // we first read the file content, then we create a JSON from
+      // it and extract only the data, then we transform it in string
+      const data = JSON.stringify(
+        fs.readFileSync(node.args[0].value).toJSON().data,
+      );
 
       // magic function define at parent level that will:
       // - remove the code used here from the initial file content
@@ -40,7 +41,7 @@ class File2ByteArray extends Replacer {
         end: node.range.end + 2, // +2 to include the trailing semicolon and new line (;\n)
         content: data,
       });
-    } 
+    }
 
     return super.visitCallExpression(node);
   }
