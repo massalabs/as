@@ -100,7 +100,7 @@ export class Amount {
     if (!currency.isOk()) {
       return new Result(
         new Amount(),
-        'deserializing Amount: ' + currency.error!,
+        'deserializing Currency: ' + currency.error!,
       );
     }
 
