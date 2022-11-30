@@ -88,14 +88,17 @@ export class Amount {
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
     if (value.isErr()) {
-      return new Result(new Amount(), 'deserializing Amount: ' + value.error!);
+      return new Result(
+        new Amount(),
+        'deserializing Amount: ' + value.errorDescription!,
+      );
     }
 
     const currency = Currency.fromArgs(args);
     if (currency.isErr()) {
       return new Result(
         new Amount(),
-        'deserializing Currency: ' + currency.error!,
+        'deserializing Currency: ' + currency.errorDescription!,
       );
     }
 

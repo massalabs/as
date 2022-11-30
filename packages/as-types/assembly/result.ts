@@ -8,16 +8,18 @@ export class Result<T> {
   /**
    *
    * @param value - expected value for passing case
-   * @param error - error message for non-passing case
+   * @param errorUniqueId - error unique id for non-passing case
+   * @param errorDescription - error message for non-passing case
    */
-  constructor(private value: T, public error: string | null = null) {}
+  constructor(private value: T, public errorUniqueId: string | null = null,
+     public errorDescription: string | null = null) {}
 
   /**
    * Checks that the result is okay.
    */
   @inline
   isOk(): bool {
-    return !this.error;
+    return !this.errorUniqueId;
   }
 
   /**
@@ -36,7 +38,10 @@ export class Result<T> {
   @inline
   expect(msg: string): NonNullable<T> {
     if (this.isErr()) {
-      assert(false, `${msg}: ${this.error!}`);
+      assert(
+        false,
+        msg ? `${msg}: ${this.errorDescription!}` : `${this.errorDescription!}`,
+      );
     }
 
     return this.getValue();
@@ -48,7 +53,7 @@ export class Result<T> {
   @inline
   unwrap(): NonNullable<T> {
     if (!this.isOk()) {
-      assert(false, this.error!);
+      assert(false, this.errorUniqueId!);
     }
 
     return this.getValue();
