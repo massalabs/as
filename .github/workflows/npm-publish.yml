@@ -5,13 +5,16 @@ name: Node.js Package
 
 on:
   release:
-    types: [created]
+    types: [ created ]
 
 jobs:
   test:
     uses: ./.github/workflows/node.js.yml
 
   publish-npm:
+    strategy:
+      matrix:
+        sub-package: ["as", "tester", "transformer"]
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -20,10 +23,6 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: |
-          npm pkg delete scripts.prepare
-          npm ci
-          npm run test:ci
-          npm publish
+      - run: ./scripts/publish-release.sh ${{ matrix.sub-package }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
