@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {Replacer} from '@massalabs/as-transformer/index.js';
+import { Transform } from "assemblyscript/transform";
 
 /**
  * Generates if expression.
@@ -66,12 +66,12 @@ test('${name}', ():i32 => {
   return `
 test('${name}', ():i32 => {
   const got = ${got};
-  
+
   if (${ifExpression}) {
     error('${got} was ' + got.toString() + '.');
     return ${continueOnFailure ? 'TestResult.Failure' : 'TestResult.StopTestSet'};
   }
-  
+
   return TestResult.Success;
 });\n`;
 }
@@ -104,7 +104,7 @@ function hydrateTemplate(template, value, iValue) {
  * Replace checksThatThe and checksForEachLineThatThe function calls with
  * assemblyscript code that use unittest functions.
  */
-class CheckReplacer extends Replacer {
+class CheckReplacer extends Transform {
   /**
      * Filters all standard (library) files.
      *

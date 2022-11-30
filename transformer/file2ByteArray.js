@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {Replacer} from './index.js';
+import { Transform } from "assemblyscript/transform";
 import * as fs from 'fs';
 
 /**
@@ -8,7 +8,7 @@ import * as fs from 'fs';
  * Replaces the fileToByteArray call by an Array<u8> encoded file
  * assemblyscript code that use unittest functions.
  */
-class File2ByteArray extends Replacer {
+class File2ByteArray extends Transform {
   /**
      * Filters all standard (library) files.
      *
