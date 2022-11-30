@@ -5,21 +5,17 @@ source ./scripts/enable-git-ssh.sh
 set-git-ssh
 
 PACKAGE=$1
-echo $PACKAGE
 
 case $PACKAGE in
-    tester|transformer|as)
-        if [[ "$PACKAGE" == "as" ]]; then
-            NPM_PACKAGE=@massalabs/as
-        else
-            NPM_PACKAGE=@massalabs/as-$PACKAGE
-            pushd $PACKAGE
-        fi
-        # remove husky install script
-        npm pkg delete scripts.prepare
-        npm publish --access public
+    tester|transformer)
+        cd $PACKAGE
+        ;&
+    as)
+        npm pkg delete scripts.prepare # remove husky install script
+        npm publish
         ;;
     *)
         echo "Unknown package $PACKAGE"
-        exit 1;;
+        exit 1
+        ;;
 esac
