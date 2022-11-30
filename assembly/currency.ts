@@ -74,10 +74,6 @@ export class Currency {
    */
   @operator('==')
   equals(other: Currency): boolean {
-    /* if (!this._isValid || !other.isValid()) {
-      return false;
-    }*/
-
     return this.minorUnit == other.minorUnit && this.name == other.name;
   }
 

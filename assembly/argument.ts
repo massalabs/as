@@ -99,10 +99,10 @@ export class Args {
    * @return {Result<u64>}
    */
   nextU64(): Result<u64> {
-    if (this.offset + sizeof<f32>() > this.serialized.length) {
+    if (this.offset + sizeof<u64>() > this.serialized.length) {
       return new Result(
         0,
-        "can't deserialize f32 from given argument: out of range",
+        "can't deserialize u64 from given argument: out of range",
       );
     }
 
@@ -120,7 +120,7 @@ export class Args {
     if (this.offset + sizeof<i64>() > this.serialized.length) {
       return new Result(
         0,
-        "can't deserialize f32 from given argument: out of range",
+        "can't deserialize i64 from given argument: out of range",
       );
     }
 
@@ -230,7 +230,7 @@ export class Args {
     if (this.offset + sizeof<u8>() >= this.serialized.length) {
       return new Result(
         false,
-        "can't deserialize u8 from given argument: out of range",
+        "can't deserialize bool from given argument: out of range",
       );
     }
 
@@ -242,7 +242,7 @@ export class Args {
   /**
    * Adds an argument to the serialized byte string if the argument is an
    * instance of a handled type (String of u32.MAX_VALUE characters maximum,
-   * Address, u32, i32, u64, i64).
+   * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
    *
    * @param {T} arg the argument to add
    *

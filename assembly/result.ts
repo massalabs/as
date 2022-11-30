@@ -24,7 +24,7 @@ export class Result<T> {
    * Checks that the result is okay and panic if not.
    *
    * @param {string} msg - panic message that will prefix the error content.
-   * @return {T}
+   * @return {NonNullable<T>}
    */
   expect(msg: string | null = null): NonNullable<T> {
     if (!this.isOk()) {
