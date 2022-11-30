@@ -26,6 +26,6 @@ case $PACKAGE in
         npm publish --access public --tag dev
         ;;
     *)
-        echo "Unknown package $NPM_PACKAGE"
+        echo "Unknown package $PACKAGE"
         exit 1;;
 esac
