@@ -34,12 +34,12 @@ export class Currency {
   static fromArgs(args: Args): Result<Currency> {
     const minorUnit = args.nextU8();
     if (!minorUnit.isOk()) {
-      return new Result(new Currency(), minorUnit.error);
+      return Currency.errorDeserialization('of minor unit', minorUnit); // #### Cleaner code here ####
     }
 
     const name = args.nextString();
     if (!name.isOk()) {
-      return new Result(new Currency(), name.error);
+      return Currency.errorDeserialization('of name', name); // #### Cleaner code here ####
     }
 
     return new Result(new Currency(name.value, minorUnit.value));
@@ -86,5 +86,17 @@ export class Currency {
   @operator('!=')
   notEqual(other: Currency): boolean {
     return !(this == other);
+  }
+
+  static errorDeserialization<U>(
+    context: string,
+    original: Result<U>,
+  ): Result<Currency> {
+    // #### Sentinel error here ####
+    return new Result(
+      new Currency(),
+      'Currency-1',
+      `while doing Currency deserialization ${context}: ${original.errorDescription!} (${original.errorUniqueId!})`,
+    );
   }
 }

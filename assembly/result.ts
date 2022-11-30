@@ -8,8 +8,10 @@ export class Result<T> {
   constructor(
     // expected value for passing case
     public value: T,
+    // error unique id for non-passing case
+    public errorUniqueId: string | null = null,
     // error message for non-passing case
-    public error: string | null = null,
+    public errorDescription: string | null = null,
   ) {}
 
   /**
@@ -17,7 +19,7 @@ export class Result<T> {
    * @return {boolean}
    */
   isOk(): bool {
-    return !this.error;
+    return !this.errorUniqueId;
   }
 
   /**
@@ -28,7 +30,10 @@ export class Result<T> {
    */
   expect(msg: string | null = null): NonNullable<T> {
     if (!this.isOk()) {
-      assert(false, msg ? `${msg}: ${this.error!}` : `${this.error!}`);
+      assert(
+        false,
+        msg ? `${msg}: ${this.errorDescription!}` : `${this.errorDescription!}`,
+      );
     }
 
     if (isNullable<T>()) {
@@ -37,5 +42,19 @@ export class Result<T> {
       // @ts-ignore: not nullable
       return this.value;
     }
+  }
+
+  /**
+   * Checks that error has the given id.
+   * If no id is given, it will only check that Result is an error (i.e. any id are matched.)
+   *
+   * @param id error unique id
+   * @returns
+   */
+  isError(id: string | null = null): bool {
+    if (id === null) {
+      return !this.isOk();
+    }
+    return id === this.errorUniqueId;
   }
 }
