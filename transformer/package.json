@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/as-transformer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Massa AS transformer",
   "main": "index.js",
   "type": "module",
