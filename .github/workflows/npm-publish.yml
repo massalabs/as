@@ -13,6 +13,7 @@ jobs:
 
   publish-npm:
     strategy:
+      fail-fast: false
       matrix:
         sub-package: ["as", "tester", "transformer"]
     needs: test
