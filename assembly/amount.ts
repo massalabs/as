@@ -85,6 +85,29 @@ export class Amount {
   }
 
   /**
+   * Creates a Result Amount from given bytes.
+   *
+   * @param {Uint8Array} bytes
+   * @return {Result<Amount>}
+   */
+  static fromBytes(bytes: StaticArray<u8>): Result<Amount> {
+    const args = new Args(bytes);
+    return Amount.fromArgs(args);
+  }
+
+  /**
+   * Serializes an Amount to bytes.
+   *
+   * @param {Uint8Array} bytes
+   * @return {Result<Amount>}
+   */
+  toBytes(): StaticArray<u8> {
+    const bytes = new Args();
+    this.addArgs(bytes);
+    return bytes.serialize();
+  }
+
+  /**
    * Creates a Result Amount from given argument
    *
    * @param {Args} args

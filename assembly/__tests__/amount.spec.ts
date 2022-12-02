@@ -8,36 +8,36 @@ describe('Doc tests', () => {
 
     const a2 = a1.add(new Amount(100, c1)).expect();
 
-    expect<u64>(a2.value).toBe(600);
-    expect<bool>(a1.lessThan(a2)).toBeTruthy('Less than');
+    expect(a2.value).toBe(600);
+    expect(a1.lessThan(a2)).toBeTruthy('less than');
 
     // Amount a1 is lower than amout a2
     // Substraction is therefore negative which is forbidden.
     // Therefore new amount is not valid anymore.
-    expect<bool>(a1.substract(a2).isOk()).toBeFalsy('underflow');
+    expect(a1.substract(a2).isOk()).toBeFalsy('underflow');
 
-    // serialization / deserialization
+    //
+    // serialization / deserialization use case
+    //
+    const serializedBytes = a1.toArgs();
 
-    const serialized = a1.toArgs();
+    const anotherAmount = Amount.fromArgs(serializedBytes);
 
-    const deserialized = Amount.fromArgs(serialized);
-
-    expect(deserialized.expect()).toBe(a1);
+    expect(anotherAmount.expect()).toBe(a1);
   });
 });
 
 describe('Blackbox tests', () => {
   test('checker/getter', () => {
     const a = new Amount(100, new Currency());
-    expect<u64>(a.value).toBe(100, 'value method');
-    expect<bool>(a.currency.equals(new Currency())).toBeTruthy(
-      'currency method',
-    );
+    expect(a.value).toBe(100, 'value method');
+    expect(a.currency.equals(new Currency())).toBeTruthy('currency method');
   });
+
   test('under/overflow', () => {
     const a = new Amount(u64.MAX_VALUE);
-    expect<bool>(a.add(new Amount(1)).isOk()).toBeFalsy('overflow');
-    expect<bool>(a.add(new Amount(0)).isOk()).toBeTruthy('MAX_VALUE + 0');
-    expect<bool>(new Amount().substract(a).isOk()).toBeFalsy('underflow');
+    expect(a.add(new Amount(1)).isOk()).toBeFalsy('overflow');
+    expect(a.add(new Amount(0)).isOk()).toBeTruthy('MAX_VALUE + 0');
+    expect(new Amount().substract(a).isOk()).toBeFalsy('underflow');
   });
 });

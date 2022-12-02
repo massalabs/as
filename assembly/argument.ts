@@ -93,6 +93,24 @@ export class Args {
     return new Result(byteArray);
   }
 
+  nextBytes(): Result<StaticArray<u8>> {
+    const u8ArrRes = this.nextUint8Array();
+
+    if (!u8ArrRes.isOk) {
+      return new Result(
+        new StaticArray<u8>(),
+        'while deserializing StaticArray<u8>: ' + u8ArrRes.error,
+      );
+    }
+
+    const u8Arr = u8ArrRes.expect();
+
+    let arr = new StaticArray<u8>(u8Arr.length);
+    memory.copy(changetype<usize>(arr), u8Arr.dataStart, arr.length);
+
+    return new Result(arr);
+  }
+
   /**
    * Returns the deserialized number as u64.
    *
@@ -263,6 +281,15 @@ export class Args {
     } else if (arg instanceof Uint8Array) {
       this.add<u32>(arg.length);
       this.serialized = this.concatArrays(this.serialized, arg);
+    } else if (arg instanceof StaticArray<u8>) {
+      this.add<u32>(arg.length);
+
+      const value = new Uint8Array(arg.length);
+      for (let i = 0; i < arg.length; i++) {
+        value[i] = arg[i];
+      }
+
+      this.serialized = this.concatArrays(this.serialized, value);
     } else if (arg instanceof u32) {
       this.serialized = this.concatArrays(
         this.serialized,
