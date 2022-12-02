@@ -21,6 +21,14 @@ export class Result<T> {
   }
 
   /**
+   * Checks that the result is okay.
+   * @return {boolean}
+   */
+  isErr(): bool {
+    return null === this.error;
+  }
+
+  /**
    * Checks that the result is okay and panic if not.
    *
    * @param {string} msg - panic message that will prefix the error content.

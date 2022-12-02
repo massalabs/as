@@ -28,7 +28,7 @@ describe('Args tests', () => {
     // use serialize to get the byte array
     const serializedBytes = args1.serialize();
 
-    // instanciate a new argument class from the serialized data
+    // instantiate a new argument class from the serialized data
     const args2 = new Args(serializedBytes);
 
     // assert that the first address is same we provide

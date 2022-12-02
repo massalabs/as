@@ -5,7 +5,7 @@ import {Args} from './argument';
 /**
  * Value in currency to express an amount.
  *
- * For instance $10.34 will be instanciate as the following:
+ * For instance $10.34 will be instantiate as the following:
  *
  * const dollar = new Currency("dollar", 2);
  * const price = new Amount(1034, dollar);
