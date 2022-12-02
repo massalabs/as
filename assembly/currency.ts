@@ -12,7 +12,7 @@ import {Result} from './result';
  * For instance, US dollar has a minor unit of 2. This means that value
  * in US dollar must be express with two digits after the decimal separator
  * like in the following: 10.34
- * This can be done with the following instanciation:
+ * This can be done with the following instantiation:
  *
  * const dollar = new Currency("dollar", 2);
  */
@@ -33,16 +33,16 @@ export class Currency {
    */
   static fromArgs(args: Args): Result<Currency> {
     const minorUnit = args.nextU8();
-    if (!minorUnit.isOk()) {
+    if (minorUnit.isErr()) {
       return new Result(new Currency(), minorUnit.error);
     }
 
     const name = args.nextString();
-    if (!name.isOk()) {
+    if (name.isErr()) {
       return new Result(new Currency(), name.error);
     }
 
-    return new Result(new Currency(name.value, minorUnit.value));
+    return new Result(new Currency(name.unwrap(), minorUnit.unwrap()));
   }
 
   /**

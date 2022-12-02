@@ -7,7 +7,7 @@
 export class Result<T> {
   constructor(
     // expected value for passing case
-    public value: T,
+    private value: T,
     // error message for non-passing case
     public error: string | null = null,
   ) {}
@@ -25,7 +25,7 @@ export class Result<T> {
    * @return {boolean}
    */
   isErr(): bool {
-    return null === this.error;
+    return !this.isOk();
   }
 
   /**
@@ -35,10 +35,27 @@ export class Result<T> {
    * @return {NonNullable<T>}
    */
   expect(msg: string | null = null): NonNullable<T> {
-    if (!this.isOk()) {
+    if (this.isErr()) {
       assert(false, msg ? `${msg}: ${this.error!}` : `${this.error!}`);
     }
 
+    return this.getValue();
+  }
+
+  /**
+   * Get the value. Panic if error.
+   *
+   * @return {NonNullable<T>}
+   */
+  unwrap(): NonNullable<T> {
+    if (!this.isOk()) {
+      assert(false, this.error!);
+    }
+
+    return this.getValue();
+  }
+
+  private getValue(): NonNullable<T> {
     if (isNullable<T>()) {
       return this.value!;
     } else {

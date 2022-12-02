@@ -52,7 +52,7 @@ export class Args {
   nextString(): Result<string> {
     const length = this.nextU32();
     if (
-      !length.isOk ||
+      length.isErr() ||
       this.offset + length.expect() > this.serialized.length
     ) {
       return new Result(
@@ -62,7 +62,7 @@ export class Args {
     }
 
     let offset = this.offset;
-    const end = offset + length.value;
+    const end = offset + length.unwrap();
     const result = this.serialized.slice(offset, end);
     this.offset = end;
     return new Result(this.toByteString(result));
@@ -76,7 +76,7 @@ export class Args {
   nextUint8Array(): Result<Uint8Array> {
     const length = this.nextU32();
     if (
-      !length.isOk ||
+      length.isErr() ||
       this.offset + length.expect() > this.serialized.length
     ) {
       return new Result(
@@ -87,19 +87,19 @@ export class Args {
 
     let byteArray = this.serialized.slice(
       this.offset,
-      this.offset + length.value,
+      this.offset + length.unwrap(),
     );
-    this.offset += length.value;
+    this.offset += length.unwrap();
     return new Result(byteArray);
   }
 
   nextBytes(): Result<StaticArray<u8>> {
     const u8ArrRes = this.nextUint8Array();
 
-    if (!u8ArrRes.isOk) {
+    if (u8ArrRes.isErr()) {
       return new Result(
-        new StaticArray<u8>(),
-        'while deserializing StaticArray<u8>: ' + u8ArrRes.error,
+        new StaticArray<u8>(0),
+        'while deserializing StaticArray<u8>: ' + u8ArrRes.error!,
       );
     }
 
@@ -321,7 +321,10 @@ export class Args {
         this.fromU32(changetype<i32>(arg)),
       );
     } else if (arg instanceof u8) {
-      this.serialized = this.concatArrays(this.serialized, this.fromU8(arg));
+      this.serialized = this.concatArrays(
+        this.serialized,
+        this.fromU8(changetype<u8>(arg)),
+      );
     }
     return this;
   }

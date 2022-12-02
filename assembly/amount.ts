@@ -26,7 +26,7 @@ export class Amount {
   /**
    * Adds two amounts and return results in a new one.
    *
-   * @param {Amount} a - Amout to add.
+   * @param {Amount} a - Amount to add.
    *
    * @return {Amount}
    */
@@ -115,19 +115,19 @@ export class Amount {
    */
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
-    if (!value.isOk()) {
+    if (value.isErr()) {
       return new Result(new Amount(), 'deserializing Amount: ' + value.error!);
     }
 
     const currency = Currency.fromArgs(args);
-    if (!currency.isOk()) {
+    if (currency.isErr()) {
       return new Result(
         new Amount(),
         'deserializing Currency: ' + currency.error!,
       );
     }
 
-    return new Result(new Amount(value.value, currency.value));
+    return new Result(new Amount(value.unwrap(), currency.unwrap()));
   }
 
   /**

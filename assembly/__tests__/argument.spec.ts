@@ -2,7 +2,7 @@ import {Args, NoArg} from '../argument';
 import {Amount} from '../amount';
 import {Currency} from '../currency';
 
-const AMOUNT = new Amount(1234, new Currency('my very own currency', 2));
+const amt = new Amount(1234, new Currency('my very own currency', 2));
 
 describe('Args tests', () => {
   it('With bytes', () => {
@@ -48,51 +48,51 @@ describe('Args tests', () => {
 
   it('With a number and an Amount', () => {
     const args1 = new Args();
-    const amtBytes = AMOUNT.toBytes();
+    const amtBytes = amt.toBytes();
     args1.add(97 as u32).add(amtBytes);
-    // AMOUNT.addArgs(args1);
+    // amt.addArgs(args1);
 
     expect(args1.nextU32().expect()).toBe(97 as u32);
     const bytes = args1.nextBytes().expect('next bytes');
     expect(bytes).toStrictEqual(amtBytes);
-    expect(Amount.fromBytes(bytes).expect('amount from bytes')).toBe(AMOUNT);
+    expect(Amount.fromBytes(bytes).expect('amount from bytes')).toBe(amt);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextU32().expect('next u32')).toBe(97 as u32);
 
     // /!\ Not working anymore we can't mix both from/toBytes and from/toArgs
-    // expect(Amount.fromArgs(args2).expect("amount from args")).toBe(AMOUNT);
+    // expect(Amount.fromArgs(args2).expect("amount from args")).toBe(amt);
   });
 
   it('With Address and i64', () => {
     const args1 = new Args();
     args1.add(97 as i64);
-    AMOUNT.addArgs(args1);
+    amt.addArgs(args1);
     args1.add(113 as i64);
 
     expect(args1.nextI64().expect()).toBe(97);
-    expect(Amount.fromArgs(args1).expect()).toBe(AMOUNT);
+    expect(Amount.fromArgs(args1).expect()).toBe(amt);
     expect(args1.nextI64().expect()).toBe(113);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextI64().expect()).toBe(97);
-    expect(Amount.fromArgs(args2).expect()).toBe(AMOUNT);
+    expect(Amount.fromArgs(args2).expect()).toBe(amt);
     expect(args2.nextI64().expect()).toBe(113);
   });
 
   it('With Address and u64', () => {
     const args1 = new Args();
     args1.add(97 as u64);
-    AMOUNT.addArgs(args1);
+    amt.addArgs(args1);
     args1.add(113 as u64);
 
     expect(args1.nextU64().expect()).toBe(97);
-    expect(Amount.fromArgs(args1).expect()).toBe(AMOUNT);
+    expect(Amount.fromArgs(args1).expect()).toBe(amt);
     expect(args1.nextU64().expect()).toBe(113);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextU64().expect()).toBe(97);
-    expect(Amount.fromArgs(args2).expect()).toBe(AMOUNT);
+    expect(Amount.fromArgs(args2).expect()).toBe(amt);
     expect(args2.nextU64().expect()).toBe(113);
   });
 
