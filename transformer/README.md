@@ -33,16 +33,10 @@ export function main(_args: string): i32 {
 
 ##### Usage
 
-You can use this transformer by adding `--transform transformer/file2ByteArray.js` to your asc command.
+You can use this transformer by adding `--transform @massalabs/as-transformer` to your asc command.
 
 For instance, to compile `assembly/my_sc.ts` with this transformer you will execute:
 
 ```shell
-yarn asc --transform transformer/file2ByteArray.js assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
+yarn asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
 ```
-
-### Transformer extenders
-
-#### Replacer
-
-This extender simplify how you can write a code replacer. Have a look at as-tester/check_replacer.js to see usage.

@@ -2,7 +2,7 @@ export default {
   /**
    * A set of globs passed to the glob package that qualify typescript files for testing.
    */
-  entries: ['assembly/**/*.spec.ts'],
+  entries: ['**/assembly/**/*.spec.ts'],
   /**
    * A set of globs passed to the glob package that quality files to be added to each test.
    */
