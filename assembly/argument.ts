@@ -53,7 +53,7 @@ export class Args {
     const length = this.nextU32();
     if (
       length.isErr() ||
-      this.offset + length.expect() > this.serialized.length
+      this.offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         '',
@@ -77,7 +77,7 @@ export class Args {
     const length = this.nextU32();
     if (
       length.isErr() ||
-      this.offset + length.expect() > this.serialized.length
+      this.offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         new Uint8Array(0),
@@ -103,7 +103,7 @@ export class Args {
       );
     }
 
-    const u8Arr = u8ArrRes.expect();
+    const u8Arr = u8ArrRes.unwrap();
 
     let arr = new StaticArray<u8>(u8Arr.length);
     memory.copy(changetype<usize>(arr), u8Arr.dataStart, arr.length);

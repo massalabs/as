@@ -6,7 +6,7 @@ describe('Doc tests', () => {
     const c1 = new Currency('Testing', 2);
     const a1 = new Amount(500, c1);
 
-    const a2 = a1.add(new Amount(100, c1)).expect();
+    const a2 = a1.add(new Amount(100, c1)).unwrap();
 
     expect(a2.value).toBe(600);
     expect(a1.lessThan(a2)).toBeTruthy('less than');
@@ -23,7 +23,7 @@ describe('Doc tests', () => {
 
     const anotherAmount = Amount.fromArgs(serializedBytes);
 
-    expect(anotherAmount.expect()).toBe(a1);
+    expect(anotherAmount.unwrap()).toBe(a1);
   });
 });
 

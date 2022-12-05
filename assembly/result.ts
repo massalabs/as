@@ -16,6 +16,7 @@ export class Result<T> {
    * Checks that the result is okay.
    * @return {boolean}
    */
+  @inline
   isOk(): bool {
     return !this.error;
   }
@@ -24,6 +25,7 @@ export class Result<T> {
    * Checks that the result is okay.
    * @return {boolean}
    */
+  @inline
   isErr(): bool {
     return !this.isOk();
   }
@@ -34,9 +36,10 @@ export class Result<T> {
    * @param {string} msg - panic message that will prefix the error content.
    * @return {NonNullable<T>}
    */
-  expect(msg: string | null = null): NonNullable<T> {
+  @inline
+  expect(msg: string): NonNullable<T> {
     if (this.isErr()) {
-      assert(false, msg ? `${msg}: ${this.error!}` : `${this.error!}`);
+      assert(false, `${msg}: ${this.error!}`);
     }
 
     return this.getValue();
@@ -47,6 +50,7 @@ export class Result<T> {
    *
    * @return {NonNullable<T>}
    */
+  @inline
   unwrap(): NonNullable<T> {
     if (!this.isOk()) {
       assert(false, this.error!);
@@ -55,6 +59,7 @@ export class Result<T> {
     return this.getValue();
   }
 
+  @inline
   private getValue(): NonNullable<T> {
     if (isNullable<T>()) {
       return this.value!;

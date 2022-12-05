@@ -15,7 +15,7 @@ describe('Doc tests', () => {
 
     const anotherCurrency = Currency.fromArgs(serializedBytes);
 
-    expect(anotherCurrency.expect()).toBe(c1);
+    expect(anotherCurrency.unwrap()).toBe(c1);
   });
 });
 
