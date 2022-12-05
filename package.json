@@ -22,20 +22,27 @@
     "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
-    "test": "asp --verbose",
+    "clean": "rimraf \"./transformer/dist\"",
+    "install:transformer": "npm install --prefix ./transformer",
+    "build:transformer": "tsc -p transformer",
+    "build": "npm run clean && npm run build:transformer",
+    "test": "asp",
     "test:ci": "asp --summary",
-    "prettier": "as-prettier --check assembly \"./**/assembly\"",
-    "prettier:fix": "as-prettier --write assembly \"./**/assembly\"",
+    "asPrettier": "as-prettier \"**/assembly/**/*.ts\"",
+    "prettier": "npm run asPrettier -- --check",
+    "prettier:fix": "npm run asPrettier -- --write",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "fmt:check": "npm run prettier && npm run lint",
     "fmt": "npm run prettier:fix && npm run lint:fix",
+    "prepublish": "npm run install:transformer",
     "prepare": "husky install"
   },
   "devDependencies": {
     "@as-pect/cli": "^8.0.0",
     "@assemblyscript/loader": "^0.24.1",
     "@envy-as/cli": "https://github.com/jtenner/envy",
+    "@massalabs/as-transformer": "file:./transformer",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
     "as-big": "^0.2.0",
@@ -51,6 +58,7 @@
     "husky": "^8.0.2",
     "lint-staged": "^13.0.4",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "typescript": "^4.8.3"
   }
 }

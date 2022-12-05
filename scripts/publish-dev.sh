@@ -7,13 +7,17 @@ set-git-ssh
 PACKAGE=$1
 
 NPM_PACKAGE=@massalabs/as
+
+npm pkg delete scripts.prepare # remove husky install script
+npm ci
+npm run build
+
 case $PACKAGE in
     tester|transformer)
         NPM_PACKAGE=$NPM_PACKAGE-$PACKAGE
         cd $PACKAGE
         ;&
     as)
-        npm pkg delete scripts.prepare # remove husky install script
         npm version --preid dev --no-git-tag-version --no-commit-hooks prepatch
         #Use timestamp as package suffix
         TIME=$(date -u +%Y%m%d%H%M%S)
