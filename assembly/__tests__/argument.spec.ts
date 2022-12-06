@@ -44,22 +44,6 @@ describe('Args tests', () => {
 
   it('With a number and an Amount', () => {
     const args1 = new Args();
-    const amtBytes = amt.toBytes();
-    args1.add(97 as u32).add(amtBytes);
-
-    expect(args1.nextU32().unwrap()).toBe(97 as u32);
-    const bytes = args1.nextBytes().expect('next bytes');
-    expect(bytes).toStrictEqual(amtBytes);
-    expect(Amount.fromBytes(bytes).expect('amount from bytes')).toBe(amt);
-
-    const args2 = new Args(args1.serialize());
-    expect(args2.nextU32().expect('next u32')).toBe(97 as u32);
-  });
-
-  // we can't mix both from/toBytes and from/toArgs
-
-  it('With a number and an Amount (addArgs and fromArgs)', () => {
-    const args1 = new Args();
     args1.add(97 as u32);
     amt.addArgs(args1);
 
