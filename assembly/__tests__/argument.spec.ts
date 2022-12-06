@@ -46,7 +46,6 @@ describe('Args tests', () => {
     const args1 = new Args();
     const amtBytes = amt.toBytes();
     args1.add(97 as u32).add(amtBytes);
-    // amt.addArgs(args1);
 
     expect(args1.nextU32().unwrap()).toBe(97 as u32);
     const bytes = args1.nextBytes().expect('next bytes');
@@ -55,9 +54,21 @@ describe('Args tests', () => {
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextU32().expect('next u32')).toBe(97 as u32);
+  });
 
-    // /!\ Not working anymore we can't mix both from/toBytes and from/toArgs
-    // expect(Amount.fromArgs(args2).expect("amount from args")).toBe(amt);
+  // we can't mix both from/toBytes and from/toArgs
+
+  it('With a number and an Amount (addArgs and fromArgs)', () => {
+    const args1 = new Args();
+    args1.add(97 as u32);
+    amt.addArgs(args1);
+
+    expect(args1.nextU32().unwrap()).toBe(97 as u32);
+    expect(Amount.fromArgs(args1).expect('amount from args')).toBe(amt);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU32().expect('next u32')).toBe(97 as u32);
+    expect(Amount.fromArgs(args2).expect('amount from args')).toBe(amt);
   });
 
   it('With Address and i64', () => {
