@@ -2,25 +2,11 @@
 
 declare function fileToByteArray(filePath: string): StaticArray<u8>;
 
-declare function checksThatThe<T>(
-  testName: string,
-  valueToCompute: T,
-  comparisonCriterion: string,
-): void;
-
-declare function checksThatThe<T, U>(
-  testName: string,
-  valueToCompute: T,
-  comparisonCriterion: string,
-  expectedValue: U,
-): void;
-
 declare function checksForEachLineThatThe<T>(
   testSetName: string,
   templateOfValueToCompute: string,
   comparisonCriterion: string,
   templateOfExpectedResult: string,
-  onFailure: onFailure,
   table: Array<T>,
 ): void;
 
@@ -28,7 +14,6 @@ declare function checksForEachLineThatThe<T>(
   testSetName: string,
   templateOfValueToCompute: string,
   comparisonCriterion: string,
-  onFailure: onFailure,
   table: Array<T>,
 ): void;
 
