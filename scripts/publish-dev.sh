@@ -13,7 +13,7 @@ npm ci
 npm run build
 
 case $PACKAGE in
-    tester|transformer)
+    transformer)
         NPM_PACKAGE=$NPM_PACKAGE-$PACKAGE
         cd $PACKAGE
         ;&

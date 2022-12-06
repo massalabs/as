@@ -11,7 +11,7 @@ npm ci
 npm run build
 
 case $PACKAGE in
-    tester|transformer)
+    transformer)
         cd $PACKAGE
         ;&
     as)

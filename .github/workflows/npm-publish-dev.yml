@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sub-package: ["as", "tester", "transformer"]
+        sub-package: ["as", "transformer"]
     needs: test
     runs-on: ubuntu-latest
     steps:

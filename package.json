@@ -40,7 +40,6 @@
   "devDependencies": {
     "@as-pect/cli": "^8.0.0",
     "@assemblyscript/loader": "^0.24.1",
-    "@envy-as/cli": "https://github.com/jtenner/envy",
     "@massalabs/as-transformer": "file:./transformer",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
