@@ -4,3 +4,4 @@ export * from './amount';
 export * from './currency';
 export * from './byteArray';
 export * from './valider';
+export * from './decimal/d64';

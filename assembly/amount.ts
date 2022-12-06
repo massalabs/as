@@ -1,7 +1,7 @@
 import {Currency} from './currency';
 import {Valider} from './valider';
 import {ByteArray} from './byteArray';
-
+import {Console, Environ} from 'as-wasi/assembly';
 /**
  * Value in currency to express an amount.
  *
