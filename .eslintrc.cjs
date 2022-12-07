@@ -210,5 +210,14 @@ module.exports = {
         '@typescript-eslint/no-empty-interface': 'off',
       },
     },
+
+    // === Legacy typescript files ================
+    {
+      files: ['**/src/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+      },
+    },
   ],
 };
