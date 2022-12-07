@@ -7,102 +7,6 @@ import {SimpleParser} from 'visitor-as';
 import {RangeTransform} from 'visitor-as/dist/transformRange.js';
 
 /**
- * Generates if expression.
- *
- * Known criteria are :
- * - is, isNot,
- * - isTrue, isFalse,
- *
- * If the criterion is not in the list,
- * the raw string value is taken.
- *
- * @param {string} criterion
- * @return {string}
- */
-export function generateIfExpression(criterion: string) {
-  switch (criterion) {
-    case 'is':
-      return {ifExpr: 'got == want', hasWant: true};
-    case 'isNot':
-      return {ifExpr: 'got != want', hasWant: true};
-    case 'isFalse':
-      return {ifExpr: '!got', hasWant: false};
-    case 'isTrue':
-      return {ifExpr: 'got', hasWant: false};
-    default:
-      return {ifExpr: criterion, hasWant: criterion.includes('want')};
-  }
-}
-
-/**
- * Generates a test.
- *
- * There is two test models:
- * - When the result value is a boolean:
- *   - in that case we don't need to:
- *     - calculate a wanted value,
- *     - add the expecting value in the error message.
- * - Otherwise we need a wanted value.
- *
- * @param {string} name - test friendly name
- * @param {string} got - got expression
- * @param {string} expect - expect expression
- * @param {string} ifExpression
- * @param {bool} needWant - include want in test ?
- * @param {bool} continueOnFailure - should the test failure stop the test set
- * @return {Object}
- */
-export function generateTest(
-  name: string,
-  got: string,
-  expect: string,
-  ifExpression: string,
-  needWant: bool,
-) {
-  if (needWant) {
-    return `
-  test('${name}', () => {
-
-  const got = ${got};
-  const want = ${expect};
-
-  expect(got).toBe(want, '${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.')
-
-  });\n`;
-  }
-
-  return `
-test('${name}', () => {
-  const got = ${got};
-
-  expect(${ifExpression}).toBe(true, '${got} was ' + got.toString() + '.')
-
-});\n`;
-}
-
-/**
- * Hydrates the template by replacing the tokens (arg[0-9]+) with actual values.
- *
- * @param {string} template - template
- * @param {Array} value - array of values to populate template with
- * @param {number} iValue - current index of values
- * @return {Object}
- */
-function hydrateTemplate(template: string, value: any, iValue: number) {
-  let instanciation = template;
-
-  while (instanciation.search(/arg[0-9]/) > -1) {
-    instanciation = instanciation.replace(/arg[0-9]+/, value[iValue]);
-    iValue++;
-  }
-
-  return {
-    instanciation,
-    iValue,
-  };
-}
-
-/**
  * Checks replacer.
  *
  * Replace checksThatThe and checksForEachLineThatThe function calls with
@@ -149,7 +53,7 @@ export class TestTable {
     let expr = `describe(${testSetName}, () => {\n`;
 
     const {ifExpr, hasWant: needWant} =
-      generateIfExpression(comparisonCriterion);
+      TestTable.generateIfExpression(comparisonCriterion);
 
     if (needWant && expectedTemplate == '') {
       expectedTemplate = 'arg0';
@@ -166,18 +70,18 @@ export class TestTable {
     let testCounter = 0;
     for (let iValue = 0; iValue < values.length; testCounter++) {
       // Destructuring assignment unpacks returned object values into distinct values.
-      ({instanciation: gotExpr, iValue} = hydrateTemplate(
+      ({instanciation: gotExpr, iValue} = TestTable.hydrateTemplate(
         gotTemplate,
         values,
         iValue,
       ));
-      ({instanciation: expectExpr, iValue} = hydrateTemplate(
+      ({instanciation: expectExpr, iValue} = TestTable.hydrateTemplate(
         expectedTemplate,
         values,
         iValue,
       ));
 
-      const test = generateTest(
+      const test = TestTable.generateTest(
         testCounter.toString(), // use test counter as test name
         gotExpr.replace(/['`]/g, ''),
         expectExpr.replace(/['`]/g, ''),
@@ -191,5 +95,101 @@ export class TestTable {
 
     const processedNode = SimpleParser.parseExpression(expr);
     return RangeTransform.visit(processedNode, node);
+  }
+
+  /**
+   * Generates if expression.
+   *
+   * Known criteria are :
+   * - is, isNot,
+   * - isTrue, isFalse,
+   *
+   * If the criterion is not in the list,
+   * the raw string value is taken.
+   *
+   * @param {string} criterion
+   * @return {string}
+   */
+  static generateIfExpression(criterion: string) {
+    switch (criterion) {
+      case 'is':
+        return {ifExpr: 'got == want', hasWant: true};
+      case 'isNot':
+        return {ifExpr: 'got != want', hasWant: true};
+      case 'isFalse':
+        return {ifExpr: '!got', hasWant: false};
+      case 'isTrue':
+        return {ifExpr: 'got', hasWant: false};
+      default:
+        return {ifExpr: criterion, hasWant: criterion.includes('want')};
+    }
+  }
+
+  /**
+   * Generates a test.
+   *
+   * There is two test models:
+   * - When the result value is a boolean:
+   *   - in that case we don't need to:
+   *     - calculate a wanted value,
+   *     - add the expecting value in the error message.
+   * - Otherwise we need a wanted value.
+   *
+   * @param {string} name - test friendly name
+   * @param {string} got - got expression
+   * @param {string} expect - expect expression
+   * @param {string} ifExpression
+   * @param {bool} needWant - include want in test ?
+   * @param {bool} continueOnFailure - should the test failure stop the test set
+   * @return {Object}
+   */
+  static generateTest(
+    name: string,
+    got: string,
+    expect: string,
+    ifExpression: string,
+    needWant: bool,
+  ) {
+    if (needWant) {
+      return `
+  test('${name}', () => {
+
+  const got = ${got};
+  const want = ${expect};
+
+  expect(got).toBe(want, '${got} = ' + got.toString() + ', ' + want.toString() + ' was expected.')
+
+  });\n`;
+    }
+
+    return `
+test('${name}', () => {
+  const got = ${got};
+
+  expect(${ifExpression}).toBe(true, '${got} was ' + got.toString() + '.')
+
+});\n`;
+  }
+
+  /**
+   * Hydrates the template by replacing the tokens (arg[0-9]+) with actual values.
+   *
+   * @param {string} template - template
+   * @param {Array} value - array of values to populate template with
+   * @param {number} iValue - current index of values
+   * @return {Object}
+   */
+  static hydrateTemplate(template: string, value: any, iValue: number) {
+    let instanciation = template;
+
+    while (instanciation.search(/arg[0-9]/) > -1) {
+      instanciation = instanciation.replace(/arg[0-9]+/, value[iValue]);
+      iValue++;
+    }
+
+    return {
+      instanciation,
+      iValue,
+    };
   }
 }

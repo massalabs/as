@@ -17,19 +17,7 @@ declare function checksForEachLineThatThe<T>(
   table: Array<T>,
 ): void;
 
-declare enum onFailure {
-  Continue,
-  ExitSet,
-}
-
-declare const is = '';
-declare const isNot = '';
-declare const isTrue = '';
-declare const isFalse = '';
-
-declare enum TestResult {
-  Panic,
-  StopTestSet,
-  Failure,
-  Success,
-}
+declare const is: string;
+declare const isNot: string;
+declare const isTrue: string;
+declare const isFalse: string;
