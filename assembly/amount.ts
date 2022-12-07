@@ -1,119 +1,75 @@
 import {Currency} from './currency';
-import {Valider} from './valider';
-import {ByteArray} from './byteArray';
+import {Result} from './result';
+import {Args} from './argument';
 
 /**
  * Value in currency to express an amount.
  *
- * For instance $10.34 will be instanciate as the following:
+ * For instance $10.34 will be instantiate as the following:
  *
  * const dollar = new Currency("dollar", 2);
  * const price = new Amount(1034, dollar);
  *
- * Note: When type is not an amount anymore due to calculation side effect,
- * _isValid flag is unset.
- *
  */
-export class Amount implements Valider {
-  _value: u64;
-  _currency: Currency;
-  _isValid: bool;
-
+export class Amount {
   /**
    * Creates a new Amount;
    *
    * @param {u64} value - Amount value.
    * @param {Currency} currency - Amount currency.
-   * @param {bool} isValid - Is a valid currency
    */
   constructor(
-    value: u64 = 0,
-    currency: Currency = new Currency(),
-    isValid: bool = true,
-  ) {
-    this._value = value;
-    this._currency = currency;
-    this._isValid = isValid;
-  }
-
-  /**
-   * Returns the value of the amount.
-   *
-   * @return {u64}
-   */
-  value(): u64 {
-    return this._value;
-  }
-
-  /**
-   * Returns the currency of the amount.
-   *
-   * @return {Currency}
-   */
-  currency(): Currency {
-    return this._currency;
-  }
-
-  /**
-   * Returns an invalid amount.
-   * @return {Amount}
-   */
-  static invalid(): Amount {
-    return new Amount(0, Currency.invalid(), false);
-  }
-
-  /**
-   * Returns if the Amount is still valid.
-   * @return {bool}
-   */
-  isValid(): bool {
-    return this._isValid;
-  }
-
-  /**
-   * Checks if both amounts currencies matches and
-   * if both amounts are still valid.
-   *
-   * @param {Amount} a - Amount to check against.
-   *
-   * @return {bool}
-   */
-  private _matchAndAmounts(a: Amount): bool {
-    return this._currency == a.currency() && this._isValid && a.isValid();
-  }
+    public value: u64 = 0,
+    public currency: Currency = new Currency(),
+  ) {}
 
   /**
    * Adds two amounts and return results in a new one.
    *
-   * WARNING : return amount may be invalid. You shall verify isNot value.
-   *
-   * @param {Amount} a - Amout to add.
+   * @param {Amount} a - Amount to add.
    *
    * @return {Amount}
    */
-  add(a: Amount): Amount {
-    if (!this._matchAndAmounts(a)) {
-      return Amount.invalid();
+  add(a: Amount): Result<Amount> {
+    if (this.currency != a.currency) {
+      return new Result(
+        new Amount(),
+        'the sum is impossible: the amounts have different currencies',
+      );
     }
 
-    const r = new Amount(this._value + a.value(), this._currency);
+    if (a.value > u64.MAX_VALUE - this.value) {
+      // tests overflow
+      return new Result(new Amount(), 'the sum is impossible: overflow');
+    }
 
-    return r.lessThan(a) ? Amount.invalid() : r;
+    return new Result(new Amount(this.value + a.value, this.currency));
   }
 
   /**
-   * Substact given amount from existing one.
+   * Substracts two amounts and return results in a new one.
    *
    * @param {Amount} a - Amount to substract.
    *
    * @return {Amount}
    */
-  substract(a: Amount): Amount {
-    if (!this._matchAndAmounts(a) || this.lessThan(a)) {
-      return Amount.invalid();
+  substract(a: Amount): Result<Amount> {
+    if (this.currency != a.currency) {
+      return new Result(
+        new Amount(),
+        'the difference is impossible: the amounts have different currencies',
+      );
     }
 
-    return new Amount(this._value - a.value(), this._currency);
+    if (a.value > this.value) {
+      // tests underflow
+      return new Result(
+        new Amount(),
+        'the difference is impossible: underflow',
+      );
+    }
+
+    return new Result(new Amount(this.value - a.value, this.currency));
   }
 
   /**
@@ -125,104 +81,51 @@ export class Amount implements Valider {
    */
   @operator('<')
   lessThan(a: Amount): bool {
-    return this._value < a.value();
+    return this.value < a.value;
   }
 
   /**
-   * Returns the offset of the next element after having parsed
-   * an address from a string segment.
+   * Creates a Result Amount from given argument
    *
-   * The string segment can contains more thant on serialized element.
-   *
-   * @param {string} bs
-   * @param {i32} begin
-   * @return {i32}
+   * @param {Args} args
+   * @return {Result<Amount>}
    */
-  fromStringSegment(bs: string, begin: i32 = 0): i32 {
-    const length = u8(bs.codePointAt(begin));
-    const c = Amount.fromByteString(bs.slice(begin + 1, begin + length + 1));
-    this._value = c._value;
-    this._currency = c._currency;
-    this._isValid = c._isValid;
-    return begin + length + 1;
-  }
-
-  /**
-   * Returns a string segment.
-   *
-   * The string segment can be concatenated with others
-   * to serialize multiple elements.
-   *
-   * @return {string}
-   */
-  toStringSegment(): string {
-    const bs = this.toByteString();
-    return String.fromCharCode(u8(bs.length)).concat(bs);
-  }
-
-  /**
-   * Returns an Amount from a byte string.
-   *
-   * Format is:
-   * - 8 bytes for value
-   * - 2+ bytes for currency
-   *
-   * @param {string} bs - Byte string
-   *
-   * @return {Amount}
-   */
-  static fromByteString(bs: string): Amount {
-    const a = ByteArray.fromByteString(bs);
-
-    return this.fromByteArray(a);
-  }
-
-  /**
-   * Serializes to byte string.
-   * @return {string}
-   */
-  toByteString(): string {
-    return this.toByteArray().toByteString();
-  }
-
-  /**
-   * Returns an Amount from a byte array.
-   *
-   * Format is:
-   * - 8 bytes for value
-   * - 2+ bytes for currency
-   *
-   * @param {string} a - Byte array
-   *
-   * @return {Amount}
-   */
-  static fromByteArray(a: Uint8Array): Amount {
-    if (a.length < 10) {
-      return Amount.invalid();
+  static fromArgs(args: Args): Result<Amount> {
+    const value = args.nextU64();
+    if (value.isErr()) {
+      return new Result(new Amount(), 'deserializing Amount: ' + value.error!);
     }
 
-    const value = ByteArray.fromUint8Array(a.subarray(0, 8)).toU64();
-    const currency = Currency.fromByteArray(a.subarray(8));
-
-    if (!currency.isValid()) {
-      return Amount.invalid();
+    const currency = Currency.fromArgs(args);
+    if (currency.isErr()) {
+      return new Result(
+        new Amount(),
+        'deserializing Currency: ' + currency.error!,
+      );
     }
 
-    return new Amount(value, currency);
+    return new Result(new Amount(value.unwrap(), currency.unwrap()));
   }
 
   /**
-   * Serialize to ByteArray.
-   * @return {ByteArray}
+   * Updates Args with current currency serialized.
    */
-  toByteArray(): ByteArray {
-    if (!this.isValid) {
-      return new ByteArray(0);
-    }
+  addArgs(args: Args): void {
+    args.add(this.value);
+    this.currency.addArgs(args);
+  }
 
-    const ba = ByteArray.fromU64(this._value);
+  /**
+   * Returns a new Args containing current currency serialized.
+   *
+   * @return {Args}
+   */
+  toArgs(): Args {
+    const args = new Args();
 
-    return ba.concat(this._currency.toByteArray());
+    this.addArgs(args);
+
+    return args;
   }
 
   /**
@@ -233,11 +136,7 @@ export class Amount implements Valider {
    */
   @operator('==')
   equals(other: Amount): boolean {
-    if (!this._isValid || !other.isValid()) {
-      return false;
-    }
-
-    return this._currency == other.currency() && this._value == other.value();
+    return this.currency == other.currency && this.value == other.value;
   }
 
   /**
