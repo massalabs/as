@@ -26,12 +26,18 @@ export function main(_args: string): i32 {
     const bytes = fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in array and then put the result in a string used to initialize `bytes`.
     const sc_addr = create_sc(bytes);
     call(sc_addr, "advance", "", 0);
-    generate_event("gol SC deployed at addr: " + sc_addr);
+    generate_event("SC deployed at addr: " + sc_addr);
     return 0;
 }
 ```
 
 ##### Usage
+
+Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.
+
+```typescript
+/// <reference types="@massalabs/as-transformer" />
+```
 
 You can use this transformer by adding `--transform @massalabs/as-transformer` to your asc command.
 

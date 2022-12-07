@@ -70,12 +70,12 @@ export class TestTable {
     let testCounter = 0;
     for (let iValue = 0; iValue < values.length; testCounter++) {
       // Destructuring assignment unpacks returned object values into distinct values.
-      ({instanciation: gotExpr, iValue} = TestTable.hydrateTemplate(
+      ({instantiation: gotExpr, iValue} = TestTable.hydrateTemplate(
         gotTemplate,
         values,
         iValue,
       ));
-      ({instanciation: expectExpr, iValue} = TestTable.hydrateTemplate(
+      ({instantiation: expectExpr, iValue} = TestTable.hydrateTemplate(
         expectedTemplate,
         values,
         iValue,
@@ -93,8 +93,9 @@ export class TestTable {
     }
     expr += `\n});`;
 
-    const processedNode = SimpleParser.parseExpression(expr);
-    return RangeTransform.visit(processedNode, node);
+    const newNode = SimpleParser.parseExpression(expr);
+    // We need RangeTransform here to keep the attributes of the original node only updating its content
+    return RangeTransform.visit(newNode, node);
   }
 
   /**
@@ -179,16 +180,14 @@ test('${name}', () => {
    * @param {number} iValue - current index of values
    * @return {Object}
    */
-  static hydrateTemplate(template: string, value: any, iValue: number) {
-    let instanciation = template;
-
-    while (instanciation.search(/arg[0-9]/) > -1) {
-      instanciation = instanciation.replace(/arg[0-9]+/, value[iValue]);
+  static hydrateTemplate(instantiation: string, value: any, iValue: number) {
+    while (instantiation.search(/arg[0-9]/) > -1) {
+      instantiation = instantiation.replace(/arg[0-9]+/, value[iValue]);
       iValue++;
     }
 
     return {
-      instanciation,
+      instantiation,
       iValue,
     };
   }
