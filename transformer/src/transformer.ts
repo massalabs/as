@@ -5,17 +5,19 @@ import {
   CallExpression,
   IdentifierExpression,
 } from 'assemblyscript/dist/assemblyscript.js';
-import {File2ByteArray} from './file2ByteArray.js';
-import {TestTable} from './testTable.js';
+import {File2ByteArray} from './transformers/file2ByteArray.js';
+import {TestTable} from './transformers/testTable.js';
+
+const callTransformers = [File2ByteArray, TestTable];
 
 export class Transformer extends TransformVisitor {
   visitCallExpression(node: CallExpression): Expression {
     const inputText = (node.expression as IdentifierExpression)?.text;
-    if (inputText == File2ByteArray.strPattern) {
-      return File2ByteArray.transform(node);
-    }
-    if (inputText == TestTable.strPattern) {
-      return TestTable.transform(node);
+
+    for (let transformer of callTransformers) {
+      if (inputText == transformer.strPattern) {
+        return transformer.transform(node);
+      }
     }
 
     return super.visitCallExpression(node);

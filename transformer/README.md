@@ -46,3 +46,11 @@ For instance, to compile `assembly/my_sc.ts` with this transformer you will exec
 ```shell
 yarn asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
 ```
+
+#### Create a transformer:
+
+Transformers are located in `src/transformers` folder.
+To create a new "call expression" transformer, the created class must implements:
+
+- a constant member `strPattern` which define the expression to be matched by the transformer
+- a `transform` method which implement the transformer itself
