@@ -29,5 +29,6 @@ jobs:
         cache: 'npm'
     - run: |
         npm ci
+        npm run build
         npm run fmt:check
         npm run test:ci

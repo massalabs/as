@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  ignorePatterns: ['assembly/abi.ts'],
+  ignorePatterns: ['dist'],
   extends: [
     'eslint:recommended',
     'plugin:json/recommended',
@@ -208,6 +208,15 @@ module.exports = {
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-extra-non-null-assertion': 'off',
         '@typescript-eslint/no-empty-interface': 'off',
+      },
+    },
+
+    // === Legacy typescript files ================
+    {
+      files: ['**/src/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],

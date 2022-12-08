@@ -6,12 +6,15 @@ set-git-ssh
 
 PACKAGE=$1
 
+npm pkg delete scripts.prepare # remove husky install script
+npm ci
+npm run build
+
 case $PACKAGE in
-    tester|transformer)
+    transformer)
         cd $PACKAGE
         ;&
     as)
-        npm pkg delete scripts.prepare # remove husky install script
         npm publish
         ;;
     *)
