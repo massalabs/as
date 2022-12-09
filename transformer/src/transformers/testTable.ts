@@ -83,8 +83,8 @@ export class TestTable {
 
       const test = TestTable.generateTest(
         testCounter.toString(), // use test counter as test name
-        gotExpr.replace(/['`]/g, ''),
-        expectExpr.replace(/['`]/g, ''),
+        gotExpr.replace(/['`"]/g, ''),
+        expectExpr.replace(/['`"]/g, ''),
         ifExpr,
         needWant,
       );
