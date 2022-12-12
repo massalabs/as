@@ -1,2 +1,2 @@
-import {Transformer} from './transformer.js';
+import { Transformer } from './transformer.js';
 export default Transformer;

@@ -1,5 +1,5 @@
-import {randomInt} from '../probability/random';
-import {drawHistogram} from './helper';
+import { randomInt } from '../probability/random';
+import { drawHistogram } from './helper';
 
 describe('Doc test', () => {
   it('should be simple to use', () => {

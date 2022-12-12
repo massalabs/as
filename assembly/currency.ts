@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
-import {Args} from './argument';
-import {Result} from './result';
+import { Args } from './argument';
+import { Result } from './result';
 
 /**
  * Monetary unit used to express a value.

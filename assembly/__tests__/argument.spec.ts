@@ -1,6 +1,6 @@
-import {Args, NoArg} from '../argument';
-import {Amount} from '../amount';
-import {Currency} from '../currency';
+import { Args, NoArg } from '../argument';
+import { Amount } from '../amount';
+import { Currency } from '../currency';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 

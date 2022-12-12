@@ -1,5 +1,5 @@
-import {Currency} from '../currency';
-import {Amount} from '../amount';
+import { Currency } from '../currency';
+import { Amount } from '../amount';
 
 describe('Doc tests', () => {
   it('should be simple to use', () => {

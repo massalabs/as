@@ -1,5 +1,5 @@
-import {Sampler} from '../probability/sampler';
-import {drawHistogram} from './helper';
+import { Sampler } from '../probability/sampler';
+import { drawHistogram } from './helper';
 
 const prob = new Map<u64, f64>();
 prob.set(0, 0.05);

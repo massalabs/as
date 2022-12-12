@@ -1,6 +1,6 @@
-import {Currency} from './currency';
-import {Result} from './result';
-import {Args} from './argument';
+import { Currency } from './currency';
+import { Result } from './result';
+import { Args } from './argument';
 
 /**
  * Value in currency to express an amount.

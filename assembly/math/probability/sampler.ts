@@ -1,4 +1,4 @@
-import {randomInt} from './random';
+import { randomInt } from './random';
 
 /**
  * Generates samples based on a probability distribution.

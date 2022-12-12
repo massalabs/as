@@ -3,8 +3,8 @@ import {
   Expression,
   ArrayLiteralExpression,
 } from 'assemblyscript/dist/assemblyscript.js';
-import {SimpleParser} from 'visitor-as';
-import {RangeTransform} from 'visitor-as/dist/transformRange.js';
+import { SimpleParser } from 'visitor-as';
+import { RangeTransform } from 'visitor-as/dist/transformRange.js';
 
 /**
  * Checks replacer.
@@ -52,7 +52,7 @@ export class TestTable {
 
     let expr = `describe(${testSetName}, () => {\n`;
 
-    const {ifExpr, hasWant: needWant} =
+    const { ifExpr, hasWant: needWant } =
       TestTable.generateIfExpression(comparisonCriterion);
 
     if (needWant && expectedTemplate == '') {
@@ -70,12 +70,12 @@ export class TestTable {
     let testCounter = 0;
     for (let iValue = 0; iValue < values.length; testCounter++) {
       // Destructuring assignment unpacks returned object values into distinct values.
-      ({instantiation: gotExpr, iValue} = TestTable.hydrateTemplate(
+      ({ instantiation: gotExpr, iValue } = TestTable.hydrateTemplate(
         gotTemplate,
         values,
         iValue,
       ));
-      ({instantiation: expectExpr, iValue} = TestTable.hydrateTemplate(
+      ({ instantiation: expectExpr, iValue } = TestTable.hydrateTemplate(
         expectedTemplate,
         values,
         iValue,
@@ -114,15 +114,15 @@ export class TestTable {
   static generateIfExpression(criterion: string) {
     switch (criterion) {
       case 'is':
-        return {ifExpr: 'got == want', hasWant: true};
+        return { ifExpr: 'got == want', hasWant: true };
       case 'isNot':
-        return {ifExpr: 'got != want', hasWant: true};
+        return { ifExpr: 'got != want', hasWant: true };
       case 'isFalse':
-        return {ifExpr: '!got', hasWant: false};
+        return { ifExpr: '!got', hasWant: false };
       case 'isTrue':
-        return {ifExpr: 'got', hasWant: false};
+        return { ifExpr: 'got', hasWant: false };
       default:
-        return {ifExpr: criterion, hasWant: criterion.includes('want')};
+        return { ifExpr: criterion, hasWant: criterion.includes('want') };
     }
   }
 
