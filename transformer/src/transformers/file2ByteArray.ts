@@ -3,8 +3,8 @@ import {
   Expression,
   StringLiteralExpression,
 } from 'assemblyscript/dist/assemblyscript.js';
-import {SimpleParser} from 'visitor-as';
-import {RangeTransform} from 'visitor-as/dist/transformRange.js';
+import { RangeTransform } from 'visitor-as/dist/transformRange.js';
+import { SimpleParser } from 'visitor-as';
 
 import * as fs from 'fs';
 

@@ -1,12 +1,12 @@
-import {TransformVisitor, utils} from 'visitor-as';
+import { TransformVisitor, utils } from 'visitor-as';
 import {
   Expression,
   Parser,
   CallExpression,
   IdentifierExpression,
 } from 'assemblyscript/dist/assemblyscript.js';
-import {File2ByteArray} from './transformers/file2ByteArray.js';
-import {TestTable} from './transformers/testTable.js';
+import { File2ByteArray } from './transformers/file2ByteArray.js';
+import { TestTable } from './transformers/testTable.js';
 
 const callTransformers = [File2ByteArray, TestTable];
 

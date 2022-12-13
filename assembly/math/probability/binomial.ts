@@ -1,5 +1,5 @@
-import {combination} from './combinatoric';
-import {Sampler} from './sampler';
+import { combination } from './combinatoric';
+import { Sampler } from './sampler';
 
 export interface Drawer {
   draw(): u64;

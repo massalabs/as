@@ -1,4 +1,4 @@
-import {Currency} from '../currency';
+import { Currency } from '../currency';
 
 describe('Doc tests', () => {
   it('should be easy to use', () => {

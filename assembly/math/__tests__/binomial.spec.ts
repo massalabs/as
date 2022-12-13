@@ -1,5 +1,5 @@
-import {Binomial} from '../probability/binomial';
-import {drawHistogram} from './helper';
+import { Binomial } from '../probability/binomial';
+import { drawHistogram } from './helper';
 
 describe('Doc test', () => {
   it('should be simple to use', () => {
