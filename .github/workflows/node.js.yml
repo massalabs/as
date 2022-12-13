@@ -5,9 +5,6 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_call:
 
 jobs:
@@ -27,7 +24,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: |
+    - name: run test
+      run: |
         npm ci
         npm run build
         npm run fmt:check
