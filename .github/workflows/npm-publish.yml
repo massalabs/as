@@ -1,7 +1,4 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
-
-name: Node.js Package
+name: Publish NPM Packages
 
 on:
   release:
@@ -12,10 +9,6 @@ jobs:
     uses: ./.github/workflows/node.js.yml
 
   publish-npm:
-    strategy:
-      fail-fast: false
-      matrix:
-        sub-package: ["as", "transformer"]
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -24,6 +17,11 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: ./scripts/publish-release.sh ${{ matrix.sub-package }}
+      - name: publish
+        run: |
+          npm pkg delete scripts.prepare
+          npm ci
+          npm run build
+          npm publish --ws --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
