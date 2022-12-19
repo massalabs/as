@@ -1,0 +1,18 @@
+{
+  "name": "@massalabs/as-proba",
+  "version": "0.0.1",
+  "description": "Massa AS probability libs",
+  "types": "assembly/index.ts",
+  "type": "module",
+  "scripts": {
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "assemblyscript": "^0.25.0"
+  },
+  "files": [
+    "assembly",
+    "index.ts"
+  ]
+}
