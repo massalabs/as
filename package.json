@@ -1,5 +1,5 @@
 {
-  "name": "@massalabs/as",
+  "name": "massalabs-as-monorepo",
   "version": "1.1.0",
   "description": "Massalabs assemblyscript monorepo",
   "type": "module",
