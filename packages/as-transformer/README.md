@@ -12,27 +12,6 @@ npm install -D @massalabs/as-transformer
 
 ## Usage
 
-### Transform ts files
-
-#### file2ByteArray
-
-##### Transformations
-
-This transformer loads the given file, encodes it to StaticArray<u8> and then replace the call to `file2ByteArray` by the encoded content.
-
-Example:
-```typescript
-export function main(_args: string): i32 {
-    const bytes = fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in array and then put the result in a string used to initialize `bytes`.
-    const sc_addr = create_sc(bytes);
-    call(sc_addr, "advance", "", 0);
-    generate_event("SC deployed at addr: " + sc_addr);
-    return 0;
-}
-```
-
-##### Usage
-
 Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.
 
 ```typescript
@@ -47,7 +26,27 @@ For instance, to compile `assembly/my_sc.ts` with this transformer you will exec
 yarn asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
 ```
 
-#### Create a transformer:
+### Transform ts files
+
+#### file2ByteArray
+
+##### Transformations
+
+This transformer loads the given file, encodes it to `StaticArray<u8>` and then replace the call to `file2ByteArray` by the encoded content.
+
+Example:
+
+```typescript
+export function main(_args: string): i32 {
+    const bytes = fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in array and then put the result in a string used to initialize `bytes`.
+    const sc_addr = create_sc(bytes);
+    call(sc_addr, "advance", "", 0);
+    generate_event("SC deployed at addr: " + sc_addr);
+    return 0;
+}
+```
+
+#### Create a transformer
 
 Transformers are located in `src/transformers` folder.
 To create a new "call expression" transformer, the created class must implements:
