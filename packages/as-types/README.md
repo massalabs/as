@@ -1,3 +1,3 @@
 # as-types
 
-This package provides assembly script classes meant to be used for smart-contract development.
+This package provides Assembly Script classes meant to be used for smart-contract development.
