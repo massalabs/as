@@ -5,3 +5,4 @@ export * from './byteArray';
 export * from './currency';
 export * from './result';
 export * from './valider';
+export * from './serialization';

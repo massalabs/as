@@ -55,7 +55,7 @@ describe('Args tests', () => {
     expect(Amount.fromArgs(args2).expect('amount from args')).toBe(amt);
   });
 
-  it('With Address and i64', () => {
+  it('With i64', () => {
     const args1 = new Args();
     args1.add(97 as i64);
     amt.addArgs(args1);
@@ -71,7 +71,7 @@ describe('Args tests', () => {
     expect(args2.nextI64().unwrap()).toBe(113);
   });
 
-  it('With Address and u64', () => {
+  it('With u64', () => {
     const args1 = new Args();
     args1.add(97 as u64);
     amt.addArgs(args1);
@@ -112,6 +112,17 @@ describe('Args tests', () => {
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextString().unwrap()).toBe('a'.repeat(65600));
+  });
+
+  it('With emoji string', () => {
+    const args1 = new Args();
+    const str = 'wagmi 🤩';
+    args1.add(str);
+
+    expect(args1.nextString().unwrap()).toBe(str);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextString().unwrap()).toBe(str);
   });
 
   it('With string and u64', () => {

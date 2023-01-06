@@ -1,4 +1,10 @@
 import { Result } from './result';
+import {
+  bytesToString,
+  stringToBytes,
+  unwrapStaticArray,
+  wrapStaticArray,
+} from './serialization';
 
 /**
  * Args for remote function call.
@@ -22,11 +28,8 @@ export class Args {
    *
    * @param {string} serialized
    */
-  constructor(serialized: StaticArray<u8> = new StaticArray<u8>(0)) {
-    this.serialized = new Uint8Array(serialized.length);
-    for (let i = 0; i < serialized.length; i++) {
-      this.serialized[i] = serialized[i];
-    }
+  constructor(serialized: StaticArray<u8> = []) {
+    this.serialized = wrapStaticArray(serialized);
   }
 
   /**
@@ -35,11 +38,7 @@ export class Args {
    * @return {string} the serialized string
    */
   serialize(): StaticArray<u8> {
-    let array: Array<u8> = new Array(this.serialized.length);
-    for (let i = 0; i < this.serialized.length; i++) {
-      array[i] = this.serialized[i];
-    }
-    return StaticArray.fromArray(array);
+    return unwrapStaticArray(this.serialized);
   }
 
   // getters
@@ -65,7 +64,7 @@ export class Args {
     const end = offset + length.unwrap();
     const result = this.serialized.slice(offset, end);
     this.offset = end;
-    return new Result(this.toByteString(result));
+    return new Result(bytesToString(unwrapStaticArray(result)));
   }
 
   /**
@@ -104,11 +103,7 @@ export class Args {
     }
 
     const u8Arr = u8ArrRes.unwrap();
-
-    let arr = new StaticArray<u8>(u8Arr.length);
-    memory.copy(changetype<usize>(arr), u8Arr.dataStart, arr.length);
-
-    return new Result(arr);
+    return new Result(unwrapStaticArray(u8Arr));
   }
 
   /**
@@ -269,27 +264,23 @@ export class Args {
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
       const value = new Uint8Array(1);
-      value[0] = u8(arg === true);
+      value[0] = u8(arg);
       this.serialized = this.concatArrays(this.serialized, value);
     } else if (arg instanceof String) {
-      const str: string = arg.toString();
-      this.add<u32>(str.length);
+      this.add<u32>(arg.length << 1);
       this.serialized = this.concatArrays(
         this.serialized,
-        this.fromByteString(arg as string),
+        wrapStaticArray(stringToBytes(arg as string)),
       );
     } else if (arg instanceof Uint8Array) {
       this.add<u32>(arg.length);
       this.serialized = this.concatArrays(this.serialized, arg);
     } else if (arg instanceof StaticArray<u8>) {
       this.add<u32>(arg.length);
-
-      const value = new Uint8Array(arg.length);
-      for (let i = 0; i < arg.length; i++) {
-        value[i] = arg[i];
-      }
-
-      this.serialized = this.concatArrays(this.serialized, value);
+      this.serialized = this.concatArrays(
+        this.serialized,
+        wrapStaticArray(arg),
+      );
     } else if (arg instanceof u32) {
       this.serialized = this.concatArrays(
         this.serialized,
@@ -344,35 +335,6 @@ export class Args {
     c.set(a, 0);
     c.set(b, a.length);
     return c;
-  }
-
-  /**
-   * Converts a string into a byte array.
-   *
-   * @param {string} byteString
-   * @return {Uint8Array}
-   */
-  private fromByteString(byteString: string): Uint8Array {
-    const byteArray = new Uint8Array(byteString.length);
-    for (let i = 0; i < byteArray.length; i++) {
-      byteArray[i] = u8(byteString.charCodeAt(i));
-    }
-    return byteArray;
-  }
-
-  /**
-   * Converts a byte array in a string.
-   *
-   * @param {Uint8Array} byteArray the byte array to convert
-   *
-   * @return {string}
-   */
-  private toByteString(byteArray: Uint8Array): string {
-    let byteString = '';
-    for (let i = 0; i < byteArray.length; i++) {
-      byteString += String.fromCharCode(byteArray[i]);
-    }
-    return byteString;
   }
 
   /**
