@@ -181,7 +181,8 @@ test('${name}', () => {
    * @param iValue - current index of values
    * @returns
    */
-  static hydrateTemplate(instantiation: string, value: never, iValue: number) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static hydrateTemplate(instantiation: string, value: any, iValue: number) {
     while (instantiation.search(/arg[0-9]/) > -1) {
       instantiation = instantiation.replace(/arg[0-9]+/, value[iValue]);
       iValue++;
