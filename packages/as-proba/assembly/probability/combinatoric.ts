@@ -2,9 +2,9 @@
  * Returns the number of unordered subsets of k elements
  * taken from a set of n elements.
  *
- * @param{u64} n - Number of elements in set.
- * @param{u64} k - Number of elements in subset.
- * @return {u64}
+ * @param n - Number of elements in set.
+ * @param k - Number of elements in subset.
+ * @returns
  */
 export function combination(n: u64, k: u64): f64 {
   return partialPermutation(n, k) / factorial(k);
@@ -14,9 +14,9 @@ export function combination(n: u64, k: u64): f64 {
  * Returns the number of ordered subsets of k elements
  * taken from a set of n elements.
  *
- * @param{u64} n - Number of elements in set.
- * @param{u64} k - Number of elements in subset.
- * @return {f64}
+ * @param n - Number of elements in set.
+ * @param k - Number of elements in subset.
+ * @returns
  */
 export function partialPermutation(n: u64, k: u64): f64 {
   return factorial(n) / factorial(n - k);
@@ -25,9 +25,9 @@ export function partialPermutation(n: u64, k: u64): f64 {
 /**
  * Returns the number of permutation of n elements.
  *
- * @param {u64} n - Number of elements.
+ * @param n - Number of elements.
  *
- * @return {f64}
+ * @returns
  */
 export function factorial(n: u64): f64 {
   let r: f64 = 1;

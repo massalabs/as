@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CallExpression,
   Expression,
@@ -20,8 +21,8 @@ export class TestTable {
    *
    * XXX: this function is clearly too big. Feel free to split it.
    *
-   * @param {Node} node
-   * @return {Node}
+   * @param node - CallExpression node.
+   * @returns
    */
   static transform(node: CallExpression): Expression {
     // Push all the arguments of the checksForEachLineThatThe function call to args array.
@@ -108,8 +109,8 @@ export class TestTable {
    * If the criterion is not in the list,
    * the raw string value is taken.
    *
-   * @param {string} criterion
-   * @return {string}
+   * @param criterion - comparison criterion
+   * @returns
    */
   static generateIfExpression(criterion: string) {
     switch (criterion) {
@@ -136,13 +137,13 @@ export class TestTable {
    *     - add the expecting value in the error message.
    * - Otherwise we need a wanted value.
    *
-   * @param {string} name - test friendly name
-   * @param {string} got - got expression
-   * @param {string} expect - expect expression
-   * @param {string} ifExpression
-   * @param {bool} needWant - include want in test ?
-   * @param {bool} continueOnFailure - should the test failure stop the test set
-   * @return {Object}
+   * @param name - test friendly name
+   * @param got - got expression
+   * @param expect - expect expression
+   * @param ifExpression - if expression
+   * @param needWant - include want in test ?
+   * @param continueOnFailure - should the test failure stop the test set
+   * @returns
    */
   static generateTest(
     name: string,
@@ -175,12 +176,12 @@ test('${name}', () => {
   /**
    * Hydrates the template by replacing the tokens (arg[0-9]+) with actual values.
    *
-   * @param {string} template - template
-   * @param {Array} value - array of values to populate template with
-   * @param {number} iValue - current index of values
-   * @return {Object}
+   * @param template - template
+   * @param value - array of values to populate template with
+   * @param iValue - current index of values
+   * @returns
    */
-  static hydrateTemplate(instantiation: string, value: any, iValue: number) {
+  static hydrateTemplate(instantiation: string, value: never, iValue: number) {
     while (instantiation.search(/arg[0-9]/) > -1) {
       instantiation = instantiation.replace(/arg[0-9]+/, value[iValue]);
       iValue++;

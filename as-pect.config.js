@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 export default {
   /**
    * A set of globs passed to the glob package that qualify typescript files for testing.
@@ -13,6 +14,12 @@ export default {
   disclude: [/node_modules/],
   /**
    * Add your required AssemblyScript imports here.
+   * @param memorys - The WebAssembly.Memory instance.
+   * @param createImports - The createImports function.
+   * @param instantiate - The WebAssembly.instantiate function.
+   * @param binary - The WebAssembly binary.
+   * @returns The imports object.
+   * 
    */
   async instantiate(memory, createImports, instantiate, binary) {
     let instance; // Imports can reference this
