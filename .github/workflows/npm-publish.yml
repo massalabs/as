@@ -30,7 +30,7 @@ jobs:
   deploy-astypes-typedoc:
     strategy:
       matrix:
-        name: [as-proba,as-transformer,as-types] 
+        packageName: [as-proba,as-transformer,as-types] 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
       run: |
         npm ci
         npm run doc
-        mv docs/${{ matrix.name }}/documentation/html ${{ matrix.name }}
+        mv docs/${{ matrix.packageName }}/documentation/html ${{ matrix.packageName }}
     - name: Deploy files
       uses: appleboy/scp-action@master
       env:
@@ -49,6 +49,6 @@ jobs:
         USERNAME: ${{ secrets.MASSANET_USERNAME }}
         KEY: ${{ secrets.MASSANET_SSHKEY }}
       with:
-        source: ./${{ matrix.name}}
+        source: ./${{ matrix.packageName}}
         target: "/var/www/type-doc"
 
