@@ -30,7 +30,7 @@ jobs:
   deploy-astypes-typedoc:
     strategy:
       matrix:
-        name:[ as-proba,as-transformer,as-types ] 
+        name: [as-proba,as-transformer,as-types] 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
