@@ -13,6 +13,8 @@ import {
   u64ToBytes,
   u8toByte,
   bytesToF64,
+  bytesToI32,
+  bytesToI64,
 } from './serialization';
 
 /**
@@ -31,14 +33,14 @@ import {
  */
 export class Args {
   private offset: i32 = 0;
-  private serialized: Uint8Array = new Uint8Array(0);
+  private serialized: StaticArray<u8> = new StaticArray<u8>(0);
 
   /**
    *
    * @param {string} serialized
    */
   constructor(serialized: StaticArray<u8> = []) {
-    this.serialized = wrapStaticArray(serialized);
+    this.serialized = serialized;
   }
 
   /**
@@ -47,7 +49,7 @@ export class Args {
    * @return {string} the serialized string
    */
   serialize(): StaticArray<u8> {
-    return unwrapStaticArray(this.serialized);
+    return this.serialized;
   }
 
   // getters
@@ -69,11 +71,25 @@ export class Args {
       );
     }
 
-    let offset = this.offset;
-    const end = offset + length.unwrap();
-    const result = this.serialized.slice(offset, end);
-    this.offset = end;
-    return new Result(bytesToString(unwrapStaticArray(result)));
+    const value = bytesToString(this.getNextData(length.unwrap()));
+    this.offset += length.unwrap();
+    return new Result(value);
+  }
+
+  nextBytes(): Result<StaticArray<u8>> {
+    const length = this.nextU32();
+    if (
+      length.isErr() ||
+      this.offset + length.unwrap() > this.serialized.length
+    ) {
+      return new Result(
+        new StaticArray<u8>(0),
+        "can't deserialize Uint8Array from given argument: out of range",
+      );
+    }
+    const value = this.getNextData(length.unwrap());
+    this.offset += length.unwrap();
+    return new Result(value);
   }
 
   /**
@@ -93,26 +109,9 @@ export class Args {
       );
     }
 
-    let byteArray = this.serialized.slice(
-      this.offset,
-      this.offset + length.unwrap(),
-    );
+    const value = wrapStaticArray(this.getNextData(length.unwrap()));
     this.offset += length.unwrap();
-    return new Result(byteArray);
-  }
-
-  nextBytes(): Result<StaticArray<u8>> {
-    const u8ArrRes = this.nextUint8Array();
-
-    if (u8ArrRes.isErr()) {
-      return new Result(
-        new StaticArray<u8>(0),
-        'while deserializing StaticArray<u8>: ' + u8ArrRes.error!,
-      );
-    }
-
-    const u8Arr = u8ArrRes.unwrap();
-    return new Result(unwrapStaticArray(u8Arr));
+    return new Result(value);
   }
 
   /**
@@ -128,9 +127,7 @@ export class Args {
         "can't deserialize u64 from given argument: out of range",
       );
     }
-
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-    const value = bytesToU64(unwrapStaticArray(subArray));
+    const value = bytesToU64(this.getNextData(size));
     this.offset += size;
     return new Result(value);
   }
@@ -149,9 +146,7 @@ export class Args {
       );
     }
 
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-
-    const value = changetype<i64>(bytesToU64(unwrapStaticArray(subArray)));
+    const value = bytesToI64(this.getNextData(size));
     this.offset += size;
     return new Result(value);
   }
@@ -169,9 +164,7 @@ export class Args {
         "can't deserialize f64 from given argument: out of range",
       );
     }
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-
-    const value = bytesToF64(unwrapStaticArray(subArray));
+    const value = bytesToF64(this.getNextData(size));
     this.offset += sizeof<f64>();
     return new Result(value);
   }
@@ -190,8 +183,7 @@ export class Args {
       );
     }
 
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-    const value = bytesToF32(unwrapStaticArray(subArray));
+    const value = bytesToF32(this.getNextData(size));
     this.offset += sizeof<f32>();
     return new Result(value);
   }
@@ -210,8 +202,7 @@ export class Args {
       );
     }
 
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-    const value = bytesToU32(unwrapStaticArray(subArray));
+    const value = bytesToU32(this.getNextData(size));
     this.offset += size;
     return new Result(value);
   }
@@ -229,9 +220,7 @@ export class Args {
         "can't deserialize i32 from given argument: out of range",
       );
     }
-    const subArray = this.serialized.slice(this.offset, this.offset + size);
-
-    const value = changetype<i32>(bytesToU32(unwrapStaticArray(subArray)));
+    const value = bytesToI32(this.getNextData(size));
     this.offset += size;
     return new Result(value);
   }
@@ -268,6 +257,12 @@ export class Args {
     return new Result(!!this.serialized[this.offset++]);
   }
 
+  private getNextData(size: i32): StaticArray<u8> {
+    return changetype<StaticArray<u8>>(
+      this.serialized.slice(this.offset, this.offset + size).dataStart,
+    );
+  }
+
   // Setter
 
   /**
@@ -281,77 +276,30 @@ export class Args {
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
-      const value = new Uint8Array(1);
+      const value = new StaticArray<u8>(1);
       value[0] = u8(arg);
-      this.serialized = this.concatArrays(this.serialized, value);
+      this.serialized = this.serialized.concat(value);
     } else if (arg instanceof String) {
       this.add<u32>(arg.length << 1);
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(stringToBytes(arg as string)),
-      );
+      this.serialized = this.serialized.concat(stringToBytes(arg as string));
     } else if (arg instanceof Uint8Array) {
       this.add<u32>(arg.length);
-      this.serialized = this.concatArrays(this.serialized, arg);
+      this.serialized = this.serialized.concat(unwrapStaticArray(arg));
     } else if (arg instanceof StaticArray<u8>) {
       this.add<u32>(arg.length);
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(arg),
-      );
+      this.serialized = this.serialized.concat(arg);
     } else if (arg instanceof u8) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(u8toByte(arg as u8)),
-      );
-    } else if (arg instanceof u32) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(u32ToBytes(arg as u32)),
-      );
-    } else if (arg instanceof u64) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(u64ToBytes(arg as u64)),
-      );
-    } else if (arg instanceof i32) {
-      this.serialized = wrapStaticArray(
-        unwrapStaticArray(this.serialized).concat(u32ToBytes(arg as u32)),
-      );
-    } else if (arg instanceof i64) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(u64ToBytes(arg as u64)),
-      );
+      this.serialized = this.serialized.concat(u8toByte(arg as u8));
+    } else if (arg instanceof u32 || arg instanceof i32) {
+      this.serialized = this.serialized.concat(u32ToBytes(arg as u32));
+    } else if (arg instanceof u64 || arg instanceof i64) {
+      this.serialized = this.serialized.concat(u64ToBytes(arg as u64));
     } else if (arg instanceof f32) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(f32ToBytes(arg as f32)),
-      );
+      this.serialized = this.serialized.concat(f32ToBytes(arg as f32));
     } else if (arg instanceof f64) {
-      this.serialized = this.concatArrays(
-        this.serialized,
-        wrapStaticArray(f64ToBytes(arg as f64)),
-      );
+      this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
     }
     return this;
-  }
-
-  // Utils
-
-  /**
-   * Internal function to concat to Uint8Array.
-   *
-   * @param {Uint8Array} a first array to concat
-   * @param {Uint8Array} b second array to concat
-   *
-   * @return {Uint8Array} the concatenated array
-   */
-  private concatArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
-    var c = new Uint8Array(a.length + b.length);
-    c.set(a, 0);
-    c.set(b, a.length);
-    return c;
   }
 }
 

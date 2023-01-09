@@ -46,7 +46,6 @@ describe('Args tests', () => {
     const val: u32 = 97;
     const args1 = new Args();
     args1.add(val);
-
     expect(args1.nextU32().unwrap()).toBe(val);
 
     const args2 = new Args(args1.serialize());
