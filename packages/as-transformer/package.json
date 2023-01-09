@@ -7,7 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "doc": "typedoc ./index.ts --name as-transformer --out docs/as-transformer/html --tsconfig assembly/tsconfig.json"
+    "doc": "typedoc src/index.ts --name as-transformer --out docs/as-transformer/html --tsconfig tsconfig.json"
   },
   "author": "",
   "license": "ISC",

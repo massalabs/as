@@ -5,7 +5,7 @@
   "types": "assembly/index.ts",
   "type": "module",
   "scripts": {
-    "doc": "typedoc ./index.ts --name as-types --out docs/as-types/html --tsconfig assembly/tsconfig.json"
+    "doc": "typedoc assembly/index.ts --name as-types --out docs/as-types/html --tsconfig assembly/tsconfig.json"
   },
   "author": "",
   "license": "ISC",

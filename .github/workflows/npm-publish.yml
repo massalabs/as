@@ -41,7 +41,7 @@ jobs:
       run: |
         npm ci
         npm run doc
-        mv docs/${{ matrix.packageName }}/documentation/html ${{ matrix.packageName }}
+        mv packages/${{ matrix.packageName }}/docs/${{ matrix.packageName }}/documentation/html ${{ matrix.packageName }}
     - name: Deploy files
       uses: appleboy/scp-action@master
       env:
