@@ -5,6 +5,7 @@
   "types": "assembly/index.ts",
   "type": "module",
   "scripts": {
+    "doc": "typedoc index.ts --name as-proba --out docs/as-proba/html --tsconfig assembly/tsconfig.json"
   },
   "author": "",
   "license": "ISC",
