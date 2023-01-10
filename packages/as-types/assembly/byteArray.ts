@@ -3,6 +3,7 @@
  */
 export class ByteArray extends Uint8Array {
   /**
+   * @deprecated
    * Convert a byte string to a byte array.
    * @param {string} byteString - Byte string
    *
@@ -17,6 +18,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a byte string.
    *
    * @return {string}
@@ -30,6 +32,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Convert a uint8 Array to a byte array.
    * @param {Uint8Array} array - Uint8 array
    *
@@ -40,6 +43,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Convert a byte to a byte array.
    * @param {u8} b - byte
    *
@@ -52,6 +56,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns bytes in little-endian order.
    * @param {i32} i - integer
    *
@@ -67,6 +72,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a int32
    *
    * @return {i32}
@@ -85,6 +91,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns bytes in little-endian order.
    * @param {u32} u - integer
    *
@@ -100,6 +107,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a u32 from byte array
    *
    * @return {u32}
@@ -118,6 +126,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns bytes in little-endian order.
    * @param {i64} i - integer
    *
@@ -137,6 +146,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a i64.
    *
    * @return {i64}
@@ -159,6 +169,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns bytes in little-endian order.
    * @param {u64} u - integer
    *
@@ -178,6 +189,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a u64.
    *
    * @return {u64}
@@ -199,6 +211,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Returns a new byte array from the concatenation of the values
    * of the two byte arrays.
    *
@@ -213,6 +226,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Tests if two ByteArray have identical bytes.
    *
    * @param {ByteArray} other
@@ -232,6 +246,7 @@ export class ByteArray extends Uint8Array {
   }
 
   /**
+   * @deprecated
    * Tests if two ByteArray have different bytes.
    *
    * @param {ByteArray} other

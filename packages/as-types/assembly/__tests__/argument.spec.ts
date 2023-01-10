@@ -42,20 +42,31 @@ describe('Args tests', () => {
     expect(args2.nextI32().unwrap()).toBe(83);
   });
 
-  it('With a number and an Amount', () => {
+  it('With a number', () => {
+    const val: u32 = 97;
     const args1 = new Args();
-    args1.add(97 as u32);
-    amt.addArgs(args1);
-
-    expect(args1.nextU32().unwrap()).toBe(97 as u32);
-    expect(Amount.fromArgs(args1).expect('amount from args')).toBe(amt);
+    args1.add(val);
+    expect(args1.nextU32().unwrap()).toBe(val);
 
     const args2 = new Args(args1.serialize());
-    expect(args2.nextU32().expect('next u32')).toBe(97 as u32);
-    expect(Amount.fromArgs(args2).expect('amount from args')).toBe(amt);
+    expect(args2.nextU32().expect('next u32')).toBe(val);
   });
 
-  it('With Address and i64', () => {
+  it('With two number', () => {
+    const val1: u32 = 97;
+    const val2: u32 = 666;
+    const args1 = new Args();
+    args1.add(val1).add(val2);
+
+    expect(args1.nextU32().unwrap()).toBe(val1);
+    expect(args1.nextU32().unwrap()).toBe(val2);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU32().expect('next u32')).toBe(val1);
+    expect(args2.nextU32().expect('next u32')).toBe(val2);
+  });
+
+  it('With i64', () => {
     const args1 = new Args();
     args1.add(97 as i64);
     amt.addArgs(args1);
@@ -71,7 +82,7 @@ describe('Args tests', () => {
     expect(args2.nextI64().unwrap()).toBe(113);
   });
 
-  it('With Address and u64', () => {
+  it('With u64', () => {
     const args1 = new Args();
     args1.add(97 as u64);
     amt.addArgs(args1);
@@ -112,6 +123,17 @@ describe('Args tests', () => {
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextString().unwrap()).toBe('a'.repeat(65600));
+  });
+
+  it('With emoji string', () => {
+    const args1 = new Args();
+    const str = 'wagmi 🤩';
+    args1.add(str);
+
+    expect(args1.nextString().unwrap()).toBe(str);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextString().unwrap()).toBe(str);
   });
 
   it('With string and u64', () => {
