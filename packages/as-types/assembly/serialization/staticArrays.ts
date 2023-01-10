@@ -1,7 +1,7 @@
 /**
  * Converts StaticArray<u8> to Uint8Array.
  *
- * @return {string} Uint8Array
+ * @returns Uint8Array
  */
 @inline
 export function wrapStaticArray(arr: StaticArray<u8>): Uint8Array {
@@ -11,7 +11,7 @@ export function wrapStaticArray(arr: StaticArray<u8>): Uint8Array {
 /**
  * Converts a Uint8Array to StaticArray<u8>.
  *
- * @return StaticArray<u8>
+ * @returns
  */
 @inline
 export function unwrapStaticArray(arr: Uint8Array): StaticArray<u8> {

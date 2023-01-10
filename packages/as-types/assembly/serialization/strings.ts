@@ -1,7 +1,7 @@
 /**
  * Converts utf-16 string to a StaticArray<u8>.
  * @param str -
- * @return {StaticArray<u8>}
+ * @returns
  */
 export function stringToBytes(str: string): StaticArray<u8> {
   if (!str.length) {
@@ -15,7 +15,7 @@ export function stringToBytes(str: string): StaticArray<u8> {
 /**
  * Converts StaticArray<u8> to a string.
  * @param arr -
- * @return {string}
+ * @returns
  */
 export function bytesToString(arr: StaticArray<u8>): string {
   if (!arr.length) {

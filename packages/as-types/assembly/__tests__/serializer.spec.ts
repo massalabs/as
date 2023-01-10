@@ -45,4 +45,8 @@ describe('Serialization tests', () => {
     const val: f64 = -666.666;
     expect(bytesToF64(f64ToBytes(val))).toBe(val);
   });
+  it('ser/deser f64 max val', () => {
+    const val: f64 = F64.MAX_VALUE;
+    expect(bytesToF64(f64ToBytes(val))).toBe(val);
+  });
 });

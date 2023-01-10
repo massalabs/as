@@ -37,7 +37,7 @@ export class Args {
 
   /**
    *
-   * @param {string} serialized
+   * @params serialized
    */
   constructor(serialized: StaticArray<u8> = []) {
     this.serialized = serialized;
@@ -46,7 +46,7 @@ export class Args {
   /**
    * Returns the serialized string to pass to CallSC.
    *
-   * @return {string} the serialized string
+   * @returns the serialized string
    */
   serialize(): StaticArray<u8> {
     return this.serialized;
@@ -57,7 +57,7 @@ export class Args {
   /**
    * Returns the deserialized string.
    *
-   * @return {Result<string>} the string
+   * @returns
    */
   nextString(): Result<string> {
     const length = this.nextU32();
@@ -76,6 +76,11 @@ export class Args {
     return new Result(value);
   }
 
+  /**
+   * Returns the deserialized byte.
+   *
+   * @returns
+   */
   nextBytes(): Result<StaticArray<u8>> {
     const length = this.nextU32();
     if (
@@ -95,7 +100,7 @@ export class Args {
   /**
    * Returns the deserialized Uint8Array.
    *
-   * @return {Result<Uint8Array>}
+   * @returns
    */
   nextUint8Array(): Result<Uint8Array> {
     const length = this.nextU32();
@@ -117,7 +122,7 @@ export class Args {
   /**
    * Returns the deserialized number as u64.
    *
-   * @return {Result<u64>}
+   * @returns
    */
   nextU64(): Result<u64> {
     const size: i32 = sizeof<u64>();
@@ -135,7 +140,7 @@ export class Args {
   /**
    * Returns the deserialized number as i64.
    *
-   * @return {Result<i64>}
+   * @returns
    */
   nextI64(): Result<i64> {
     const size: i32 = sizeof<i64>();
@@ -154,7 +159,7 @@ export class Args {
   /**
    * Returns the deserialized number as f64.
    *
-   * @return {Result<f64>}
+   * @returns
    */
   nextF64(): Result<f64> {
     const size: i32 = sizeof<f64>();
@@ -172,7 +177,7 @@ export class Args {
   /**
    * Returns the deserialized number as f32.
    *
-   * @return {Result<f32>}
+   * @returns
    */
   nextF32(): Result<f32> {
     const size: i32 = sizeof<f32>();
@@ -191,7 +196,7 @@ export class Args {
   /**
    * Returns the deserialized number as u32.
    *
-   * @return {Result<u32>}
+   * @returns
    */
   nextU32(): Result<u32> {
     const size: i32 = sizeof<u32>();
@@ -210,7 +215,7 @@ export class Args {
   /**
    * Returns the deserialized number as i32.
    *
-   * @return {Result<i32>}
+   * @returns
    */
   nextI32(): Result<i32> {
     const size: i32 = sizeof<i32>();
@@ -228,7 +233,7 @@ export class Args {
   /**
    * Returns the deserialized u8
    *
-   * @return {Result<u8>}
+   * @returns
    */
   nextU8(): Result<u8> {
     if (this.offset + sizeof<u8>() > this.serialized.length) {
@@ -244,7 +249,7 @@ export class Args {
   /**
    * Returns the deserialized boolean
    *
-   * @return {Result<bool>}
+   * @returns
    */
   nextBool(): Result<bool> {
     if (this.offset + sizeof<u8>() >= this.serialized.length) {
@@ -257,6 +262,11 @@ export class Args {
     return new Result(!!this.serialized[this.offset++]);
   }
 
+  /**
+   * Returns the data of requested size for current offset
+   * @param size The data size
+   * @returns
+   */
   private getNextData(size: i32): StaticArray<u8> {
     return changetype<StaticArray<u8>>(
       this.serialized.slice(this.offset, this.offset + size).dataStart,
@@ -270,9 +280,9 @@ export class Args {
    * instance of a handled type (String of u32.MAX_VALUE characters maximum,
    * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
    *
-   * @param {T} arg the argument to add
+   * @param arg the argument to add
    *
-   * @return {Args} the modified Arg instance
+   * @returns the modified Arg instance
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {

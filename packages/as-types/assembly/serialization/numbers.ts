@@ -3,7 +3,7 @@
  *
  * @param {u8} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
@@ -16,7 +16,7 @@ export function u8toByte(val: u8): StaticArray<u8> {
  *
  * @param {u32} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function u32ToBytes(val: u32): StaticArray<u8> {
   const arr = new StaticArray<u8>(4);
@@ -30,7 +30,7 @@ export function u32ToBytes(val: u32): StaticArray<u8> {
  * Converts a byte array into a u32.
  *
  * @param {Uint8Array} arr
- * @return {u32}
+ * @returns
  */
 export function bytesToU32(arr: StaticArray<u8>): u32 {
   let x: u32 = 0;
@@ -46,7 +46,7 @@ export function bytesToU32(arr: StaticArray<u8>): u32 {
  *
  * @param {f32} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function f32ToBytes(val: f32): StaticArray<u8> {
   return u32ToBytes(bswap<u32>(reinterpret<u32>(val)));
@@ -56,7 +56,7 @@ export function f32ToBytes(val: f32): StaticArray<u8> {
  * Converts a byte array into a f32.
  *
  * @param {Uint8Array} arr
- * @return {u32}
+ * @returns
  */
 export function bytesToF32(arr: StaticArray<u8>): f32 {
   return reinterpret<f32>(bswap<u32>(bytesToU32(arr)));
@@ -67,7 +67,7 @@ export function bytesToF32(arr: StaticArray<u8>): f32 {
  *
  * @param {i32} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function i32ToBytes(val: i32): StaticArray<u8> {
   return u32ToBytes(val as u32);
@@ -77,7 +77,7 @@ export function i32ToBytes(val: i32): StaticArray<u8> {
  * Converts a byte array into a i32.
  *
  * @param {Uint8Array} arr
- * @return {i32}
+ * @returns
  */
 export function bytesToI32(arr: StaticArray<u8>): i32 {
   return changetype<i32>(bytesToU32(arr));
@@ -88,7 +88,7 @@ export function bytesToI32(arr: StaticArray<u8>): i32 {
  *
  * @param {u64} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function u64ToBytes(val: u64): StaticArray<u8> {
   const arr = new StaticArray<u8>(8);
@@ -102,7 +102,7 @@ export function u64ToBytes(val: u64): StaticArray<u8> {
  * Converts a byte array into a u64.
  *
  * @param {Uint8Array} arr
- * @return {u64}
+ * @returns
  */
 export function bytesToU64(arr: StaticArray<u8>): u64 {
   let x: u64 = 0;
@@ -118,7 +118,7 @@ export function bytesToU64(arr: StaticArray<u8>): u64 {
  *
  * @param {i64} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function i64ToBytes(val: i64): StaticArray<u8> {
   return u64ToBytes(val as u64);
@@ -128,7 +128,7 @@ export function i64ToBytes(val: i64): StaticArray<u8> {
  * Converts a byte array into a i64.
  *
  * @param {Uint8Array} arr
- * @return {i64}
+ * @returns
  */
 export function bytesToI64(arr: StaticArray<u8>): i64 {
   return changetype<i64>(bytesToU64(arr));
@@ -139,7 +139,7 @@ export function bytesToI64(arr: StaticArray<u8>): i64 {
  *
  * @param {f64} val the number to convert
  *
- * @return {StaticArray<u8>} the converted StaticArray<u8>
+ * @returns the converted StaticArray<u8>
  */
 export function f64ToBytes(val: f64): StaticArray<u8> {
   return u64ToBytes(bswap<u64>(reinterpret<u64>(val)));
@@ -149,7 +149,7 @@ export function f64ToBytes(val: f64): StaticArray<u8> {
  * Converts a byte array into a f32.
  *
  * @param {Uint8Array} arr
- * @return {f64}
+ * @returns
  */
 export function bytesToF64(arr: StaticArray<u8>): f64 {
   return reinterpret<f64>(bswap<u64>(bytesToU64(arr)));
