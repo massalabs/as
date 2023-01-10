@@ -61,17 +61,4 @@ Note that if you try to add or substract amounts that are defined in different t
 
 #### Argument
 This class is very important to write smart contract.
-It allows for the serialisation/deserialisation of a regular type (int, float, string) into a byteArray.
-
-#### ByteArray
-This class allows for the manipulation of byte arrays.
-Available class methods :
-- `equals`
-- `notEqual`
-- `toByteString`
-- `toI32`
-- `toU32`
-- `toU64`
-- `concat`
-
-#### Valider
+It allows for the serialisation/deserialisation of a regular type (int, float, string) into a binary format.
