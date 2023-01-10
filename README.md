@@ -1,15 +1,15 @@
 # as
 
-MassaLabs monorepo for assemblyscript libraries.
+**MassaLabs** monorepo for assemblyscript libraries.
 _Massa AS_
 
-A collection of tools, objects and functions, specific in usage for Massa smart contracts, in AssemblyScript. 
+A collection of tools, objects and functions, specific in usage for Massa smart contracts, in *AssemblyScript.* 
 
-Massa AS is a group of packages with the goal to support you through your path using Assembly Script in Massa environment 
+_Massa AS_ is a group of packages with the goal to support you through your path using *AssemblyScript* in **MassaLabs** environment 
 
-- Basic functions with as-types 
-- Mathematical processes with as-proba
-- Transformer functionnality with as-transformer
+- *Basic functions* with **as-types** 
+- *Mathematical processes* with **as-proba**
+- *Transformer functions* with **as-transformer**
 
 
 Complete documentation of all available functions and objects is here: 
