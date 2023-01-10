@@ -264,7 +264,7 @@ export class Args {
 
   /**
    * Returns the data of requested size for current offset
-   * @param size The data size
+   * @param size - The data size
    * @returns
    */
   private getNextData(size: i32): StaticArray<u8> {
