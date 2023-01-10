@@ -2,6 +2,8 @@
 
 An [AssemblyScript transformer](https://www.assemblyscript.org/compiler.html#transforms) helper module.
 
+- [`as-transformer documentation`](https://as-transformer.docs.massa.net)
+
 ## Installation
 
 To install this module, run the following command at your project root directory :
