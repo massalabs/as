@@ -14,11 +14,6 @@ export default {
   disclude: [/node_modules/],
   /**
    * Add your required AssemblyScript imports here.
-   * @param memory - The WebAssembly.Memory instance to use for module instantiation.
-   * @param createImports - The createImports function that merge multiple objects.
-   * @param instantiate - The WebAssembly.instantiate function.
-   * @param binary - The WebAssembly binary.
-   * @returns The imports object.
    * 
    */
   async instantiate(memory, createImports, instantiate, binary) {
