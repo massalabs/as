@@ -1,4 +1,4 @@
-name: Publish NPM Packages
+name: Publish NPM Packages & Deploy Docs
 
 on:
 
@@ -6,7 +6,7 @@ on:
     types: [ created ]
 
 jobs:
-  test:
+  build:
     uses: ./.github/workflows/node.js.yml
 
   publish-npm:
