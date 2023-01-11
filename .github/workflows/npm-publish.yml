@@ -1,9 +1,9 @@
 name: Publish NPM Packages
 
 on:
-  push:
-  # release:
-  #   types: [ created ]
+
+  release:
+  types: [ created ]
 
 jobs:
   test:
