@@ -1,11 +1,8 @@
 # as
 
 **MassaLabs** monorepo for assemblyscript libraries.
-_AS_
 
-A collection of tools, objects and functions in *AssemblyScript*. 
-
-_AS_ is a group of packages with the goal to support you through your path using *AssemblyScript* in **MassaLabs** environment 
+This repository is a collection of tools, objects and functions in *AssemblyScript*. 
 
 - *Classes and helper functions* with **as-types** 
 - *random draws* with **as-proba**
