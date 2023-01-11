@@ -9,7 +9,7 @@ _AS_ is a group of packages with the goal to support you through your path using
 
 - *Helpers functions* with **as-types** 
 - *Mathematical processes* with **as-proba**
-- *Transformer functions* with **as-transformer**
+- *AssemblyScript transformers for unit testing and reading a file* with **as-transformer**
 
 
 The complete documentation of all available functions and objects is here: 
