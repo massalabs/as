@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@as-pect/cli": "^8.0.1",
-    "@massalabs/eslint-config": "^0.0.3",
+    "@massalabs/eslint-config": "^0.0.4",
     "@massalabs/prettier-config-as": "^0.0.2",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.4",
