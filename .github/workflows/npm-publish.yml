@@ -9,23 +9,23 @@ jobs:
   test:
     uses: ./.github/workflows/node.js.yml
 
-  # publish-npm:
-  #   needs: test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-  #         registry-url: https://registry.npmjs.org/
-  #     - name: publish
-  #       run: |
-  #         npm pkg delete scripts.prepare
-  #         npm ci
-  #         npm run build
-  #         npm publish --ws --access public
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+  publish-npm:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - name: publish
+        run: |
+          npm pkg delete scripts.prepare
+          npm ci
+          npm run build
+          npm publish --ws --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
   deploy-typedoc:
     strategy:
