@@ -16,24 +16,26 @@ The complete documentation of all available functions and objects is here:
 - [`as-transformer documentation`](https://as-transformer.docs.massa.net)
 
 
-## To Install
+## Install
 Packages are independant you can choose to install what you need
 ```sh
 npm i --save-dev @massalabs/as-types
 npm i --save-dev @massalabs/as-proba
 npm i --save-dev @massalabs/as-transformer
 ```
-## To Format
+
+## Development guide
+### Code linting and formatting
 ```sh
 npm run fmt
 ```
 
-## To test
+### Test
 ```sh
 npm run test
 ```
 
-## To generate doc
+### Generate doc
 ```sh
 npm run doc
 ```
