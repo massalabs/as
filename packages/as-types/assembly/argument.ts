@@ -15,6 +15,7 @@ import {
   bytesToF64,
   bytesToI32,
   bytesToI64,
+  boolToByte,
 } from './serialization';
 
 /**
@@ -286,9 +287,7 @@ export class Args {
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
-      const value = new StaticArray<u8>(1);
-      value[0] = u8(arg);
-      this.serialized = this.serialized.concat(value);
+      this.serialized = this.serialized.concat(boolToByte(arg as bool));
     } else if (arg instanceof String) {
       this.add<u32>(arg.length << 1);
       this.serialized = this.serialized.concat(stringToBytes(arg as string));

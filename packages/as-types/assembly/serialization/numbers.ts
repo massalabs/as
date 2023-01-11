@@ -3,12 +3,23 @@
  *
  * @param {u8} val the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
   arr[0] = val;
   return arr;
+}
+
+/**
+ * Converts a StaticArray<u8> to u8.
+ *
+ * @param {u8} val the number to convert
+ *
+ * @returns
+ */
+export function bytesToU8(arr: StaticArray<u8>): u8 {
+  return arr[0];
 }
 
 /**
