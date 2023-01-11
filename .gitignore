@@ -7,7 +7,7 @@ logs
 as-tral
 *.lockb
 *.log
-
 *.wasm
 *.wat
 *.map
+packages/**/docs

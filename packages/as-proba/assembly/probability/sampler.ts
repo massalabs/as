@@ -13,7 +13,7 @@ export class Sampler {
    *
    * This constructor calls seedRandom.
    *
-   * @param {u64} s - seed for random Math.random function.
+   * @param s - seed for random Math.random function.
    */
   constructor(s: u64 = 0) {
     Math.seedRandom(s);
@@ -26,8 +26,8 @@ export class Sampler {
    * Probability function doesn't need to be normalized,
    * but the greatest probability of the distribution must be knowned.
    *
-   * @param{u64} _ - sample.
-   * @return {f64}
+   * @param _ - sample.
+   * @returns
    */
   probability(_: u64): f64 {
     return 1;
@@ -64,12 +64,12 @@ export class Sampler {
    *     Lets say k = 0.
    *  2- draw a number x, from an unifrom random function with lower limit 0
    *     and upper limit p_max.
-   *     Lets say x > p_0. In that case we restart the process from
+   *     Lets say x \> p_0. In that case we restart the process from
    *     the begining.
    *  3- randomly find k.
    *     Lets say k = 2.
    *  4- randmly find x.
-   *     Lets say x < p_2. In that case the process stop and
+   *     Lets say x \< p_2. In that case the process stop and
    *     the observation is returned.
    *
    *  Graphically, the following process can be represented as the following:
@@ -88,9 +88,9 @@ export class Sampler {
    *  greater probability will have a higher chance of being returned
    *  than observation with lower one.
    *
-   * @param {u64} n - sampling upper limit
-   * @param {f32} max - greatest probability of the distribution
-   * @return {u64}
+   * @param n - sampling upper limit
+   * @param max - greatest probability of the distribution
+   * @returns
    */
   rejectionSampling(n: u64, max: f32): u64 {
     while (true) {
@@ -105,7 +105,7 @@ export class Sampler {
   /**
    * Populate observation zone bounderies.
    *
-   * @param {u64} n - Sampling upper limit
+   * @param n - Sampling upper limit
    */
   private populateBounderies(n: u64): void {
     this._bounderies = new Float64Array(i32(n));
@@ -163,8 +163,8 @@ export class Sampler {
    *    ├┼x┼───┼┼──┤
    *    0 1  2 3 4
    *
-   * @param{u64} n - Sampling upper limit.
-   * @return {u64} Observation
+   * @param n - Sampling upper limit.
+   * @returns Observation
    */
   inverseCumulativeDistribution(n: u64): u64 {
     if (this._bounderies.length == 0) {

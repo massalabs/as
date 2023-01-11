@@ -15,8 +15,8 @@ export class Amount {
   /**
    * Creates a new Amount;
    *
-   * @param {u64} value - Amount value.
-   * @param {Currency} currency - Amount currency.
+   * @param value - Amount value.
+   * @param currency - Amount currency.
    */
   constructor(
     public value: u64 = 0,
@@ -26,9 +26,9 @@ export class Amount {
   /**
    * Adds two amounts and return results in a new one.
    *
-   * @param {Amount} a - Amount to add.
+   * @param  a - Amount to add.
    *
-   * @return {Amount}
+   * @returns
    */
   add(a: Amount): Result<Amount> {
     if (this.currency != a.currency) {
@@ -49,9 +49,9 @@ export class Amount {
   /**
    * Substracts two amounts and return results in a new one.
    *
-   * @param {Amount} a - Amount to substract.
+   * @param  a - Amount to substract.
    *
-   * @return {Amount}
+   * @returns
    */
   substract(a: Amount): Result<Amount> {
     if (this.currency != a.currency) {
@@ -75,9 +75,9 @@ export class Amount {
   /**
    * Check if existent amount is lower than given one.
    *
-   * @param {Amount} a - Amount to check against.
+   * @param  a - Amount to check against.
    *
-   * @return {bool}
+   * @returns
    */
   @operator('<')
   lessThan(a: Amount): bool {
@@ -87,8 +87,8 @@ export class Amount {
   /**
    * Creates a Result Amount from given argument
    *
-   * @param {Args} args
-   * @return {Result<Amount>}
+   * @param args - Argument to deserialize.
+   * @returns
    */
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
@@ -118,7 +118,7 @@ export class Amount {
   /**
    * Returns a new Args containing current currency serialized.
    *
-   * @return {Args}
+   * @returns
    */
   toArgs(): Args {
     const args = new Args();
@@ -131,8 +131,8 @@ export class Amount {
   /**
    * Tests if two amounts are identical.
    *
-   * @param {Amount} other
-   * @return {boolean}
+   *  @param other -
+   * @returns
    */
   @operator('==')
   equals(other: Amount): boolean {
@@ -142,8 +142,8 @@ export class Amount {
   /**
    * Tests if two amounts are different.
    *
-   * @param {Amount} other
-   * @return {boolean}
+   *  @param other -
+   * @returns
    */
   @operator('!=')
   notEqual(other: Amount): boolean {

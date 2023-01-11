@@ -3,8 +3,8 @@
  *
  * Stdout the histogram of the log of the data using stars `*` char.
  *
- * @param {Uint32Array} a - array containing histogram data
- * @param {i32} w - width of the histogram
+ * @param a - array containing histogram data
+ * @param w - width of the histogram
  */
 export function drawLogHistogram(a: Uint32Array, w: i32): void {
   let max: f64 = 0;
@@ -28,8 +28,8 @@ export function drawLogHistogram(a: Uint32Array, w: i32): void {
  *
  * Stdout the histogram of the data using stars `*` char.
  *
- * @param {Uint32Array} a - array containing histogram data
- * @param {i32} w - width of the histogram
+ * @param a - array containing histogram data
+ * @param w - width of the histogram
  *
  */
 export function drawHistogram(a: Uint32Array, w: i32): void {
