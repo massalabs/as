@@ -8,7 +8,7 @@ A collection of tools, objects and functions in *AssemblyScript*.
 _AS_ is a group of packages with the goal to support you through your path using *AssemblyScript* in **MassaLabs** environment 
 
 - *Helpers functions* with **as-types** 
-- *Mathematical processes* with **as-proba**
+- *random draws* with **as-proba**
 - *AssemblyScript transformers for unit testing and reading a file* with **as-transformer**
 
 
