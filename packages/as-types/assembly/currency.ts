@@ -14,7 +14,10 @@ import { Result } from './result';
  * like in the following: 10.34
  * This can be done with the following instantiation:
  *
+ * @example
+ * ```typescript
  * const dollar = new Currency("dollar", 2);
+ * ```
  */
 export class Currency {
   /**
@@ -29,7 +32,6 @@ export class Currency {
    * Creates a Result Currency from given argument
    *
    * @param args -
-   * @returns
    */
   static fromArgs(args: Args): Result<Currency> {
     const minorUnit = args.nextU8();
@@ -55,8 +57,6 @@ export class Currency {
 
   /**
    * Returns a new Args containing current currency serialized.
-   *
-   * @returns
    */
   toArgs(): Args {
     const args = new Args();
@@ -70,7 +70,6 @@ export class Currency {
    * Checks if both currencies are the same.
    *
    * @param other -
-   * @returns
    */
   @operator('==')
   equals(other: Currency): boolean {
@@ -81,7 +80,6 @@ export class Currency {
    * Checks if both currencies are different.
    *
    * @param other -
-   * @returns
    */
   @operator('!=')
   notEqual(other: Currency): boolean {

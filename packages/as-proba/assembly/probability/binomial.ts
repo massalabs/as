@@ -33,7 +33,6 @@ export class Binomial extends Sampler implements Drawer {
    * event k.
    *
    * @param k - Event.
-   * @returns
    */
   probability(k: u64): f64 {
     return (
@@ -48,8 +47,6 @@ export class Binomial extends Sampler implements Drawer {
    *
    * Rejection sampling method is used to generates an observation
    * from binomial distribution.
-   *
-   * @returns
    */
   draw(): u64 {
     if (this._m == 0) {

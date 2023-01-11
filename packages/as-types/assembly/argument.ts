@@ -79,8 +79,6 @@ export class Args {
 
   /**
    * Returns the deserialized byte.
-   *
-   * @returns
    */
   nextBytes(): Result<StaticArray<u8>> {
     const length = this.nextU32();
@@ -100,8 +98,6 @@ export class Args {
 
   /**
    * Returns the deserialized Uint8Array.
-   *
-   * @returns
    */
   nextUint8Array(): Result<Uint8Array> {
     const length = this.nextU32();
@@ -122,8 +118,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as u64.
-   *
-   * @returns
    */
   nextU64(): Result<u64> {
     const size: i32 = sizeof<u64>();
@@ -140,8 +134,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as i64.
-   *
-   * @returns
    */
   nextI64(): Result<i64> {
     const size: i32 = sizeof<i64>();
@@ -159,8 +151,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as f64.
-   *
-   * @returns
    */
   nextF64(): Result<f64> {
     const size: i32 = sizeof<f64>();
@@ -177,8 +167,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as f32.
-   *
-   * @returns
    */
   nextF32(): Result<f32> {
     const size: i32 = sizeof<f32>();
@@ -196,8 +184,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as u32.
-   *
-   * @returns
    */
   nextU32(): Result<u32> {
     const size: i32 = sizeof<u32>();
@@ -215,8 +201,6 @@ export class Args {
 
   /**
    * Returns the deserialized number as i32.
-   *
-   * @returns
    */
   nextI32(): Result<i32> {
     const size: i32 = sizeof<i32>();
@@ -233,8 +217,6 @@ export class Args {
 
   /**
    * Returns the deserialized u8
-   *
-   * @returns
    */
   nextU8(): Result<u8> {
     if (this.offset + sizeof<u8>() > this.serialized.length) {
@@ -249,8 +231,6 @@ export class Args {
 
   /**
    * Returns the deserialized boolean
-   *
-   * @returns
    */
   nextBool(): Result<bool> {
     if (this.offset + sizeof<u8>() >= this.serialized.length) {
@@ -266,7 +246,6 @@ export class Args {
   /**
    * Returns the data of requested size for current offset
    * @param size - The data size
-   * @returns
    */
   private getNextData(size: i32): StaticArray<u8> {
     return changetype<StaticArray<u8>>(

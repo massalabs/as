@@ -22,7 +22,6 @@ export class TestTable {
    * XXX: this function is clearly too big. Feel free to split it.
    *
    * @param node - CallExpression node.
-   * @returns
    */
   static transform(node: CallExpression): Expression {
     // Push all the arguments of the checksForEachLineThatThe function call to args array.
@@ -110,7 +109,6 @@ export class TestTable {
    * the raw string value is taken.
    *
    * @param criterion - comparison criterion
-   * @returns
    */
   static generateIfExpression(criterion: string) {
     switch (criterion) {
@@ -143,7 +141,6 @@ export class TestTable {
    * @param ifExpression - if expression
    * @param needWant - include want in test ?
    * @param continueOnFailure - should the test failure stop the test set
-   * @returns
    */
   static generateTest(
     name: string,
@@ -179,7 +176,6 @@ test('${name}', () => {
    * @param template - template
    * @param value - array of values to populate template with
    * @param iValue - current index of values
-   * @returns
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static hydrateTemplate(instantiation: string, value: any, iValue: number) {

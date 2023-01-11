@@ -7,7 +7,6 @@ export class ByteArray extends Uint8Array {
    * Convert a byte string to a byte array.
    * @param byteString - Byte string
    *
-   * @returns
    */
   static fromByteString(byteString: string): ByteArray {
     const self = new ByteArray(byteString.length);
@@ -21,7 +20,6 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a byte string.
    *
-   * @returns
    */
   toByteString(): string {
     let s = '';
@@ -36,7 +34,6 @@ export class ByteArray extends Uint8Array {
    * Convert a uint8 Array to a byte array.
    * @param array - Uint8 array
    *
-   * @returns
    */
   static fromUint8Array(array: Uint8Array): ByteArray {
     return changetype<ByteArray>(array);
@@ -47,7 +44,6 @@ export class ByteArray extends Uint8Array {
    * Convert a byte to a byte array.
    * @param b - byte
    *
-   * @returns
    */
   static fromU8(b: u8): ByteArray {
     const self = new ByteArray(1);
@@ -60,7 +56,6 @@ export class ByteArray extends Uint8Array {
    * Returns bytes in little-endian order.
    * @param i - integer
    *
-   * @returns
    */
   static fromI32(i: i32): ByteArray {
     const self = new ByteArray(4);
@@ -75,7 +70,6 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a int32
    *
-   * @returns
    */
   toI32(): i32 {
     if (this.length != 4) {
@@ -95,7 +89,6 @@ export class ByteArray extends Uint8Array {
    * Returns bytes in little-endian order.
    * @param u - integer
    *
-   * @returns
    */
   static fromU32(u: u32): ByteArray {
     const self = new ByteArray(4);
@@ -110,7 +103,6 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a u32 from byte array
    *
-   * @returns
    */
   toU32(): u32 {
     if (this.length != 4) {
@@ -130,7 +122,6 @@ export class ByteArray extends Uint8Array {
    * Returns bytes in little-endian order.
    * @param i - integer
    *
-   * @returns
    */
   static fromI64(i: i64): ByteArray {
     const self = new ByteArray(8);
@@ -149,7 +140,6 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a i64.
    *
-   * @returns
    */
   toI64(): i64 {
     if (this.length != 8) {
@@ -173,7 +163,6 @@ export class ByteArray extends Uint8Array {
    * Returns bytes in little-endian order.
    * @param u - integer
    *
-   * @returns
    */
   static fromU64(u: u64): ByteArray {
     const self = new ByteArray(8);
@@ -192,7 +181,6 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a u64.
    *
-   * @returns
    */
   toU64(): u64 {
     if (this.length != 8) {
@@ -216,7 +204,6 @@ export class ByteArray extends Uint8Array {
    * of the two byte arrays.
    *
    * @param ba -
-   * @returns
    */
   concat(ba: ByteArray): ByteArray {
     const n = new ByteArray(this.length + ba.length);
@@ -230,7 +217,6 @@ export class ByteArray extends Uint8Array {
    * Tests if two ByteArray have identical bytes.
    *
    * @param other -
-   * @returns
    */
   @operator('==')
   equals(other: ByteArray): boolean {
@@ -250,7 +236,6 @@ export class ByteArray extends Uint8Array {
    * Tests if two ByteArray have different bytes.
    *
    * @param other -
-   * @returns
    */
   @operator('!=')
   notEqual(other: ByteArray): boolean {
