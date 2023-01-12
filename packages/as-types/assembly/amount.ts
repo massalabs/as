@@ -7,9 +7,11 @@ import { Args } from './argument';
  *
  * For instance $10.34 will be instantiate as the following:
  *
+ * @example
+ * ```typescript
  * const dollar = new Currency("dollar", 2);
  * const price = new Amount(1034, dollar);
- *
+ * ```
  */
 export class Amount {
   /**
@@ -27,8 +29,6 @@ export class Amount {
    * Adds two amounts and return results in a new one.
    *
    * @param  a - Amount to add.
-   *
-   * @returns
    */
   add(a: Amount): Result<Amount> {
     if (this.currency != a.currency) {
@@ -50,8 +50,6 @@ export class Amount {
    * Substracts two amounts and return results in a new one.
    *
    * @param  a - Amount to substract.
-   *
-   * @returns
    */
   substract(a: Amount): Result<Amount> {
     if (this.currency != a.currency) {
@@ -76,8 +74,6 @@ export class Amount {
    * Check if existent amount is lower than given one.
    *
    * @param  a - Amount to check against.
-   *
-   * @returns
    */
   @operator('<')
   lessThan(a: Amount): bool {
@@ -88,7 +84,6 @@ export class Amount {
    * Creates a Result Amount from given argument
    *
    * @param args - Argument to deserialize.
-   * @returns
    */
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
@@ -118,7 +113,6 @@ export class Amount {
   /**
    * Returns a new Args containing current currency serialized.
    *
-   * @returns
    */
   toArgs(): Args {
     const args = new Args();
@@ -132,7 +126,6 @@ export class Amount {
    * Tests if two amounts are identical.
    *
    *  @param other -
-   * @returns
    */
   @operator('==')
   equals(other: Amount): boolean {
@@ -143,7 +136,6 @@ export class Amount {
    * Tests if two amounts are different.
    *
    *  @param other -
-   * @returns
    */
   @operator('!=')
   notEqual(other: Amount): boolean {

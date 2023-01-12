@@ -4,7 +4,6 @@
  *
  * @param n - Number of elements in set.
  * @param k - Number of elements in subset.
- * @returns
  */
 export function combination(n: u64, k: u64): f64 {
   return partialPermutation(n, k) / factorial(k);
@@ -16,7 +15,6 @@ export function combination(n: u64, k: u64): f64 {
  *
  * @param n - Number of elements in set.
  * @param k - Number of elements in subset.
- * @returns
  */
 export function partialPermutation(n: u64, k: u64): f64 {
   return factorial(n) / factorial(n - k);
@@ -26,8 +24,6 @@ export function partialPermutation(n: u64, k: u64): f64 {
  * Returns the number of permutation of n elements.
  *
  * @param n - Number of elements.
- *
- * @returns
  */
 export function factorial(n: u64): f64 {
   let r: f64 = 1;

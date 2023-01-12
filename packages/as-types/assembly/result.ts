@@ -14,7 +14,6 @@ export class Result<T> {
 
   /**
    * Checks that the result is okay.
-   * @returns
    */
   @inline
   isOk(): bool {
@@ -23,7 +22,6 @@ export class Result<T> {
 
   /**
    * Checks that the result is okay.
-   * @returns
    */
   @inline
   isErr(): bool {
@@ -34,7 +32,6 @@ export class Result<T> {
    * Checks that the result is okay and panic if not.
    *
    * @param msg - panic message that will prefix the error content.
-   * @returns
    */
   @inline
   expect(msg: string): NonNullable<T> {
@@ -47,8 +44,6 @@ export class Result<T> {
 
   /**
    * Get the value. Panic if error.
-   *
-   * @returns
    */
   @inline
   unwrap(): NonNullable<T> {

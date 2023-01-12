@@ -27,7 +27,6 @@ export class Sampler {
    * but the greatest probability of the distribution must be knowned.
    *
    * @param _ - sample.
-   * @returns
    */
   probability(_: u64): f64 {
     return 1;
@@ -90,7 +89,6 @@ export class Sampler {
    *
    * @param n - sampling upper limit
    * @param max - greatest probability of the distribution
-   * @returns
    */
   rejectionSampling(n: u64, max: f32): u64 {
     while (true) {

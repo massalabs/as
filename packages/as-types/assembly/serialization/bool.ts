@@ -2,8 +2,6 @@
  * Converts a StaticArray<u8> to boolean.
  *
  * @param arr - the StaticArray<u8> to convert
- *
- * @returns
  */
 @inline
 export function byteToBool(arr: StaticArray<u8>): bool {
@@ -14,8 +12,6 @@ export function byteToBool(arr: StaticArray<u8>): bool {
  * Converts a boolean to StaticArray<u8>.
  *
  * @param val - the number to convert
- *
- * @returns
  */
 @inline
 export function boolToByte(val: bool): StaticArray<u8> {
