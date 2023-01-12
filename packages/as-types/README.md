@@ -62,5 +62,5 @@ const price = new Amount(1034, dollar);
 Note that if you try to add or substract amounts that are defined in different types of currencies, it will result in an error.
 
 #### Argument
-This class is very important to write smart contract.
+This class is very important to write smart contracts.
 It allows for the serialisation/deserialisation of a regular type (int, float, string) into a binary format.
