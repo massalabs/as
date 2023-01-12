@@ -20,16 +20,16 @@ export class Currency {
   /**
    * Creates a new instance of Currency.
    *
-   * @param {string} name - name of the currency.
-   * @param {u8} minorUnit - minor unit of the currency.
+   * @param name - name of the currency.
+   * @param minorUnit - minor unit of the currency.
    */
   constructor(public name: string = '', public minorUnit: u8 = 0) {}
 
   /**
    * Creates a Result Currency from given argument
    *
-   * @param {Args} args
-   * @return {Result<Currency>}
+   * @param args -
+   * @returns
    */
   static fromArgs(args: Args): Result<Currency> {
     const minorUnit = args.nextU8();
@@ -56,7 +56,7 @@ export class Currency {
   /**
    * Returns a new Args containing current currency serialized.
    *
-   * @return {Args}
+   * @returns
    */
   toArgs(): Args {
     const args = new Args();
@@ -69,8 +69,8 @@ export class Currency {
   /**
    * Checks if both currencies are the same.
    *
-   * @param {Currency} other
-   * @return {boolean}
+   * @param other -
+   * @returns
    */
   @operator('==')
   equals(other: Currency): boolean {
@@ -80,8 +80,8 @@ export class Currency {
   /**
    * Checks if both currencies are different.
    *
-   * @param {Currency} other
-   * @return {boolean}
+   * @param other -
+   * @returns
    */
   @operator('!=')
   notEqual(other: Currency): boolean {

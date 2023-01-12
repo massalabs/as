@@ -2,6 +2,8 @@
 
 An [AssemblyScript transformer](https://www.assemblyscript.org/compiler.html#transforms) helper module.
 
+- [`as-transformer documentation`](https://as-transformer.docs.massa.net)
+
 ## Installation
 
 To install this module, run the following command at your project root directory :
@@ -23,7 +25,7 @@ You can use this transformer by adding `--transform @massalabs/as-transformer` t
 For instance, to compile `assembly/my_sc.ts` with this transformer you will execute:
 
 ```shell
-yarn asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
+npx asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
 ```
 
 ### Transform ts files

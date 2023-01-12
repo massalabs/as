@@ -5,9 +5,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Convert a byte string to a byte array.
-   * @param {string} byteString - Byte string
+   * @param byteString - Byte string
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromByteString(byteString: string): ByteArray {
     const self = new ByteArray(byteString.length);
@@ -21,7 +21,7 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a byte string.
    *
-   * @return {string}
+   * @returns
    */
   toByteString(): string {
     let s = '';
@@ -34,9 +34,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Convert a uint8 Array to a byte array.
-   * @param {Uint8Array} array - Uint8 array
+   * @param array - Uint8 array
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromUint8Array(array: Uint8Array): ByteArray {
     return changetype<ByteArray>(array);
@@ -45,9 +45,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Convert a byte to a byte array.
-   * @param {u8} b - byte
+   * @param b - byte
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromU8(b: u8): ByteArray {
     const self = new ByteArray(1);
@@ -58,9 +58,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Returns bytes in little-endian order.
-   * @param {i32} i - integer
+   * @param i - integer
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromI32(i: i32): ByteArray {
     const self = new ByteArray(4);
@@ -75,7 +75,7 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a int32
    *
-   * @return {i32}
+   * @returns
    */
   toI32(): i32 {
     if (this.length != 4) {
@@ -93,9 +93,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Returns bytes in little-endian order.
-   * @param {u32} u - integer
+   * @param u - integer
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromU32(u: u32): ByteArray {
     const self = new ByteArray(4);
@@ -110,7 +110,7 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a u32 from byte array
    *
-   * @return {u32}
+   * @returns
    */
   toU32(): u32 {
     if (this.length != 4) {
@@ -128,9 +128,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Returns bytes in little-endian order.
-   * @param {i64} i - integer
+   * @param i - integer
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromI64(i: i64): ByteArray {
     const self = new ByteArray(8);
@@ -149,7 +149,7 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a i64.
    *
-   * @return {i64}
+   * @returns
    */
   toI64(): i64 {
     if (this.length != 8) {
@@ -171,9 +171,9 @@ export class ByteArray extends Uint8Array {
   /**
    * @deprecated
    * Returns bytes in little-endian order.
-   * @param {u64} u - integer
+   * @param u - integer
    *
-   * @return {ByteArray}
+   * @returns
    */
   static fromU64(u: u64): ByteArray {
     const self = new ByteArray(8);
@@ -192,7 +192,7 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Returns a u64.
    *
-   * @return {u64}
+   * @returns
    */
   toU64(): u64 {
     if (this.length != 8) {
@@ -215,8 +215,8 @@ export class ByteArray extends Uint8Array {
    * Returns a new byte array from the concatenation of the values
    * of the two byte arrays.
    *
-   * @param {ByteArray} ba
-   * @return {ByteArray}
+   * @param ba -
+   * @returns
    */
   concat(ba: ByteArray): ByteArray {
     const n = new ByteArray(this.length + ba.length);
@@ -229,8 +229,8 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Tests if two ByteArray have identical bytes.
    *
-   * @param {ByteArray} other
-   * @return {boolean}
+   * @param other -
+   * @returns
    */
   @operator('==')
   equals(other: ByteArray): boolean {
@@ -249,8 +249,8 @@ export class ByteArray extends Uint8Array {
    * @deprecated
    * Tests if two ByteArray have different bytes.
    *
-   * @param {ByteArray} other
-   * @return {boolean}
+   * @param other -
+   * @returns
    */
   @operator('!=')
   notEqual(other: ByteArray): boolean {

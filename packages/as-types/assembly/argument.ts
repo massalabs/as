@@ -37,7 +37,7 @@ export class Args {
 
   /**
    *
-   * @params serialized
+   * @param serialized -
    */
   constructor(serialized: StaticArray<u8> = []) {
     this.serialized = serialized;
@@ -57,7 +57,7 @@ export class Args {
   /**
    * Returns the deserialized string.
    *
-   * @returns
+   * @returns the string
    */
   nextString(): Result<string> {
     const length = this.nextU32();
@@ -264,7 +264,7 @@ export class Args {
 
   /**
    * Returns the data of requested size for current offset
-   * @param size The data size
+   * @param size - The data size
    * @returns
    */
   private getNextData(size: i32): StaticArray<u8> {
@@ -280,7 +280,7 @@ export class Args {
    * instance of a handled type (String of u32.MAX_VALUE characters maximum,
    * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
    *
-   * @param arg the argument to add
+   * @param arg - the argument to add
    *
    * @returns the modified Arg instance
    */

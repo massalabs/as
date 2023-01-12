@@ -15,10 +15,10 @@ export class Binomial extends Sampler implements Drawer {
   _m: f32; // Maximal probability value returned by mass probability function.
 
   /**
-   * Instanciates a binomial distribution.
+   * Instantiates a binomial distribution.
    *
-   * @param {u64} n - Number of independent experiments.
-   * @param {f32} p - Probability of success of each experiment.
+   * @param n - Number of independent experiments.
+   * @param p - Probability of success of each experiment.
    */
   constructor(n: u64, p: f32) {
     super();
@@ -27,13 +27,13 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Returns the propability of event.
+   * Returns the probability of an event.
    *
    * The mass probability function is used to compute the probability of
    * event k.
    *
-   * @param {u64} k - Event.
-   * @return {f64}
+   * @param k - Event.
+   * @returns
    */
   probability(k: u64): f64 {
     return (
@@ -49,7 +49,7 @@ export class Binomial extends Sampler implements Drawer {
    * Rejection sampling method is used to generates an observation
    * from binomial distribution.
    *
-   * @return {u64}
+   * @returns
    */
   draw(): u64 {
     if (this._m == 0) {

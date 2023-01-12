@@ -24,20 +24,16 @@
     "lint:fix": "eslint --fix .",
     "fmt:check": "npm run prettier && npm run lint",
     "fmt": "npm run prettier:fix && npm run lint:fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "doc": "npm run doc --ws --if-present"
   },
   "devDependencies": {
     "@as-pect/cli": "^8.0.1",
+    "@massalabs/eslint-config": "^0.0.4",
     "@massalabs/prettier-config-as": "^0.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.18.0",
-    "@typescript-eslint/parser": "^5.18.0",
-    "eslint": "^8.12.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-json": "^3.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "husky": "^8.0.2",
-    "lint-staged": "^13.0.4"
+    "lint-staged": "^13.0.4",
+    "typedoc": "^0.23.24"
   },
   "prettier": "@massalabs/prettier-config-as",
   "workspaces": [
