@@ -63,4 +63,4 @@ Note that if you try to add or substract amounts that are defined in different t
 
 #### Argument
 This class is very important to write smart contracts.
-It allows for the serialisation/deserialisation of a regular type (int, float, string) into a binary format.
+It allows for the serialisation/deserialisation of a regular type (int, float, string), into a binary format.
