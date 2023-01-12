@@ -27,7 +27,7 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Returns the probability of event.
+   * Returns the probability of an event.
    *
    * The mass probability function is used to compute the probability of
    * event k.
