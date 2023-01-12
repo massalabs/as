@@ -15,7 +15,7 @@ export class Binomial extends Sampler implements Drawer {
   _m: f32; // Maximal probability value returned by mass probability function.
 
   /**
-   * Instanciates a binomial distribution.
+   * Instantiates a binomial distribution.
    *
    * @param n - Number of independent experiments.
    * @param p - Probability of success of each experiment.
@@ -27,7 +27,7 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Returns the propability of event.
+   * Returns the probability of event.
    *
    * The mass probability function is used to compute the probability of
    * event k.
