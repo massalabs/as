@@ -15,7 +15,7 @@ export function u8toByte(val: u8): StaticArray<u8> {
 /**
  * Converts a StaticArray<u8> into a u8.
  *
- * @param arr
+ * @param arr - the array to be converted
  *
  * @returns
  */
