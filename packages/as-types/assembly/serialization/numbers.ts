@@ -3,8 +3,9 @@
  *
  * @param val - the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
+@inline
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
   arr[0] = val;
@@ -12,11 +13,23 @@ export function u8toByte(val: u8): StaticArray<u8> {
 }
 
 /**
+ * Converts a StaticArray<u8> into a u8.
+ *
+ * @param arr - the array to be converted
+ *
+ * @returns
+ */
+@inline
+export function byteToU8(arr: StaticArray<u8>): u8 {
+  return arr[0];
+}
+
+/**
  * Converts a u32 in a StaticArray<u8>.
  *
  * @param val - the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
 export function u32ToBytes(val: u32): StaticArray<u8> {
   const arr = new StaticArray<u8>(4);
@@ -27,7 +40,7 @@ export function u32ToBytes(val: u32): StaticArray<u8> {
 }
 
 /**
- * Converts a byte array into a u32.
+ * Converts a StaticArray<u8> into a u32.
  *
  * @param arr -
  * @returns
@@ -46,14 +59,14 @@ export function bytesToU32(arr: StaticArray<u8>): u32 {
  *
  * @param val - the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
 export function f32ToBytes(val: f32): StaticArray<u8> {
   return u32ToBytes(bswap<u32>(reinterpret<u32>(val)));
 }
 
 /**
- * Converts a byte array into a f32.
+ * Converts a StaticArray<u8> into a f32.
  *
  * @param arr -
  * @returns
@@ -74,7 +87,7 @@ export function i32ToBytes(val: i32): StaticArray<u8> {
 }
 
 /**
- * Converts a byte array into a i32.
+ * Converts a StaticArray<u8> into a i32.
  *
  * @param arr -
  * @returns
@@ -99,7 +112,7 @@ export function u64ToBytes(val: u64): StaticArray<u8> {
 }
 
 /**
- * Converts a byte array into a u64.
+ * Converts a StaticArray<u8> into a u64.
  *
  * @param arr -
  * @returns
@@ -118,14 +131,14 @@ export function bytesToU64(arr: StaticArray<u8>): u64 {
  *
  * @param val - the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
 export function i64ToBytes(val: i64): StaticArray<u8> {
   return u64ToBytes(val as u64);
 }
 
 /**
- * Converts a byte array into a i64.
+ * Converts a StaticArray<u8> into a i64.
  *
  * @param arr -
  * @returns
@@ -139,14 +152,14 @@ export function bytesToI64(arr: StaticArray<u8>): i64 {
  *
  * @param val - the number to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns
  */
 export function f64ToBytes(val: f64): StaticArray<u8> {
   return u64ToBytes(bswap<u64>(reinterpret<u64>(val)));
 }
 
 /**
- * Converts a byte array into a f32.
+ * Converts a StaticArray<u8> into a f64.
  *
  * @param arr -s
  * @returns

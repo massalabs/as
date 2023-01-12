@@ -1,4 +1,5 @@
 import {
+  boolToByte,
   bytesToF32,
   bytesToF64,
   bytesToI32,
@@ -6,6 +7,8 @@ import {
   bytesToString,
   bytesToU32,
   bytesToU64,
+  byteToBool,
+  byteToU8,
   f32ToBytes,
   f64ToBytes,
   i32ToBytes,
@@ -13,12 +16,23 @@ import {
   stringToBytes,
   u32ToBytes,
   u64ToBytes,
+  u8toByte,
 } from '../serialization';
 
 describe('Serialization tests', () => {
   it('ser/deser string', () => {
     const str = 'Hello world 🙂';
     expect(bytesToString(stringToBytes(str))).toBe(str);
+  });
+  it('ser/deser bool', () => {
+    let val = false;
+    expect(byteToBool(boolToByte(val))).toBe(val);
+    val = true;
+    expect(byteToBool(boolToByte(val))).toBe(val);
+  });
+  it('ser/deser u8', () => {
+    const val: u8 = 123;
+    expect(byteToU8(u8toByte(val))).toBe(val);
   });
   it('ser/deser u32', () => {
     const val: u32 = 666;
