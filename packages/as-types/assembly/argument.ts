@@ -88,7 +88,7 @@ export class Args {
     ) {
       return new Result(
         new StaticArray<u8>(0),
-        "can't deserialize byte from given argument: out of range",
+        "can't deserialize bytes from given argument: out of range",
       );
     }
     const value = this.getNextData(length.unwrap());
