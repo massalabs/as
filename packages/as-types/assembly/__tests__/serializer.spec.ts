@@ -20,8 +20,13 @@ import {
 } from '../serialization';
 
 describe('Serialization tests', () => {
-  it('ser/deser string', () => {
+  it('ser/deser Utf-16 string', () => {
     const str = 'Hello world 🙂';
+    expect(bytesToString(stringToBytes(str))).toBe(str);
+  });
+  it('ser/deser Utf-8 string', () => {
+    const str =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     expect(bytesToString(stringToBytes(str))).toBe(str);
   });
   it('ser/deser bool', () => {
