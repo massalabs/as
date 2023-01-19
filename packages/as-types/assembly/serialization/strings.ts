@@ -6,9 +6,7 @@ export function stringToBytes(str: string): StaticArray<u8> {
   if (!str.length) {
     return [];
   }
-  const arr = new StaticArray<u8>(str.length << 1);
-  memory.copy(changetype<usize>(arr), changetype<usize>(str), arr.length);
-  return arr;
+  return changetype<StaticArray<u8>>(String.UTF8.encode(str));
 }
 
 /**
@@ -19,7 +17,5 @@ export function bytesToString(arr: StaticArray<u8>): string {
   if (!arr.length) {
     return '';
   }
-  const str = changetype<string>(__new(arr.length, idof<string>()));
-  memory.copy(changetype<usize>(str), changetype<usize>(arr), arr.length);
-  return str;
+  return String.UTF8.decode(changetype<ArrayBuffer>(arr));
 }

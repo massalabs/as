@@ -68,7 +68,7 @@ export class Args {
     ) {
       return new Result(
         '',
-        "can't deserialize Uint8Array from given argument: out of range",
+        "can't deserialize string from given argument: out of range",
       );
     }
 
@@ -88,7 +88,7 @@ export class Args {
     ) {
       return new Result(
         new StaticArray<u8>(0),
-        "can't deserialize Uint8Array from given argument: out of range",
+        "can't deserialize bytes from given argument: out of range",
       );
     }
     const value = this.getNextData(length.unwrap());
@@ -268,8 +268,9 @@ export class Args {
     if (arg instanceof bool) {
       this.serialized = this.serialized.concat(boolToByte(arg as bool));
     } else if (arg instanceof String) {
-      this.add<u32>(arg.length << 1);
-      this.serialized = this.serialized.concat(stringToBytes(arg as string));
+      const serialized = stringToBytes(arg as string);
+      this.add<u32>(serialized.length);
+      this.serialized = this.serialized.concat(serialized);
     } else if (arg instanceof Uint8Array) {
       this.add<u32>(arg.length);
       this.serialized = this.serialized.concat(unwrapStaticArray(arg));
