@@ -20,14 +20,18 @@ import {
 } from '../serialization';
 
 describe('Serialization tests', () => {
-  it('ser/deser Utf-16 string', () => {
+  it('ser/deser with emojis', () => {
     const str = 'Hello world 🙂';
     expect(bytesToString(stringToBytes(str))).toBe(str);
   });
-  it('ser/deser Utf-8 string', () => {
+  it('ser/deser Ascii', () => {
     const str =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     expect(bytesToString(stringToBytes(str))).toBe(str);
+  });
+  it('ser/deser utf16 char', () => {
+    const str = String.fromCharCodes([0xd83d, 0xde42]);
+    expect(bytesToString(stringToBytes(str))).toBe('🙂');
   });
   it('ser/deser bool', () => {
     let val = false;
