@@ -53,7 +53,7 @@ export function bytesToU32(arr: StaticArray<u8>): u32 {
  * @param val - the number to convert
  */
 export function f32ToBytes(val: f32): StaticArray<u8> {
-  return u32ToBytes(bswap<u32>(reinterpret<u32>(val)));
+  return u32ToBytes(reinterpret<u32>(val));
 }
 
 /**
@@ -62,7 +62,7 @@ export function f32ToBytes(val: f32): StaticArray<u8> {
  * @param arr - the array to convert
  */
 export function bytesToF32(arr: StaticArray<u8>): f32 {
-  return reinterpret<f32>(bswap<u32>(bytesToU32(arr)));
+  return reinterpret<f32>(bytesToU32(arr));
 }
 
 /**
@@ -138,7 +138,7 @@ export function bytesToI64(arr: StaticArray<u8>): i64 {
  * @param val - the number to convert
  */
 export function f64ToBytes(val: f64): StaticArray<u8> {
-  return u64ToBytes(bswap<u64>(reinterpret<u64>(val)));
+  return u64ToBytes(reinterpret<u64>(val));
 }
 
 /**
@@ -147,5 +147,5 @@ export function f64ToBytes(val: f64): StaticArray<u8> {
  * @param arr - the array to convert
  */
 export function bytesToF64(arr: StaticArray<u8>): f64 {
-  return reinterpret<f64>(bswap<u64>(bytesToU64(arr)));
+  return reinterpret<f64>(bytesToU64(arr));
 }
