@@ -28,6 +28,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
   deploy-typedoc:
+    needs: test
     strategy:
       matrix:
         packageName: [as-proba,as-transformer,as-types]
