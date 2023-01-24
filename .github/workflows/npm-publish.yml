@@ -6,7 +6,7 @@ on:
     types: [ published ]
 
 jobs:
-  build:
+  test:
     uses: ./.github/workflows/node.js.yml
 
   publish-npm:
@@ -25,7 +25,7 @@ jobs:
           npm run build
           npm publish --ws --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
   deploy-typedoc:
     strategy:
@@ -51,4 +51,3 @@ jobs:
       with:
         source: "./${{ matrix.packageName}}"
         target: "/var/www/type-doc"
-
