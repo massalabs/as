@@ -3,7 +3,7 @@ name: Publish NPM Packages & Deploy Docs
 on:
 
   release:
-    types: [ created ]
+    types: [ published ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
   deploy-typedoc:
     strategy:
       matrix:
-        packageName: [as-proba,as-transformer,as-types] 
+        packageName: [as-proba,as-transformer,as-types]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
