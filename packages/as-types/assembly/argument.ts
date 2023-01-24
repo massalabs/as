@@ -1,4 +1,5 @@
 import { Result } from './result';
+import { Serializable } from './serializable';
 import {
   bytesToString,
   stringToBytes,
@@ -243,6 +244,10 @@ export class Args {
     return new Result(!!this.serialized[this.offset++]);
   }
 
+  next<T extends Serializable<T>>(object: T): void {
+    this.offset = object.deserialize(this.serialized, this.offset);
+  }
+
   /**
    * Returns the data of requested size for current offset
    * @param size - The data size
@@ -288,6 +293,11 @@ export class Args {
     } else if (arg instanceof f64) {
       this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
     }
+    return this;
+  }
+
+  addObject<T extends Serializable<T>>(object: T): Args {
+    this.serialized = this.serialized.concat(object.serialize());
     return this;
   }
 }
