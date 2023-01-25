@@ -249,7 +249,23 @@ export class Args {
   }
 
   /**
-   * Returns the data of requested size for current offset
+   * This function deserialize an object by calling its `deserialize` method.
+   *
+   * @param object - provide an instance of the object
+   * @returns the deserialized object wrapped in a `Result`
+   */
+  nextHydrate<T extends Serializable>(object: T): Result<T> {
+    const result = object.deserialize(this.serialized, this._offset);
+    if (result.isErr()) {
+      return new Result(object, `Can't deserialize object ${typeof object}`);
+    }
+    this._offset = result.unwrap();
+    return new Result(object);
+  }
+
+  /**
+   * Returns the data of requested size for current _offset
+   *
    * @param size - The data size
    */
   private getNextData(size: i32): StaticArray<u8> {
