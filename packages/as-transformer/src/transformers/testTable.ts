@@ -174,6 +174,7 @@ test('${name}', () => {
    * Hydrates the template by replacing the tokens (arg[0-9]+) with actual values.
    *
    * @param template - template
+   * @param instantiation -
    * @param value - array of values to populate template with
    * @param iValue - current index of values
    */

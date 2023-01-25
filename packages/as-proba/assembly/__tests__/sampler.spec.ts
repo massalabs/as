@@ -13,16 +13,25 @@ prob.set(4, 0.07);
  * Sampler class.
  */
 class WeightedProbability extends Sampler {
+  /**
+   *
+   * @param o -
+   * @returns
+   */
   probability(o: u64): f64 {
-    return prob[o];
+    return prob.get(o);
   }
 
-  // In a real life example you should use only one sampling method.
+  /**
+   * In a real life example you should use only one sampling method.
+   */
   drawR(): u64 {
     return this.rejectionSampling(4, 0.9);
   }
 
-  // In a real life example you should use only one sampling method.
+  /**
+   * In a real life example you should use only one sampling method.
+   */
   drawI(): u64 {
     return this.inverseCumulativeDistribution(4);
   }
