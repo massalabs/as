@@ -244,12 +244,20 @@ export class Args {
     return new Result(!!this.serialized[this.offset++]);
   }
 
-  next<T extends Serializable<T>>(object: T): void {
+  /**
+   * This function deserialize an object by calling its `deserialize` method.
+   *
+   * @param object - the object to deserialize
+   * @returns the object
+   */
+  nextObject<T extends Serializable<T>>(object: T): T {
     this.offset = object.deserialize(this.serialized, this.offset);
+    return object;
   }
 
   /**
    * Returns the data of requested size for current offset
+   *
    * @param size - The data size
    */
   private getNextData(size: i32): StaticArray<u8> {
@@ -261,12 +269,11 @@ export class Args {
   // Setter
 
   /**
-   * Adds an argument to the serialized byte string if the argument is an
+   * Adds an argument to the serialized byte array if the argument is an
    * instance of a handled type (String of u32.MAX_VALUE characters maximum,
    * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
    *
    * @param arg - the argument to add
-   *
    * @returns the modified Arg instance
    */
   add<T>(arg: T): Args {
@@ -296,6 +303,13 @@ export class Args {
     return this;
   }
 
+  /**
+   * Adds an object to the serialized byte array if the given object implements `Serializable`
+   *
+   * @see {@link Serializable}
+   * @param object - object to add
+   * @returns the modified Arg instance
+   */
   addObject<T extends Serializable<T>>(object: T): Args {
     this.serialized = this.serialized.concat(object.serialize());
     return this;
