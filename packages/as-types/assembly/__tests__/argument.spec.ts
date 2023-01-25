@@ -1,6 +1,8 @@
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
+import { Serializable } from '../serializable';
+import { Result } from '../result';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -268,4 +270,39 @@ describe('Args tests', () => {
     expect(args2.nextU8().unwrap()).toBe(u8(1));
     expect(args2.nextU8().isOk()).toBeFalsy('out of range deserialization');
   });
+
+  it('With object that uses Args', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 18 as i32;
+    const name = 'Jack';
+    const person = new Person(age, name);
+    const floatingPointNumber = 13.7 as f32;
+
+    const args = new Args();
+    args.add(array).add(person).add(floatingPointNumber);
+
+    const args2 = new Args(args.serialize());
+
+    expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
+    const person2 = args2.nextHydrate(new Person()).unwrap();
+    expect(person2.age).toBe(age);
+    expect(person2.name).toBe(name);
+    expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
+  });
 });
+
+class Person implements Serializable {
+  constructor(public age: i32 = 0, public name: string = '') {}
+
+  serialize(): StaticArray<u8> {
+    return new Args().add(this.age).add(this.name).serialize();
+  }
+
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    const args = new Args(data, offset);
+    this.age = args.nextI32().expect("Can't deserialize the age.");
+    this.name = args.nextString().expect("Can't deserialize the name.");
+    return new Result(args.offset);
+  }
+}

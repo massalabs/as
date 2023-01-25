@@ -34,15 +34,20 @@ import {
  *
  */
 export class Args {
-  private offset: i32 = 0;
+  private _offset: i32 = 0;
   private serialized: StaticArray<u8> = new StaticArray<u8>(0);
 
   /**
    *
    * @param serialized -
    */
-  constructor(serialized: StaticArray<u8> = []) {
+  constructor(serialized: StaticArray<u8> = [], offset: i32 = 0) {
     this.serialized = serialized;
+    this._offset = offset;
+  }
+
+  get offset(): i32 {
+    return this._offset;
   }
 
   /**
@@ -65,7 +70,7 @@ export class Args {
     const length = this.nextU32();
     if (
       length.isErr() ||
-      this.offset + length.unwrap() > this.serialized.length
+      this._offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         '',
@@ -74,7 +79,7 @@ export class Args {
     }
 
     const value = bytesToString(this.getNextData(length.unwrap()));
-    this.offset += length.unwrap();
+    this._offset += length.unwrap();
     return new Result(value);
   }
 
@@ -85,7 +90,7 @@ export class Args {
     const length = this.nextU32();
     if (
       length.isErr() ||
-      this.offset + length.unwrap() > this.serialized.length
+      this._offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         new StaticArray<u8>(0),
@@ -93,7 +98,7 @@ export class Args {
       );
     }
     const value = this.getNextData(length.unwrap());
-    this.offset += length.unwrap();
+    this._offset += length.unwrap();
     return new Result(value);
   }
 
@@ -104,7 +109,7 @@ export class Args {
     const length = this.nextU32();
     if (
       length.isErr() ||
-      this.offset + length.unwrap() > this.serialized.length
+      this._offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         new Uint8Array(0),
@@ -113,7 +118,7 @@ export class Args {
     }
 
     const value = wrapStaticArray(this.getNextData(length.unwrap()));
-    this.offset += length.unwrap();
+    this._offset += length.unwrap();
     return new Result(value);
   }
 
@@ -122,14 +127,14 @@ export class Args {
    */
   nextU64(): Result<u64> {
     const size: i32 = sizeof<u64>();
-    if (this.offset + size > this.serialized.length) {
+    if (this._offset + size > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize u64 from given argument: out of range",
       );
     }
     const value = bytesToU64(this.getNextData(size));
-    this.offset += size;
+    this._offset += size;
     return new Result(value);
   }
 
@@ -138,7 +143,7 @@ export class Args {
    */
   nextI64(): Result<i64> {
     const size: i32 = sizeof<i64>();
-    if (this.offset + size > this.serialized.length) {
+    if (this._offset + size > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize i64 from given argument: out of range",
@@ -146,7 +151,7 @@ export class Args {
     }
 
     const value = bytesToI64(this.getNextData(size));
-    this.offset += size;
+    this._offset += size;
     return new Result(value);
   }
 
@@ -155,14 +160,14 @@ export class Args {
    */
   nextF64(): Result<f64> {
     const size: i32 = sizeof<f64>();
-    if (this.offset + size > this.serialized.length) {
+    if (this._offset + size > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize f64 from given argument: out of range",
       );
     }
     const value = bytesToF64(this.getNextData(size));
-    this.offset += sizeof<f64>();
+    this._offset += sizeof<f64>();
     return new Result(value);
   }
 
@@ -171,7 +176,7 @@ export class Args {
    */
   nextF32(): Result<f32> {
     const size: i32 = sizeof<f32>();
-    if (this.offset + sizeof<f32>() > this.serialized.length) {
+    if (this._offset + sizeof<f32>() > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize f32 from given argument: out of range",
@@ -179,7 +184,7 @@ export class Args {
     }
 
     const value = bytesToF32(this.getNextData(size));
-    this.offset += sizeof<f32>();
+    this._offset += sizeof<f32>();
     return new Result(value);
   }
 
@@ -188,7 +193,7 @@ export class Args {
    */
   nextU32(): Result<u32> {
     const size: i32 = sizeof<u32>();
-    if (this.offset + size > this.serialized.length) {
+    if (this._offset + size > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize u32 from given argument: out of range",
@@ -196,7 +201,7 @@ export class Args {
     }
 
     const value = bytesToU32(this.getNextData(size));
-    this.offset += size;
+    this._offset += size;
     return new Result(value);
   }
 
@@ -205,14 +210,14 @@ export class Args {
    */
   nextI32(): Result<i32> {
     const size: i32 = sizeof<i32>();
-    if (this.offset + size > this.serialized.length) {
+    if (this._offset + size > this.serialized.length) {
       return new Result(
         0,
         "can't deserialize i32 from given argument: out of range",
       );
     }
     const value = bytesToI32(this.getNextData(size));
-    this.offset += size;
+    this._offset += size;
     return new Result(value);
   }
 
@@ -220,38 +225,34 @@ export class Args {
    * Returns the deserialized u8
    */
   nextU8(): Result<u8> {
-    if (this.offset + sizeof<u8>() > this.serialized.length) {
+    if (this._offset + sizeof<u8>() > this.serialized.length) {
       return new Result(
         u8(0),
         "can't deserialize u8 from given argument: out of range",
       );
     }
 
-    return new Result(this.serialized[this.offset++]);
+    return new Result(this.serialized[this._offset++]);
   }
 
   /**
    * Returns the deserialized boolean
    */
   nextBool(): Result<bool> {
-    if (this.offset + sizeof<u8>() >= this.serialized.length) {
+    if (this._offset + sizeof<u8>() >= this.serialized.length) {
       return new Result(
         false,
         "can't deserialize bool from given argument: out of range",
       );
     }
 
-    return new Result(!!this.serialized[this.offset++]);
-  }
-
-  next<T extends Serializable<T>>(object: T): void {
-    this.offset = object.deserialize(this.serialized, this.offset);
+    return new Result(!!this.serialized[this._offset++]);
   }
 
   /**
    * This function deserialize an object by calling its `deserialize` method.
    *
-   * @param object - provide an instance of the object
+   * @param object - the object to deserialize
    * @returns the deserialized object wrapped in a `Result`
    */
   nextHydrate<T extends Serializable>(object: T): Result<T> {
@@ -264,25 +265,24 @@ export class Args {
   }
 
   /**
-   * Returns the data of requested size for current _offset
+   * Returns the data of requested size for current offset
    *
    * @param size - The data size
    */
   private getNextData(size: i32): StaticArray<u8> {
     return changetype<StaticArray<u8>>(
-      this.serialized.slice(this.offset, this.offset + size).dataStart,
+      this.serialized.slice(this._offset, this._offset + size).dataStart,
     );
   }
 
   // Setter
 
   /**
-   * Adds an argument to the serialized byte string if the argument is an
+   * Adds an argument to the serialized byte array if the argument is an
    * instance of a handled type (String of u32.MAX_VALUE characters maximum,
    * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
    *
    * @param arg - the argument to add
-   *
    * @returns the modified Arg instance
    */
   add<T>(arg: T): Args {
@@ -308,12 +308,14 @@ export class Args {
       this.serialized = this.serialized.concat(f32ToBytes(arg as f32));
     } else if (arg instanceof f64) {
       this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
+      // @ts-ignore isDefined is an assemblyscript function
+    } else if (isDefined(arg.serialize)) {
+      this.serialized = this.serialized.concat(
+        (arg as Serializable).serialize(),
+      );
+    } else {
+      ERROR("args doesn't know how to serialize the given type.");
     }
-    return this;
-  }
-
-  addObject<T extends Serializable<T>>(object: T): Args {
-    this.serialized = this.serialized.concat(object.serialize());
     return this;
   }
 }

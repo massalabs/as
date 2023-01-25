@@ -49,7 +49,6 @@ describe('Serialization tests', () => {
   });
   it('ser/deser u64', () => {
     const val: u64 = 666;
-    const bytes = u64ToBytes(val);
     expect(bytesToU64(u64ToBytes(val))).toBe(val);
   });
   it('ser/deser i32', () => {
