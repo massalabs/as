@@ -49,6 +49,9 @@ export class Currency {
 
   /**
    * Updates Args with current currency serialized.
+   *
+   * @deprecated implements `Serializable`
+   * @param args -
    */
   addArgs(args: Args): void {
     args.add(this.minorUnit);
@@ -57,6 +60,7 @@ export class Currency {
 
   /**
    * Returns a new Args containing current currency serialized.
+   * @deprecated implements `Serializable`
    */
   toArgs(): Args {
     const args = new Args();
