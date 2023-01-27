@@ -290,6 +290,25 @@ describe('Args tests', () => {
     expect(person2.name).toBe(name);
     expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
   });
+
+  it('With object that uses Args and does not panic', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 24 as i32;
+    const name = 'Me';
+    const hero = new Hero(age, name);
+    const floatingPointNumber = 19.11 as f32;
+
+    const args = new Args(
+      new Args().add(array).add(hero).add(floatingPointNumber).serialize(),
+    );
+
+    expect(args.nextUint8Array().unwrap()).toStrictEqual(array);
+    const hero2 = args.nextSerializable(new Hero()).unwrap();
+    expect(hero2.age).toBe(age);
+    expect(hero2.name).toBe(name);
+    expect(args.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
+  });
 });
 
 class Person implements Serializable {
@@ -303,6 +322,26 @@ class Person implements Serializable {
     const args = new Args(data, offset);
     this.age = args.nextI32().expect("Can't deserialize the age.");
     this.name = args.nextString().expect("Can't deserialize the name.");
+    return new Result(args.offset);
+  }
+}
+
+class Hero extends Person implements Serializable {
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    const args = new Args(data, offset);
+
+    const age = args.nextI32();
+    if (age.isErr()) {
+      return new Result(0, "Can't deserialize the age.");
+    }
+    this.age = age.unwrap();
+
+    const name = args.nextString();
+    if (name.isErr()) {
+      return new Result(0, "Can't deserialize the name.");
+    }
+    this.name = name.unwrap();
+
     return new Result(args.offset);
   }
 }
