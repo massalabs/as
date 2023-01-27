@@ -272,11 +272,15 @@ describe('Args tests', () => {
   });
 
   it('With object that uses Args', () => {
+    // Example of a class that doesn't implement Serializable,
+    // this will not compile:
+    // const args = new Args().add(new Person(2, 'wrong'));
+
     const array = new Uint8Array(2);
     array.set([65, 88]);
     const age = 18 as i32;
     const name = 'Jack';
-    const person = new Person(age, name);
+    const person = new Divinity(age, name);
     const floatingPointNumber = 13.7 as f32;
 
     const args = new Args();
@@ -285,7 +289,7 @@ describe('Args tests', () => {
     const args2 = new Args(args.serialize());
 
     expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
-    const person2 = args2.nextSerializable(new Person()).unwrap();
+    const person2 = args2.nextSerializable(new Divinity()).unwrap();
     expect(person2.age).toBe(age);
     expect(person2.name).toBe(name);
     expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
@@ -311,9 +315,11 @@ describe('Args tests', () => {
   });
 });
 
-class Person implements Serializable {
+class Person {
   constructor(public age: i32 = 0, public name: string = '') {}
+}
 
+class Divinity extends Person implements Serializable {
   serialize(): StaticArray<u8> {
     return new Args().add(this.age).add(this.name).serialize();
   }
@@ -326,7 +332,7 @@ class Person implements Serializable {
   }
 }
 
-class Hero extends Person implements Serializable {
+class Hero extends Divinity implements Serializable {
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     const args = new Args(data, offset);
 
