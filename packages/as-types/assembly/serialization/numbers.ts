@@ -1,21 +1,21 @@
-@inline
 /**
  * Converts a u8 in a StaticArray<u8>.
  *
  * @param val - the number to convert
  */
+@inline
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
   arr[0] = val;
   return arr;
 }
 
-@inline
 /**
  * Converts a StaticArray<u8> into a u8.
  *
  * @param arr - the array to convert
  */
+@inline
 export function byteToU8(arr: StaticArray<u8>): u8 {
   return arr[0];
 }
