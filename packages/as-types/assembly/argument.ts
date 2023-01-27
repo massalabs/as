@@ -308,8 +308,8 @@ export class Args {
       this.serialized = this.serialized.concat(f32ToBytes(arg as f32));
     } else if (arg instanceof f64) {
       this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
-      // @ts-ignore isDefined is an assemblyscript function
-    } else if (isDefined(arg.serialize)) {
+      // @ts-ignore
+    } else if (arg instanceof Serializable) {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
