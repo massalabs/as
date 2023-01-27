@@ -49,6 +49,8 @@ export class Currency {
 
   /**
    * Updates Args with current currency serialized.
+   *
+   * @param args -
    */
   addArgs(args: Args): void {
     args.add(this.minorUnit);

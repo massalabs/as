@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@massalabs/as-types": "^0.0.3-dev",
     "assemblyscript": "^0.24.1",
     "visitor-as": "^0.11.3"
   },

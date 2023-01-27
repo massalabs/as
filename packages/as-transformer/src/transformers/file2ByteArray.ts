@@ -8,9 +8,16 @@ import { SimpleParser } from 'visitor-as';
 
 import * as fs from 'fs';
 
+/**
+ * File2ByteArray transformer
+ */
 export class File2ByteArray {
   static strPattern = 'fileToByteArray';
 
+  /**
+   *
+   * @param node -
+   */
   static transform(node: CallExpression): Expression {
     let arg0 = node.args[0] as StringLiteralExpression;
     const bytes = JSON.stringify(fs.readFileSync(arg0.value).toJSON().data);

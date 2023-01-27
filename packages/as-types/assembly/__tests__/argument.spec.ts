@@ -1,6 +1,8 @@
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
+import { Serializable } from '../serializable';
+import { Result } from '../result';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -268,4 +270,84 @@ describe('Args tests', () => {
     expect(args2.nextU8().unwrap()).toBe(u8(1));
     expect(args2.nextU8().isOk()).toBeFalsy('out of range deserialization');
   });
+
+  it('With object that uses Args', () => {
+    // Example of a class that doesn't implement Serializable,
+    // this will not compile:
+    // const args = new Args().add(new Person(2, 'wrong'));
+
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 18 as i32;
+    const name = 'Jack';
+    const person = new Divinity(age, name);
+    const floatingPointNumber = 13.7 as f32;
+
+    const args = new Args();
+    args.add(array).add(person).add(floatingPointNumber);
+
+    const args2 = new Args(args.serialize());
+
+    expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
+    const person2 = args2.nextSerializable(new Divinity()).unwrap();
+    expect(person2.age).toBe(age);
+    expect(person2.name).toBe(name);
+    expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
+  });
+
+  it('With object that uses Args and does not panic', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const age = 24 as i32;
+    const name = 'Me';
+    const hero = new Hero(age, name);
+    const floatingPointNumber = 19.11 as f32;
+
+    const args = new Args(
+      new Args().add(array).add(hero).add(floatingPointNumber).serialize(),
+    );
+
+    expect(args.nextUint8Array().unwrap()).toStrictEqual(array);
+    const hero2 = args.nextSerializable(new Hero()).unwrap();
+    expect(hero2.age).toBe(age);
+    expect(hero2.name).toBe(name);
+    expect(args.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
+  });
 });
+
+class Person {
+  constructor(public age: i32 = 0, public name: string = '') {}
+}
+
+class Divinity extends Person implements Serializable {
+  serialize(): StaticArray<u8> {
+    return new Args().add(this.age).add(this.name).serialize();
+  }
+
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    const args = new Args(data, offset);
+    this.age = args.nextI32().expect("Can't deserialize the age.");
+    this.name = args.nextString().expect("Can't deserialize the name.");
+    return new Result(args.offset);
+  }
+}
+
+class Hero extends Divinity implements Serializable {
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    const args = new Args(data, offset);
+
+    const age = args.nextI32();
+    if (age.isErr()) {
+      return new Result(0, "Can't deserialize the age.");
+    }
+    this.age = age.unwrap();
+
+    const name = args.nextString();
+    if (name.isErr()) {
+      return new Result(0, "Can't deserialize the name.");
+    }
+    this.name = name.unwrap();
+
+    return new Result(args.offset);
+  }
+}

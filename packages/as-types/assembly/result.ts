@@ -5,12 +5,12 @@
  * - an error if something went wrong.
  */
 export class Result<T> {
-  constructor(
-    // expected value for passing case
-    private value: T,
-    // error message for non-passing case
-    public error: string | null = null,
-  ) {}
+  /**
+   *
+   * @param value - expected value for passing case
+   * @param error - error message for non-passing case
+   */
+  constructor(private value: T, public error: string | null = null) {}
 
   /**
    * Checks that the result is okay.
@@ -54,6 +54,9 @@ export class Result<T> {
     return this.getValue();
   }
 
+  /**
+   * @returns the value
+   */
   @inline
   private getValue(): NonNullable<T> {
     if (isNullable<T>()) {

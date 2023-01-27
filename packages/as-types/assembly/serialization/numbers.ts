@@ -69,7 +69,6 @@ export function bytesToF32(arr: StaticArray<u8>): f32 {
  * Converts a i32 in a StaticArray<u8>.
  *
  * @param val - the number to convert
- *
  * @returns the converted StaticArray<u8>
  */
 export function i32ToBytes(val: i32): StaticArray<u8> {
@@ -89,7 +88,6 @@ export function bytesToI32(arr: StaticArray<u8>): i32 {
  * Converts a u64 in a StaticArray<u8>.
  *
  * @param val - the number to convert
- *
  * @returns the converted StaticArray<u8>
  */
 export function u64ToBytes(val: u64): StaticArray<u8> {

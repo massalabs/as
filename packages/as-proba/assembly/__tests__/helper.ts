@@ -30,7 +30,6 @@ export function drawLogHistogram(a: Uint32Array, w: i32): void {
  *
  * @param a - array containing histogram data
  * @param w - width of the histogram
- *
  */
 export function drawHistogram(a: Uint32Array, w: i32): void {
   let max: f64 = 0;
