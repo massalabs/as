@@ -255,7 +255,7 @@ export class Args {
    * @param object - the object to deserialize
    * @returns the deserialized object wrapped in a `Result`
    */
-  nextHydrate<T extends Serializable>(object: T): Result<T> {
+  nextSerializable<T extends Serializable>(object: T): Result<T> {
     const result = object.deserialize(this.serialized, this._offset);
     if (result.isErr()) {
       return new Result(object, `Can't deserialize object ${typeof object}`);

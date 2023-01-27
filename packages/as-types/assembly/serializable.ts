@@ -6,7 +6,7 @@ import { Result } from './result';
  * @example
  * ```typescript
  * const args = new Args().add(new Address(input)); // serialize
- * const address = args.nextHydrate(new Address()).unwrap();
+ * const address = args.nextSerializable(new Address()).unwrap();
  * ```
  */
 export interface Serializable {
@@ -20,7 +20,7 @@ export interface Serializable {
    * @param data - the serialized data
    * @param offset - current offset
    * @returns the new offset wrapped in a `Result`
-   * @see {@link Args.nextHydrate}
+   * @see {@link Args.nextSerializable}
    */
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32>;
 }

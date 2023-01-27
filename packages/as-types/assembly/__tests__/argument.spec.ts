@@ -285,7 +285,7 @@ describe('Args tests', () => {
     const args2 = new Args(args.serialize());
 
     expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
-    const person2 = args2.nextHydrate(new Person()).unwrap();
+    const person2 = args2.nextSerializable(new Person()).unwrap();
     expect(person2.age).toBe(age);
     expect(person2.name).toBe(name);
     expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
