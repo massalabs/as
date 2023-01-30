@@ -255,7 +255,8 @@ export class Args {
    * @param object - the object to deserialize
    * @returns the deserialized object wrapped in a `Result`
    */
-  nextSerializable<T extends Serializable>(object: T): Result<T> {
+  nextSerializable<T extends Serializable>(): Result<T> {
+    const object = instantiate<T>();
     const result = object.deserialize(this.serialized, this._offset);
     if (result.isErr()) {
       return new Result(object, `Can't deserialize object ${typeof object}`);

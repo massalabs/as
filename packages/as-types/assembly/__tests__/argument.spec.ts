@@ -289,7 +289,7 @@ describe('Args tests', () => {
     const args2 = new Args(args.serialize());
 
     expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
-    const person2 = args2.nextSerializable(new Divinity()).unwrap();
+    const person2 = args2.nextSerializable<Divinity>().unwrap();
     expect(person2.age).toBe(age);
     expect(person2.name).toBe(name);
     expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
@@ -308,18 +308,18 @@ describe('Args tests', () => {
     );
 
     expect(args.nextUint8Array().unwrap()).toStrictEqual(array);
-    const hero2 = args.nextSerializable(new Hero()).unwrap();
+    const hero2 = args.nextSerializable<Hero>().unwrap();
     expect(hero2.age).toBe(age);
     expect(hero2.name).toBe(name);
     expect(args.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
   });
 });
 
-class Person {
+export class Person {
   constructor(public age: i32 = 0, public name: string = '') {}
 }
 
-class Divinity extends Person implements Serializable {
+export class Divinity extends Person implements Serializable {
   serialize(): StaticArray<u8> {
     return new Args().add(this.age).add(this.name).serialize();
   }
@@ -332,7 +332,7 @@ class Divinity extends Person implements Serializable {
   }
 }
 
-class Hero extends Divinity implements Serializable {
+export class Hero extends Divinity implements Serializable {
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     const args = new Args(data, offset);
 
