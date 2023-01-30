@@ -14,7 +14,7 @@ export default {
   disclude: [/node_modules/],
   /**
    * Add your required AssemblyScript imports here.
-   * 
+   *
    */
   async instantiate(memory, createImports, instantiate, binary) {
     let instance; // Imports can reference this

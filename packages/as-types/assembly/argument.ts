@@ -17,6 +17,8 @@ import {
   bytesToI32,
   bytesToI64,
   boolToByte,
+  arrayToBytes,
+  bytesToArray,
 } from './serialization';
 
 /**
@@ -99,6 +101,33 @@ export class Args {
     }
     const value = this.getNextData(length.unwrap());
     this._offset += length.unwrap();
+    return new Result(value);
+  }
+
+  /**
+   *
+   */
+  nextArray<T>(): Result<T[]> {
+    const length = this.nextU32();
+    if (
+      length.isErr() ||
+      this._offset + length.unwrap() > this.serialized.length
+    ) {
+      return new Result(
+        [],
+        "can't deserialize array from given argument: out of range",
+      );
+    }
+
+    const amount = length.unwrap();
+
+    if (amount === 0) {
+      return new Result([]);
+    }
+
+    const bufferSize = amount << alignof<T>();
+    const value = bytesToArray<T>(this.getNextData(bufferSize));
+    this._offset += bufferSize;
     return new Result(value);
   }
 
@@ -252,7 +281,6 @@ export class Args {
   /**
    * This function deserialize an object by calling its `deserialize` method.
    *
-   * @param object - the object to deserialize
    * @returns the deserialized object wrapped in a `Result`
    */
   nextSerializable<T extends Serializable>(): Result<T> {
@@ -317,6 +345,19 @@ export class Args {
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
+    return this;
+  }
+
+  /**
+   * Adds an array to the Arg instance.
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  addArray<T>(arg: T[]): Args {
+    const array = arg as Array<T>;
+    this.add(array.length);
+    this.serialized = this.serialized.concat(arrayToBytes<T>(array));
     return this;
   }
 }
