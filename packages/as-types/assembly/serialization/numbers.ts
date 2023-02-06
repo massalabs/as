@@ -3,6 +3,7 @@
  *
  * @param val - the number to convert
  */
+// @ts-ignore: decorator
 @inline
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
@@ -15,6 +16,7 @@ export function u8toByte(val: u8): StaticArray<u8> {
  *
  * @param arr - the array to convert
  */
+// @ts-ignore: decorator
 @inline
 export function byteToU8(arr: StaticArray<u8>): u8 {
   return arr[0];

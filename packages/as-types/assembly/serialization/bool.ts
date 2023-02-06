@@ -3,6 +3,7 @@
  *
  * @param arr - the StaticArray<u8> to convert
  */
+// @ts-ignore: decorator
 @inline
 export function byteToBool(arr: StaticArray<u8>): bool {
   return !!arr[0];
@@ -13,6 +14,7 @@ export function byteToBool(arr: StaticArray<u8>): bool {
  *
  * @param val - the number to convert
  */
+// @ts-ignore: decorator
 @inline
 export function boolToByte(val: bool): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
