@@ -57,7 +57,17 @@ export function serializableObjectArrayToBytes<T extends Serializable>(
 
   for (let index = 0; index < source.length; index++) {
     const element = source[index];
-    array = array.concat(element.serialize());
+    if (isDefined(element.serialize)) {
+      array = array.concat(element.serialize());
+    } else {
+      // compiler think we have u8
+      // so complain with: Property 'serialize' does not exist on type '~lib/number/U8'
+      // but at runtime we only have Serializable object
+      // So I can't use ERROR function, nor remove this if/else statement
+      // We can fix this by making Args.addArray and Args.addSerializableObjectArray public and use them instead of the
+      // generic Args.add method.
+      throw new Error('element does not implement Serializable');
+    }
   }
 
   return array;

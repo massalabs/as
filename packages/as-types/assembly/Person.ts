@@ -13,8 +13,8 @@ export class Divinity extends Person implements Serializable {
 
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     const args = new Args(data, offset);
-    this.age = args.nextI32().expect("Can't deserialize the age.");
-    this.name = args.nextString().expect("Can't deserialize the name.");
+    this.age = args.nextI32().expect("Can't deserialize the age");
+    this.name = args.nextString().expect("Can't deserialize the name");
     return new Result(args.offset);
   }
 }
@@ -25,13 +25,13 @@ export class Hero extends Divinity implements Serializable {
 
     const age = args.nextI32();
     if (age.isErr()) {
-      return new Result(0, "Can't deserialize the age.");
+      return new Result(0, "Can't deserialize the age");
     }
     this.age = age.unwrap();
 
     const name = args.nextString();
     if (name.isErr()) {
-      return new Result(0, "Can't deserialize the name.");
+      return new Result(0, "Can't deserialize the name");
     }
     this.name = name.unwrap();
 

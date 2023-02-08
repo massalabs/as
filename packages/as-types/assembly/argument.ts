@@ -19,6 +19,8 @@ import {
   boolToByte,
   arrayToBytes,
   bytesToArray,
+  serializableObjectArrayToBytes,
+  bytesToSerializableObjectArray,
 } from './serialization';
 
 /**
@@ -105,7 +107,7 @@ export class Args {
   }
 
   /**
-   *
+   * Returns the deserialized array of type parameter wrapped in a `Result`.
    */
   nextArray<T>(): Result<T[]> {
     const length = this.nextU32();
@@ -129,6 +131,18 @@ export class Args {
     const value = bytesToArray<T>(this.getNextData(bufferSize));
     this._offset += bufferSize;
     return new Result(value);
+  }
+
+  nextSerializableArray<T extends Serializable>(): Result<T[]> {
+    const result = bytesToSerializableObjectArray<T>(this.serialized);
+    if (result.isOk()) {
+      return new Result(result.unwrap());
+    }
+
+    return new Result(
+      [],
+      "can't deserialize array of serializable from given argument: out of range",
+    );
   }
 
   /**
@@ -342,6 +356,13 @@ export class Args {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
+      // @ts-ignore
+    } else if (isArray<T>() && arg.length && arg[0] instanceof Serializable) {
+      // @ts-ignore
+      this.addSerializableObjectArray(arg);
+    } else if (isArray<T>()) {
+      // @ts-ignore
+      this.addArray(arg);
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
@@ -354,10 +375,23 @@ export class Args {
    * @param arg - the argument to add
    * @returns the modified Arg instance
    */
-  addArray<T>(arg: T[]): Args {
+  private addArray<T>(arg: T[]): Args {
     const array = arg as Array<T>;
     this.add(array.length);
     this.serialized = this.serialized.concat(arrayToBytes<T>(array));
+    return this;
+  }
+
+  /**
+   * Adds an array to the Arg instance.
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  private addSerializableObjectArray<T extends Serializable>(arg: T[]): Args {
+    this.serialized = this.serialized.concat(
+      serializableObjectArrayToBytes<T>(arg),
+    );
     return this;
   }
 }
