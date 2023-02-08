@@ -1,3 +1,6 @@
+import { Result } from '../result';
+import { Serializable } from '../serializable';
+
 /**
  * Convert an array of type parameter to StaticArray<u8>
  *
@@ -45,4 +48,40 @@ export function bytesToArray<T>(source: StaticArray<u8>): T[] {
   memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
 
   return array;
+}
+
+export function serializableObjectArrayToBytes<T extends Serializable>(
+  source: T[],
+): StaticArray<u8> {
+  let array = new StaticArray<u8>(0);
+
+  for (let index = 0; index < source.length; index++) {
+    const element = source[index];
+    array = array.concat(element.serialize());
+  }
+
+  return array;
+}
+
+export function bytesToSerializableObjectArray<T extends Serializable>(
+  source: StaticArray<u8>,
+): Result<T[]> {
+  const array = instantiate<T[]>(0);
+
+  let offset = 0;
+
+  while (offset < source.length) {
+    const object = instantiate<T>();
+    const result = object.deserialize(source, offset);
+    if (result.isErr()) {
+      return new Result(
+        [],
+        `Can't deserialize array of object ${typeof object}`,
+      );
+    }
+    offset = result.unwrap();
+    array.push(object);
+  }
+
+  return new Result(array);
 }

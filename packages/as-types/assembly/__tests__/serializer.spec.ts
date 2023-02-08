@@ -7,6 +7,7 @@ import {
   bytesToF64,
   bytesToI32,
   bytesToI64,
+  bytesToSerializableObjectArray,
   bytesToString,
   bytesToU32,
   bytesToU64,
@@ -16,6 +17,7 @@ import {
   f64ToBytes,
   i32ToBytes,
   i64ToBytes,
+  serializableObjectArrayToBytes,
   stringToBytes,
   u32ToBytes,
   u64ToBytes,
@@ -74,6 +76,7 @@ describe('Serialization tests', () => {
     const val: f64 = F64.MAX_VALUE;
     expect(bytesToF64(f64ToBytes(val))).toBe(val);
   });
+
   // ARRAYS
 
   it('ser/deser array of object', () => {
@@ -84,6 +87,21 @@ describe('Serialization tests', () => {
     const array = [new Hero(age1, name1), new Divinity(age2, name2)];
     const bytes = arrayToBytes(array);
     const arrayDeser = bytesToArray<Person>(bytes);
+    expect(arrayDeser.length).toBe(2);
+    expect(arrayDeser[0].age).toBe(age1);
+    expect(arrayDeser[0].name).toBe(name1);
+    expect(arrayDeser[1].age).toBe(age2);
+    expect(arrayDeser[1].name).toBe(name2);
+  });
+
+  it('ser/deser array of object (deep copy)', () => {
+    const age1 = 18;
+    const age2 = 37;
+    const name1 = 'Hercules';
+    const name2 = 'Zeus';
+    const array = [new Hero(age1, name1), new Divinity(age2, name2)];
+    const bytes = serializableObjectArrayToBytes(array);
+    const arrayDeser = bytesToSerializableObjectArray<Divinity>(bytes).unwrap();
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
     expect(arrayDeser[0].name).toBe(name1);
