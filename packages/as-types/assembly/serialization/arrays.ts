@@ -1,5 +1,13 @@
-// inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
-
+/**
+ * Convert an array of type parameter to StaticArray<u8>
+ *
+ * @remarks
+ * This do not a deep copy.
+ * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ *
+ * @param source - the array to convert
+ * @returns
+ */
 export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
 
@@ -22,10 +30,19 @@ export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
   return target;
 }
 
-export function bytesToArray<T>(array: StaticArray<u8>): T[] {
-  let bufferSize = array.length;
-  const arr = instantiate<T[]>(bufferSize >> alignof<T>());
-  memory.copy(arr.dataStart, changetype<usize>(array), bufferSize);
+/**
+ * Converts a StaticArray<u8> into a Array of type parameter.
+ *
+ * @remarks
+ * This do not a deep copy.
+ * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ *
+ * @param source - the array to convert
+ */
+export function bytesToArray<T>(source: StaticArray<u8>): T[] {
+  let bufferSize = source.length;
+  const array = instantiate<T[]>(bufferSize >> alignof<T>());
+  memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
 
-  return arr;
+  return array;
 }
