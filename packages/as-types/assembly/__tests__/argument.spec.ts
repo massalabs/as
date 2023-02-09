@@ -270,6 +270,8 @@ describe('Args tests', () => {
     expect(args2.nextU8().isOk()).toBeFalsy('out of range deserialization');
   });
 
+  // Object
+
   it('With object that uses Args', () => {
     // Example of a class that doesn't implement Serializable,
     // this will not compile:
@@ -313,25 +315,31 @@ describe('Args tests', () => {
     expect(args.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
   });
 
+  // Array
+
   it('With array of numbers', () => {
     const arrayU64 = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
-    const serialized = new Args().add(arrayU64).serialize();
+    const serialized = new Args().addNativeTypeArray(arrayU64).serialize();
     const args = new Args(serialized);
-    const unserialized = args.nextArray<u64>().unwrap();
+    const unserialized = args.nextNativeTypeArray<u64>().unwrap();
     expect<u64[]>(unserialized).toStrictEqual(arrayU64);
   });
 
   it('With array of one u8', () => {
     const arrayU8 = [<u8>54];
-    const args = new Args(new Args().add(arrayU8).serialize());
-    expect<u8[]>(args.nextArray<u8>().unwrap()).toStrictEqual(arrayU8);
+    const args = new Args(new Args().addNativeTypeArray(arrayU8).serialize());
+    expect<u8[]>(args.nextNativeTypeArray<u8>().unwrap()).toStrictEqual(
+      arrayU8,
+    );
   });
   it('With empty array of boolean', () => {
     const emptyArray: boolean[] = [];
-    const args = new Args(new Args().add(emptyArray).serialize());
-    expect<boolean[]>(args.nextArray<boolean>().unwrap()).toStrictEqual(
-      emptyArray,
+    const args = new Args(
+      new Args().addNativeTypeArray(emptyArray).serialize(),
     );
+    expect<boolean[]>(
+      args.nextNativeTypeArray<boolean>().unwrap(),
+    ).toStrictEqual(emptyArray);
   });
 
   it('With array of object (no deep copy)', () => {
@@ -339,8 +347,10 @@ describe('Args tests', () => {
       new Person(14, 'Poseidon'),
       new Person(45, 'Superman'),
     ];
-    const args = new Args(new Args().add(arrayOfPerson).serialize());
-    const deser = args.nextArray<Person>().unwrap();
+    const args = new Args(
+      new Args().addNativeTypeArray(arrayOfPerson).serialize(),
+    );
+    const deser = args.nextNativeTypeArray<Person>().unwrap();
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);
@@ -354,8 +364,10 @@ describe('Args tests', () => {
       new Divinity(14, 'Poseidon'),
       new Divinity(45, 'Superman'),
     ];
-    const args = new Args(new Args().add(arrayOfSerializable).serialize());
-    const deser = args.nextArray<Divinity>().unwrap();
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+    const deser = args.nextSerializableObjectArray<Divinity>().unwrap();
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);

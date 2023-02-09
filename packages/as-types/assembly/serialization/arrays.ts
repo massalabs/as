@@ -15,24 +15,20 @@ import { Serializable } from '../serializable';
  * @param source - the array to convert
  * @returns
  */
-export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
-  if (source.length == 0) {
-    return [];
-  }
+// export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
+//   if (source.length == 0) {
+//     return [];
+//   }
 
-  const item: valueof<T> = 0;
-  // @ts-ignore
-  if (item instanceof Serializable) {
-    // @ts-ignore: source is an array of T, T implements Serializable
-    return serializableObjectsArrayToBytes(source);
-  }
+//   const item: valueof<T> = 0;
+//   // @ts-ignore
+//   if (item instanceof Serializable) {
+//     // @ts-ignore: source is an array of T, T implements Serializable
+//     return serializableObjectsArrayToBytes(source);
+//   }
 
-  if (isInteger<T>()) {
-    return nativeTypeArrayToBytes(source);
-  }
-
-  ERROR("Unsupported type.");
-}
+//   return nativeTypeArrayToBytes(source);
+// }
 
 export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
@@ -90,26 +86,22 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
 
 // De-serialize array
 
-export function bytesToArray<T>(
-  source: StaticArray<u8>,
-): Result<T[]> {
-  if (source.length == 0) {
-    return new Result([]);
-  }
+// export function bytesToArray<T>(
+//   source: StaticArray<u8>,
+// ): Result<T[]> {
+//   if (source.length == 0) {
+//     return new Result([]);
+//   }
 
-  let item: valueof<T> = 0;
-  // @ts-ignore
-  if (item instanceof Serializable) {
-    // @ts-ignore: source is an array of T, T implements Serializable
-    return bytesToSerializableObjectArray(source);
-  }
+//   let item: valueof<T> = 0;
+//   // @ts-ignore
+//   if (item instanceof Serializable) {
+//     // @ts-ignore: source is an array of T, T implements Serializable
+//     return bytesToSerializableObjectArray(source);
+//   }
 
-  if (isInteger<T>() || isFloat<T>() || isBoolean<T>()) {
-    return new Result(bytesToNativeTypeArray(source));
-  }
-
-  ERROR('bytesToArray: unsupported type');
-}
+//   return new Result(bytesToNativeTypeArray(source));
+// }
 
 /**
  * Converts a StaticArray<u8> into a Array of type parameter.
