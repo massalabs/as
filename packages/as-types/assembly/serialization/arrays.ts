@@ -7,29 +7,13 @@ import { Serializable } from '../serializable';
  * Convert an array of type parameter to StaticArray<u8>
  *
  * @remarks
- * This will perform a deep copy only for native types and types that implement `Serializable`.
+ * This will perform a deep copy only for native types.
  * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  *
  * @see {@link Serializable}
  *
  * @param source - the array to convert
- * @returns
  */
-// export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
-//   if (source.length == 0) {
-//     return [];
-//   }
-
-//   const item: valueof<T> = 0;
-//   // @ts-ignore
-//   if (item instanceof Serializable) {
-//     // @ts-ignore: source is an array of T, T implements Serializable
-//     return serializableObjectsArrayToBytes(source);
-//   }
-
-//   return nativeTypeArrayToBytes(source);
-// }
-
 export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
 
@@ -52,6 +36,17 @@ export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   return target;
 }
 
+/**
+ * Convert an array of type parameter to StaticArray<u8>
+ *
+ * @remarks
+ * This will perform a deep copy
+ * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ *
+ * @see {@link Serializable}
+ *
+ * @param source - the array to convert
+ */
 export function serializableObjectsArrayToBytes<T extends Serializable>(
   source: T[],
 ): StaticArray<u8> {
@@ -86,23 +81,6 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
 
 // De-serialize array
 
-// export function bytesToArray<T>(
-//   source: StaticArray<u8>,
-// ): Result<T[]> {
-//   if (source.length == 0) {
-//     return new Result([]);
-//   }
-
-//   let item: valueof<T> = 0;
-//   // @ts-ignore
-//   if (item instanceof Serializable) {
-//     // @ts-ignore: source is an array of T, T implements Serializable
-//     return bytesToSerializableObjectArray(source);
-//   }
-
-//   return new Result(bytesToNativeTypeArray(source));
-// }
-
 /**
  * Converts a StaticArray<u8> into a Array of type parameter.
  *
@@ -119,6 +97,11 @@ export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
   return array;
 }
 
+/**
+ * Converts a StaticArray<u8> into a Array of type parameter.
+ *
+ * @param source - the array to convert
+ */
 export function bytesToSerializableObjectArray<T extends Serializable>(
   source: StaticArray<u8>,
 ): Result<T[]> {

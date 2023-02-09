@@ -107,34 +107,6 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized array of type parameter wrapped in a `Result`.
-   */
-  // nextArray<T>(): Result<T[]> {
-  //   const length = this.nextU32();
-  //   if (
-  //     length.isErr() ||
-  //     this._offset + length.unwrap() > this.serialized.length
-  //   ) {
-  //     return new Result(
-  //       [],
-  //       "can't deserialize length of array from given argument",
-  //     );
-  //   }
-
-  //   const bufferSize = length.unwrap();
-
-  //   if (bufferSize === 0) {
-  //     return new Result([]);
-  //   }
-
-  //   const buffer = this.getNextData(bufferSize);
-
-  //   const value = bytesToArray<T>(buffer);
-  //   this._offset += bufferSize;
-  //   return value;
-  // }
-
-  /**
    * @returns the next array of object that are native type
    */
   nextNativeTypeArray<T>(): Result<T[]> {
@@ -401,20 +373,6 @@ export class Args {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
-      // } else if (isArrayLike<T>()) {
-      //   let content: StaticArray<u8>;
-
-      //   if (isNativeType<valueof<T>>()) {
-      //     content = nativeTypeArrayToBytes(arg);
-      //   } else {
-      //     let item: valueof<T> = 0;
-      //     if (item instanceof Serializable) {
-      //       content = serializableObjectsArrayToBytes(arg);
-      //     }
-      //     ERROR("args doesn't know how to serialize the given type.");
-      //   }
-      //   this.add<u32>(content.length);
-      //   this.serialized = this.serialized.concat(content);
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
