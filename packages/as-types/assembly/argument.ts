@@ -19,8 +19,6 @@ import {
   boolToByte,
   arrayToBytes,
   bytesToArray,
-  serializableObjectArrayToBytes,
-  bytesToSerializableObjectArray,
 } from './serialization';
 
 /**
@@ -111,6 +109,7 @@ export class Args {
    */
   nextArray<T>(): Result<T[]> {
     const length = this.nextU32();
+    log(length);
     if (
       length.isErr() ||
       this._offset + length.unwrap() > this.serialized.length
@@ -121,14 +120,16 @@ export class Args {
       );
     }
 
-    const amount = length.unwrap();
+    const bufferSize = length.unwrap();
 
-    if (amount === 0) {
+    if (bufferSize === 0) {
       return new Result([]);
     }
 
-    const bufferSize = amount << alignof<T>();
-    const value = bytesToArray<T>(this.getNextData(bufferSize));
+    const buffer = this.getNextData(bufferSize);
+    log(buffer);
+
+    const value = bytesToArray<T>(buffer);
     this._offset += bufferSize;
     return new Result(value);
   }
@@ -356,13 +357,10 @@ export class Args {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
-      // @ts-ignore
-    } else if (isArray<T>() && arg.length && arg[0] instanceof Serializable) {
-      // @ts-ignore
-      this.addSerializableObjectArray(arg);
     } else if (isArray<T>()) {
-      // @ts-ignore
-      this.addArray(arg);
+      const content = arrayToBytes(arg);
+      this.add<u32>(content.length);
+      this.serialized = this.serialized.concat(content);
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
@@ -379,19 +377,6 @@ export class Args {
     const array = arg as Array<T>;
     this.add(array.length);
     this.serialized = this.serialized.concat(arrayToBytes<T>(array));
-    return this;
-  }
-
-  /**
-   * Adds an array to the Arg instance.
-   *
-   * @param arg - the argument to add
-   * @returns the modified Arg instance
-   */
-  private addSerializableObjectArray<T extends Serializable>(arg: T[]): Args {
-    this.serialized = this.serialized.concat(
-      serializableObjectArrayToBytes<T>(arg),
-    );
     return this;
   }
 }

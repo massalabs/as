@@ -12,6 +12,24 @@ import { Serializable } from '../serializable';
  * @returns
  */
 export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
+  if (source.length == 0) {
+    return [];
+  }
+
+  if (source[0] instanceof Serializable) {
+    return serializableObjectsArrayToBytes(source);
+  }
+
+  if (isInteger<T>()) {
+    return nativeTypeArrayToBytes(source);
+  }
+
+  throw new Error('Unsupported type');
+  // ERROR("Unsupported type.");
+  // return [];
+}
+
+function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
 
   // ensures that the new array has the proper length.
@@ -33,6 +51,44 @@ export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
   return target;
 }
 
+function serializableObjectsArrayToBytes<T extends Serializable>(
+  source: T[],
+): StaticArray<u8> {
+  if (!isDefined(source[0].serialize)) {
+    throw new Error('element does not implement Serializable');
+  } else {
+    const nbElements = source.length;
+    const pointers = new Array<usize>(nbElements);
+    const sizes = new Array<usize>(nbElements);
+    let totalLength = 0;
+
+    for (let i = 0; i < nbElements; i++) {
+      const arr: StaticArray<u8> = source[i].serialize();
+
+      pointers[i] = changetype<usize>(arr);
+      sizes[i] = arr.length;
+      totalLength += arr.length;
+    }
+
+    // allocates a new StaticArray<u8> in the memory
+    const target = changetype<StaticArray<u8>>(
+      // @ts-ignore: Cannot find name '__new'
+      __new(totalLength, idof<StaticArray<u8>>()),
+    );
+
+    let offset: usize = 0;
+    for (let i = 0; i < nbElements; i++) {
+      // copies the content of the source buffer to the newly allocated array.
+      // Note: the pointer to the data buffer for Typed Array is in dataStart.
+      // There is no such things for StaticArray.
+      memory.copy(changetype<usize>(target) + offset, pointers[i], sizes[i]);
+      offset += sizes[i];
+    }
+
+    return target;
+  }
+}
+
 /**
  * Converts a StaticArray<u8> into a Array of type parameter.
  *
@@ -42,7 +98,7 @@ export function arrayToBytes<T>(source: T[]): StaticArray<u8> {
  *
  * @param source - the array to convert
  */
-export function bytesToArray<T>(source: StaticArray<u8>): T[] {
+function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
   let bufferSize = source.length;
   const array = instantiate<T[]>(bufferSize >> alignof<T>());
   memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
@@ -50,30 +106,25 @@ export function bytesToArray<T>(source: StaticArray<u8>): T[] {
   return array;
 }
 
-export function serializableObjectArrayToBytes<T extends Serializable>(
-  source: T[],
-): StaticArray<u8> {
-  let array = new StaticArray<u8>(0);
-
-  for (let index = 0; index < source.length; index++) {
-    const element = source[index];
-    if (isDefined(element.serialize)) {
-      array = array.concat(element.serialize());
-    } else {
-      // compiler think we have u8
-      // so complain with: Property 'serialize' does not exist on type '~lib/number/U8'
-      // but at runtime we only have Serializable object
-      // So I can't use ERROR function, nor remove this if/else statement
-      // We can fix this by making Args.addArray and Args.addSerializableObjectArray public and use them instead of the
-      // generic Args.add method.
-      throw new Error('element does not implement Serializable');
-    }
+export function bytesToArray<T extends Serializable>(
+  source: StaticArray<u8>,
+): Result<T[]> {
+  if (source.length == 0) {
+    return instantiate<T[]>(0);
   }
 
-  return array;
+  if (T instanceof Serializable) {
+    return bytesToSerializableObjectArray(source);
+  }
+
+  if (isInteger<T>()) {
+    return bytesToNativeTypeArray(source);
+  }
+
+  throw new Error('Unsupported type');
 }
 
-export function bytesToSerializableObjectArray<T extends Serializable>(
+function bytesToSerializableObjectArray<T extends Serializable>(
   source: StaticArray<u8>,
 ): Result<T[]> {
   const array = instantiate<T[]>(0);

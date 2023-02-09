@@ -17,7 +17,6 @@ import {
   f64ToBytes,
   i32ToBytes,
   i64ToBytes,
-  serializableObjectArrayToBytes,
   stringToBytes,
   u32ToBytes,
   u64ToBytes,
@@ -100,7 +99,7 @@ describe('Serialization tests', () => {
     const name1 = 'Hercules';
     const name2 = 'Zeus';
     const array = [new Hero(age1, name1), new Divinity(age2, name2)];
-    const bytes = serializableObjectArrayToBytes(array);
+    const bytes = arrayToBytes(array);
     const arrayDeser = bytesToSerializableObjectArray<Divinity>(bytes).unwrap();
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
