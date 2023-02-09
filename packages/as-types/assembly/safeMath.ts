@@ -58,16 +58,4 @@ export class SafeMath {
 
       return c;
   }
-
-  /**
-   *
-   * @param a
-   * @param b
-   * @returns Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-   * Reverts with custom message when dividing by zero.
-   */
-  static mod(a: u64, b: u64): u64 {
-      assert(b != 0, "SafeMath: modulo by zero");
-      return a % b;
-  }
 }
