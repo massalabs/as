@@ -109,14 +109,13 @@ export class Args {
    */
   nextArray<T>(): Result<T[]> {
     const length = this.nextU32();
-    log(length);
     if (
       length.isErr() ||
       this._offset + length.unwrap() > this.serialized.length
     ) {
       return new Result(
         [],
-        "can't deserialize array from given argument: out of range",
+        "can't deserialize length of array from given argument",
       );
     }
 
@@ -127,23 +126,10 @@ export class Args {
     }
 
     const buffer = this.getNextData(bufferSize);
-    log(buffer);
 
     const value = bytesToArray<T>(buffer);
     this._offset += bufferSize;
-    return new Result(value);
-  }
-
-  nextSerializableArray<T extends Serializable>(): Result<T[]> {
-    const result = bytesToSerializableObjectArray<T>(this.serialized);
-    if (result.isOk()) {
-      return new Result(result.unwrap());
-    }
-
-    return new Result(
-      [],
-      "can't deserialize array of serializable from given argument: out of range",
-    );
+    return value;
   }
 
   /**
@@ -352,31 +338,19 @@ export class Args {
       this.serialized = this.serialized.concat(f32ToBytes(arg as f32));
     } else if (arg instanceof f64) {
       this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
-      // @ts-ignore
+    // @ts-ignore
     } else if (arg instanceof Serializable) {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
-    } else if (isArray<T>()) {
+    } else if (isArrayLike<T>()) {
+      // @ts-ignore: arg is an array of T, T implements Serializable
       const content = arrayToBytes(arg);
       this.add<u32>(content.length);
       this.serialized = this.serialized.concat(content);
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
-    return this;
-  }
-
-  /**
-   * Adds an array to the Arg instance.
-   *
-   * @param arg - the argument to add
-   * @returns the modified Arg instance
-   */
-  private addArray<T>(arg: T[]): Args {
-    const array = arg as Array<T>;
-    this.add(array.length);
-    this.serialized = this.serialized.concat(arrayToBytes<T>(array));
     return this;
   }
 }

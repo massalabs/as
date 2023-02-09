@@ -316,40 +316,38 @@ describe('Args tests', () => {
   it('With array of numbers', () => {
     const arrayU64 = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
     const serialized = new Args().add(arrayU64).serialize();
-    log(serialized);
     const args = new Args(serialized);
-    log(args);
     const unserialized = args.nextArray<u64>().unwrap();
-    log(unserialized);
     expect<u64[]>(unserialized).toStrictEqual(arrayU64);
   });
 
   it('With array of one u8', () => {
-    // limit case
     const arrayU8 = [<u8>54];
-    const args2 = new Args(new Args().add(arrayU8).serialize());
-    expect<u8[]>(args2.nextArray<u8>().unwrap()).toStrictEqual(arrayU8);
-    const arrayEmpty: boolean[] = [];
-    const args3 = new Args(new Args().add(arrayEmpty).serialize());
-    expect<boolean[]>(args3.nextArray<boolean>().unwrap()).toStrictEqual(
-      arrayEmpty,
+    const args = new Args(new Args().add(arrayU8).serialize());
+    expect<u8[]>(args.nextArray<u8>().unwrap()).toStrictEqual(arrayU8);
+  });
+  it('With empty array of boolean', () => {
+    const emptyArray: boolean[] = [];
+    const args = new Args(new Args().add(emptyArray).serialize());
+    expect<boolean[]>(args.nextArray<boolean>().unwrap()).toStrictEqual(
+      emptyArray,
     );
   });
 
-  // it('With array of object (no deep copy)', () => {
-  //  const arrayOfPerson = [
-  //    new Person(14, 'Poseidon'),
-  //    new Person(45, 'Superman'),
-  //  ];
-  //  const args = new Args(new Args().add(arrayOfPerson).serialize());
-  //  const deser = args.nextArray<Person>().unwrap();
-  //  const first = deser[0];
-  //  expect(deser).toHaveLength(2);
-  //  expect(first.age).toBe(14);
-  //  expect(first.name).toBe('Poseidon');
-  //  expect(deser[1].age).toBe(45);
-  //  expect(deser[1].name).toBe('Superman');
-  // });
+  it('With array of object (no deep copy)', () => {
+    const arrayOfPerson = [
+      new Person(14, 'Poseidon'),
+      new Person(45, 'Superman'),
+    ];
+    const args = new Args(new Args().add(arrayOfPerson).serialize());
+    const deser = args.nextArray<Person>().unwrap();
+    const first = deser[0];
+    expect(deser).toHaveLength(2);
+    expect(first.age).toBe(14);
+    expect(first.name).toBe('Poseidon');
+    expect(deser[1].age).toBe(45);
+    expect(deser[1].name).toBe('Superman');
+  });
 
   it('With array of Serializable', () => {
     const arrayOfSerializable = [
@@ -357,7 +355,7 @@ describe('Args tests', () => {
       new Divinity(45, 'Superman'),
     ];
     const args = new Args(new Args().add(arrayOfSerializable).serialize());
-    const deser = args.nextSerializableArray<Divinity>().unwrap();
+    const deser = args.nextArray<Divinity>().unwrap();
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);

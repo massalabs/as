@@ -7,7 +7,6 @@ import {
   bytesToF64,
   bytesToI32,
   bytesToI64,
-  bytesToSerializableObjectArray,
   bytesToString,
   bytesToU32,
   bytesToU64,
@@ -83,9 +82,9 @@ describe('Serialization tests', () => {
     const age2 = 37;
     const name1 = 'Hercules';
     const name2 = 'Zeus';
-    const array = [new Hero(age1, name1), new Divinity(age2, name2)];
+    const array = [new Person(age1, name1), new Person(age2, name2)];
     const bytes = arrayToBytes(array);
-    const arrayDeser = bytesToArray<Person>(bytes);
+    const arrayDeser = bytesToArray<Person>(bytes).unwrap();
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
     expect(arrayDeser[0].name).toBe(name1);
@@ -100,7 +99,7 @@ describe('Serialization tests', () => {
     const name2 = 'Zeus';
     const array = [new Hero(age1, name1), new Divinity(age2, name2)];
     const bytes = arrayToBytes(array);
-    const arrayDeser = bytesToSerializableObjectArray<Divinity>(bytes).unwrap();
+    const arrayDeser = bytesToArray<Divinity>(bytes).unwrap();
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
     expect(arrayDeser[0].name).toBe(name1);
@@ -111,19 +110,19 @@ describe('Serialization tests', () => {
   // ARRAY U8
   it('ser/deser empty array u8', () => {
     const array: u8[] = [];
-    expect<u8[]>(bytesToArray<u8>(arrayToBytes<u8>(array))).toStrictEqual(
+    expect<u8[]>(bytesToArray<u8>(arrayToBytes<u8>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
   it('ser/deser array of one u8', () => {
     const array = [1 as u8];
     const ser = arrayToBytes<u8>(array);
-    expect<u8[]>(bytesToArray<u8>(ser)).toStrictEqual(array);
+    expect<u8[]>(bytesToArray<u8>(ser).unwrap()).toStrictEqual(array);
   });
   it('ser/deser array of two u8', () => {
     const array = [1 as u8, 2 as u8];
     const ser = arrayToBytes<u8>(array);
-    expect<u8[]>(bytesToArray<u8>(ser)).toStrictEqual(array);
+    expect<u8[]>(bytesToArray<u8>(ser).unwrap()).toStrictEqual(array);
   });
   it('ser/deser array of 8 u8', () => {
     const array = [
@@ -137,25 +136,25 @@ describe('Serialization tests', () => {
       34 as u8,
     ];
     const ser = arrayToBytes<u8>(array);
-    expect<u8[]>(bytesToArray<u8>(ser)).toStrictEqual(array);
+    expect<u8[]>(bytesToArray<u8>(ser).unwrap()).toStrictEqual(array);
   });
 
   // ARRAY I16
   it('ser/deser empty array i16', () => {
     const array: i16[] = [];
-    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array))).toStrictEqual(
+    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
   it('ser/deser array of one i16', () => {
     const array = [1 as i16];
-    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array))).toStrictEqual(
+    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
   it('ser/deser array of i16', () => {
     const array = [1 as i16, 2 as i16, 3 as i16, 5 as i16, 8 as i16];
-    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array))).toStrictEqual(
+    expect<i16[]>(bytesToArray<i16>(arrayToBytes<i16>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
@@ -163,19 +162,19 @@ describe('Serialization tests', () => {
   // ARRAY I32
   it('ser/deser empty array i32', () => {
     const array: i32[] = [];
-    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array))).toStrictEqual(
+    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
   it('ser/deser array of one i32', () => {
     const array = [1 as i32];
-    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array))).toStrictEqual(
+    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
   it('ser/deser array of i32', () => {
     const array = [1, 2, 3, 5, 8];
-    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array))).toStrictEqual(
+    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
@@ -184,7 +183,7 @@ describe('Serialization tests', () => {
     for (let index = 0; index < 999; index++) {
       array.push(index);
     }
-    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array))).toStrictEqual(
+    expect<i32[]>(bytesToArray<i32>(arrayToBytes<i32>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
@@ -192,7 +191,7 @@ describe('Serialization tests', () => {
   // ARRAY I64
   it('ser/deser array of u64', () => {
     const array = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
-    expect<u64[]>(bytesToArray<u64>(arrayToBytes<u64>(array))).toStrictEqual(
+    expect<u64[]>(bytesToArray<u64>(arrayToBytes<u64>(array)).unwrap()).toStrictEqual(
       array,
     );
   });
