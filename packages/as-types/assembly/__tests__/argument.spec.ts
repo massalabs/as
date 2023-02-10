@@ -1,8 +1,7 @@
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
-import { Serializable } from '../serializable';
-import { Result } from '../result';
+import { Divinity, Hero, Person } from '../Person';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -271,6 +270,8 @@ describe('Args tests', () => {
     expect(args2.nextU8().isOk()).toBeFalsy('out of range deserialization');
   });
 
+  // Object
+
   it('With object that uses Args', () => {
     // Example of a class that doesn't implement Serializable,
     // this will not compile:
@@ -289,7 +290,7 @@ describe('Args tests', () => {
     const args2 = new Args(args.serialize());
 
     expect(args2.nextUint8Array().unwrap()).toStrictEqual(array);
-    const person2 = args2.nextSerializable(new Divinity()).unwrap();
+    const person2 = args2.nextSerializable<Divinity>().unwrap();
     expect(person2.age).toBe(age);
     expect(person2.name).toBe(name);
     expect(args2.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
@@ -308,46 +309,70 @@ describe('Args tests', () => {
     );
 
     expect(args.nextUint8Array().unwrap()).toStrictEqual(array);
-    const hero2 = args.nextSerializable(new Hero()).unwrap();
+    const hero2 = args.nextSerializable<Hero>().unwrap();
     expect(hero2.age).toBe(age);
     expect(hero2.name).toBe(name);
     expect(args.nextF32().unwrap()).toBeCloseTo(floatingPointNumber);
   });
+
+  // Array
+
+  it('With array of numbers', () => {
+    const arrayU64 = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
+    const serialized = new Args().addNativeTypeArray(arrayU64).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextNativeTypeArray<u64>().unwrap();
+    expect<u64[]>(unserialized).toStrictEqual(arrayU64);
+  });
+
+  it('With array of one u8', () => {
+    const arrayU8 = [<u8>54];
+    const args = new Args(new Args().addNativeTypeArray(arrayU8).serialize());
+    expect<u8[]>(args.nextNativeTypeArray<u8>().unwrap()).toStrictEqual(
+      arrayU8,
+    );
+  });
+  it('With empty array of boolean', () => {
+    const emptyArray: boolean[] = [];
+    const args = new Args(
+      new Args().addNativeTypeArray(emptyArray).serialize(),
+    );
+    expect<boolean[]>(
+      args.nextNativeTypeArray<boolean>().unwrap(),
+    ).toStrictEqual(emptyArray);
+  });
+
+  it('With array of object (no deep copy)', () => {
+    const arrayOfPerson = [
+      new Person(14, 'Poseidon'),
+      new Person(45, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addNativeTypeArray(arrayOfPerson).serialize(),
+    );
+    const deser = args.nextNativeTypeArray<Person>().unwrap();
+    const first = deser[0];
+    expect(deser).toHaveLength(2);
+    expect(first.age).toBe(14);
+    expect(first.name).toBe('Poseidon');
+    expect(deser[1].age).toBe(45);
+    expect(deser[1].name).toBe('Superman');
+  });
+
+  it('With array of Serializable', () => {
+    const arrayOfSerializable = [
+      new Divinity(14, 'Poseidon'),
+      new Divinity(45, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+    const deser = args.nextSerializableObjectArray<Divinity>().unwrap();
+    const first = deser[0];
+    expect(deser).toHaveLength(2);
+    expect(first.age).toBe(14);
+    expect(first.name).toBe('Poseidon');
+    expect(deser[1].age).toBe(45);
+    expect(deser[1].name).toBe('Superman');
+  });
 });
-
-class Person {
-  constructor(public age: i32 = 0, public name: string = '') {}
-}
-
-class Divinity extends Person implements Serializable {
-  serialize(): StaticArray<u8> {
-    return new Args().add(this.age).add(this.name).serialize();
-  }
-
-  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
-    const args = new Args(data, offset);
-    this.age = args.nextI32().expect("Can't deserialize the age.");
-    this.name = args.nextString().expect("Can't deserialize the name.");
-    return new Result(args.offset);
-  }
-}
-
-class Hero extends Divinity implements Serializable {
-  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
-    const args = new Args(data, offset);
-
-    const age = args.nextI32();
-    if (age.isErr()) {
-      return new Result(0, "Can't deserialize the age.");
-    }
-    this.age = age.unwrap();
-
-    const name = args.nextString();
-    if (name.isErr()) {
-      return new Result(0, "Can't deserialize the name.");
-    }
-    this.name = name.unwrap();
-
-    return new Result(args.offset);
-  }
-}
