@@ -3,6 +3,7 @@
  *
  * @param val - the number to convert
  */
+// @ts-ignore: decorator
 @inline
 export function u8toByte(val: u8): StaticArray<u8> {
   const arr = new StaticArray<u8>(1);
@@ -15,9 +16,36 @@ export function u8toByte(val: u8): StaticArray<u8> {
  *
  * @param arr - the array to convert
  */
+// @ts-ignore: decorator
 @inline
 export function byteToU8(arr: StaticArray<u8>): u8 {
   return arr[0];
+}
+
+/**
+ * Convert a number to StaticArray<u8>
+ *
+ *  @param val - the number to convert
+ */
+export function toBytes<T>(val: T): StaticArray<u8> {
+  if (!isInteger<T>()) {
+    ERROR('input must be a integer');
+  }
+  const arr = new StaticArray<u8>(sizeof<T>());
+  store<T>(changetype<usize>(arr), val);
+  return arr;
+}
+
+/**
+ * Convert a StaticArray<u8> to number
+ *
+ *  @param arr - the array to convert
+ */
+export function fromBytes<T>(arr: StaticArray<u8>): T {
+  if (!isInteger<T>()) {
+    ERROR('output must be a integer');
+  }
+  return load<T>(changetype<usize>(arr), 0);
 }
 
 /**
@@ -26,11 +54,7 @@ export function byteToU8(arr: StaticArray<u8>): u8 {
  * @param val - the number to convert
  */
 export function u32ToBytes(val: u32): StaticArray<u8> {
-  const arr = new StaticArray<u8>(4);
-  for (let i = 0; i < 4; i++) {
-    arr[i] = u8(val >> (i * 8));
-  }
-  return arr;
+  return toBytes(val);
 }
 
 /**
@@ -39,12 +63,7 @@ export function u32ToBytes(val: u32): StaticArray<u8> {
  * @param arr - the array to convert
  */
 export function bytesToU32(arr: StaticArray<u8>): u32 {
-  let x: u32 = 0;
-  for (let i = 3; i >= 1; --i) {
-    x = (x | arr[i]) << 8;
-  }
-  x = x | arr[0];
-  return x;
+  return fromBytes<u32>(arr);
 }
 
 /**
@@ -91,11 +110,7 @@ export function bytesToI32(arr: StaticArray<u8>): i32 {
  * @returns the converted StaticArray<u8>
  */
 export function u64ToBytes(val: u64): StaticArray<u8> {
-  const arr = new StaticArray<u8>(8);
-  for (let i = 0; i < 8; i++) {
-    arr[i] = u8(val >> (i * 8));
-  }
-  return arr;
+  return toBytes(val);
 }
 
 /**
@@ -104,12 +119,7 @@ export function u64ToBytes(val: u64): StaticArray<u8> {
  * @param arr - the array to convert
  */
 export function bytesToU64(arr: StaticArray<u8>): u64 {
-  let x: u64 = 0;
-  for (let i = 7; i >= 1; --i) {
-    x = (x | arr[i]) << 8;
-  }
-  x = x | arr[0];
-  return x;
+  return fromBytes<u64>(arr);
 }
 
 /**

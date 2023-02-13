@@ -3,6 +3,8 @@ import { Result } from './result';
 /**
  * Implement this interface so that you can use `Args` to serialize/de-serialize your objects.
  *
+ * The constructor of the class implementing this interface must have default value for each argument.
+ *
  * @example
  * ```typescript
  * const args = new Args().add(new Address(input)); // serialize

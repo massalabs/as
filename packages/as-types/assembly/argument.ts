@@ -17,6 +17,10 @@ import {
   bytesToI32,
   bytesToI64,
   boolToByte,
+  serializableObjectsArrayToBytes,
+  nativeTypeArrayToBytes,
+  bytesToNativeTypeArray,
+  bytesToSerializableObjectArray,
 } from './serialization';
 
 /**
@@ -100,6 +104,62 @@ export class Args {
     const value = this.getNextData(length.unwrap());
     this._offset += length.unwrap();
     return new Result(value);
+  }
+
+  /**
+   * @returns the next array of object that are native type
+   */
+  nextNativeTypeArray<T>(): Result<T[]> {
+    const length = this.nextU32();
+    if (
+      length.isErr() ||
+      this._offset + length.unwrap() > this.serialized.length
+    ) {
+      return new Result(
+        [],
+        "can't deserialize length of array from given argument",
+      );
+    }
+
+    const bufferSize = length.unwrap();
+
+    if (bufferSize === 0) {
+      return new Result([]);
+    }
+
+    const buffer = this.getNextData(bufferSize);
+
+    const value = bytesToNativeTypeArray<T>(buffer);
+    this._offset += bufferSize;
+    return new Result(value);
+  }
+
+  /**
+   * @returns the deserialized array of object that implement Serializable
+   */
+  nextSerializableObjectArray<T extends Serializable>(): Result<T[]> {
+    const length = this.nextU32();
+    if (
+      length.isErr() ||
+      this._offset + length.unwrap() > this.serialized.length
+    ) {
+      return new Result(
+        [],
+        "can't deserialize length of array from given argument",
+      );
+    }
+
+    const bufferSize = length.unwrap();
+
+    if (bufferSize === 0) {
+      return new Result([]);
+    }
+
+    const buffer = this.getNextData(bufferSize);
+
+    const value = bytesToSerializableObjectArray<T>(buffer);
+    this._offset += bufferSize;
+    return value;
   }
 
   /**
@@ -252,10 +312,10 @@ export class Args {
   /**
    * This function deserialize an object by calling its `deserialize` method.
    *
-   * @param object - the object to deserialize
    * @returns the deserialized object wrapped in a `Result`
    */
-  nextSerializable<T extends Serializable>(object: T): Result<T> {
+  nextSerializable<T extends Serializable>(): Result<T> {
+    const object = instantiate<T>();
     const result = object.deserialize(this.serialized, this._offset);
     if (result.isErr()) {
       return new Result(object, `Can't deserialize object ${typeof object}`);
@@ -279,8 +339,8 @@ export class Args {
 
   /**
    * Adds an argument to the serialized byte array if the argument is an
-   * instance of a handled type (String of u32.MAX_VALUE characters maximum,
-   * Address, Uint8Array, bool, u8, u32, i32, f32, u64, i64, f64).
+   * instance of a handled type (bool, String of u32.MAX_VALUE characters maximum,
+   * Uint8Array, StaticArray<u8>, u8, u32, i32, u64, i64, f32, f64, Serializable).
    *
    * @param arg - the argument to add
    * @returns the modified Arg instance
@@ -316,6 +376,45 @@ export class Args {
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
+    return this;
+  }
+
+  /**
+   * Adds an array.
+   *
+   * @remarks
+   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
+   * what you want. You can only serialize properly array of native types or array of `Serializable` object.
+   *
+   * @see {@link addSerializableObjectArray}
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  addNativeTypeArray<T extends ArrayLike<unknown>>(arg: T): Args {
+    // @ts-ignore
+    const content = nativeTypeArrayToBytes(arg);
+    this.add<u32>(content.length);
+    this.serialized = this.serialized.concat(content);
+    return this;
+  }
+
+  /**
+   * Adds an array of element that implement `Serializable`.
+   *
+   * @remarks
+   * This will perform a deep copy of your objects thanks to the `serialize` method you define in your class.
+   *
+   * @see {@link Serializable}
+   *
+   * @param arg - the argument to add
+   * @returns the modified Arg instance
+   */
+  addSerializableObjectArray<T extends ArrayLike<Serializable>>(arg: T): Args {
+    // @ts-ignore
+    const content = serializableObjectsArrayToBytes(arg);
+    this.add<u32>(content.length);
+    this.serialized = this.serialized.concat(content);
     return this;
   }
 }
