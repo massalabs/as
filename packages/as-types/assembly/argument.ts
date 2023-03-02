@@ -299,7 +299,7 @@ export class Args {
    * Returns the deserialized boolean
    */
   nextBool(): Result<bool> {
-    if (this._offset + sizeof<u8>() >= this.serialized.length) {
+    if (this._offset + sizeof<u8>() > this.serialized.length) {
       return new Result(
         false,
         "can't deserialize bool from given argument: out of range",
