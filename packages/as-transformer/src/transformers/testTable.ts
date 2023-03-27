@@ -49,7 +49,7 @@ export class TestTable {
 
     expr += `\n});`;
 
-    console.log(expr);
+    // console.log(expr);
 
     const newNode = SimpleParser.parseExpression(expr);
 
