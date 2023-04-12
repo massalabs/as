@@ -13,7 +13,6 @@ const callTransformers = [File2ByteArray, TestTable];
 
 export class Transformer extends TransformVisitor {
   visitCallExpression(node: CallExpression): Expression {
-    console.log('########## yes ##############');
     const inputText = (node.expression as IdentifierExpression)?.text;
 
     for (let transformer of callTransformers) {
@@ -26,7 +25,6 @@ export class Transformer extends TransformVisitor {
   }
 
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
-    console.log('########## Started ##############');
     if (utils.hasDecorator(node, 'exportAs')) {
       console.log(node);
       // console.log(node.signature.returnType.kind);

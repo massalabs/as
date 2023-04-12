@@ -12,4 +12,3 @@ export function _sayHello(language: string, name: string): string {
 
   return greetings + name + '!';
 }
-

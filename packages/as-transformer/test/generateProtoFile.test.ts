@@ -23,7 +23,5 @@ message SayHelloResponse {
 }`;
 
     expect(protoFile).to.equal(expectedProtoFile);
-
-    // Assert that the generated protoFile is correct
   });
 });
