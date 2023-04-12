@@ -8,6 +8,7 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
+import { ExportAs } from './transformers/protobufABI/protobufABI.js';
 
 const callTransformers = [File2ByteArray, TestTable];
 
@@ -25,12 +26,9 @@ export class Transformer extends TransformVisitor {
   }
 
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
+
     if (utils.hasDecorator(node, 'exportAs')) {
-      console.log(node);
-      // console.log(node.signature.returnType.kind);
-      // console.log("nom", node.signature.parameters[0].name.text);
-      // console.log("type", node.signature.parameters[0].type.kind);
-      // node.signature.parameters[0].is
+      return ExportAs.transformFunction(node);
     }
 
     return super.visitFunctionDeclaration(node);

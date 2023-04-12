@@ -1,6 +1,6 @@
 describe('Protobuf ABI tests', () => {});
 
-@exportAs("toto")
+@exportAs("SayHello")
 export function _sayHello(language: string, name: string): string {
   let greetings = 'Hello,' + language;
 

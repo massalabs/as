@@ -1,13 +1,12 @@
 import { createWrapperFunction } from '../src/transformers/protobufABI/generateWrapper.js';
-import { TypeKind } from 'assemblyscript/dist/assemblyscript';
 import { expect } from 'chai';
 
 describe('createWrapperFunction', () => {
   it('should generate a valid wrapper function', () => {
     const name = 'sayHello';
     const args = [
-      { name: 'language', type: TypeKind.Stringref },
-      { name: 'name', type: TypeKind.Stringref },
+      { name: 'language', type: "string" },
+      { name: 'name', type: "string" },
     ];
 
     const code = createWrapperFunction(name, args);

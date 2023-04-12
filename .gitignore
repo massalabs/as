@@ -11,3 +11,5 @@ as-tral
 *.wat
 *.map
 packages/**/docs
+proto/*
+packages/as-transformer/assembly/__tests__/SayHello*

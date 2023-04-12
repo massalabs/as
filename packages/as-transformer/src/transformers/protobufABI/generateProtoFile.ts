@@ -1,4 +1,3 @@
-import { TypeKind } from 'assemblyscript/dist/assemblyscript';
 import { Argument, capitalizeFirstLetter } from './protobufABI.js';
 
 enum ProtoType {
@@ -22,7 +21,7 @@ enum ProtoType {
 export function generateProtoFile(
   name: string,
   args: Argument[],
-  returnedValue: TypeKind,
+  returnedValue: string,
 ): string {
   const messageName = capitalizeFirstLetter(name);
   const argumentMessages = args.map((arg, index) =>
@@ -51,32 +50,32 @@ function generateArgumentMessage(arg: Argument, index: number): string {
   return `  ${fieldType} ${fieldName} = ${index};`;
 }
 
-function generateResponseMessage(returnedValue: TypeKind): string {
+function generateResponseMessage(returnedValue: string): string {
   const fieldType = getTypeName(returnedValue);
   return `  ${fieldType} value = 1;`;
 }
 
-function getTypeName(type: TypeKind): ProtoType {
+function getTypeName(type: string): ProtoType {
   switch (type) {
-    case TypeKind.Bool:
+    case "bool":
       return ProtoType.Bool;
-    case TypeKind.I8:
-    case TypeKind.I16:
-    case TypeKind.I32:
+    case "i8":
+    case "i16":
+    case "i32":
       return ProtoType.Int32;
-    case TypeKind.I64:
+    case "i64":
       return ProtoType.Int64;
-    case TypeKind.U8:
-    case TypeKind.U16:
-    case TypeKind.U32:
+    case "u8":
+    case "u16":
+    case "u32":
       return ProtoType.UInt32;
-    case TypeKind.U64:
+    case "u64":
       return ProtoType.UInt64;
-    case TypeKind.F32:
+    case "f32":
       return ProtoType.Float;
-    case TypeKind.F64:
+    case "f64":
       return ProtoType.Double;
-    case TypeKind.Stringref:
+    case "string":
       return ProtoType.String;
     default:
       throw new Error(`Unsupported type: ${type}`);
