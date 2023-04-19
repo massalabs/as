@@ -33,8 +33,6 @@ jobs:
         echo "coverage=$value" >> $GITHUB_OUTPUT
 
     - name: Update README
-      uses: actions/github-script@v3
-      if: ${{ github.event_name == 'push' }}
       run: node "${GITHUB_WORKSPACE}/.github/coverage.js"
  
 
