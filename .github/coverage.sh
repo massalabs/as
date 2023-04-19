@@ -10,29 +10,31 @@ elif [ "$coverage" -ge 70 ]; then
 fi
 
 content=$(cat README.md)
-lines=($content)
+firstLine=$(head -n 1 README.md)
 
 regex="coverage-([0-9]{1,3})%"
-if [[ ${lines[1]} =~ $regex ]]; then
+if [[ $firstLine =~ $regex ]]; then
     oldCoverage="${BASH_REMATCH[1]}"
 else
     oldCoverage=""
 fi
 
 if [ "$oldCoverage" != "$coverage" ] || [ -z "$oldCoverage" ]; then
-  echo "updating badge"
+    echo "updating badge"
 
-  response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  https://api.github.com/repos/$GITHUB_REPOSITORY/contents/README.md?ref=$GITHUB_REF)
+    newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
+    content="${firstLine}\n${content#"$firstLine"}"
+    content="${content/"$firstLine"/"$newLine"}"
 
-  lines[1]="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
-  content=$(printf "%s\n" "${lines[@]}")
-  encodedContent=$(echo "$content" | base64 --wrap=0)
+    encodedContent=$(echo "$content" | base64 --wrap=0)
 
-  sha=$(echo "$response" | jq -r '.sha')
-  url=$(echo "$response" | jq -r '.url')
+    response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    https://api.github.com/repos/$GITHUB_REPOSITORY/contents/README.md?ref=$GITHUB_REF)
 
-  curl -s -H "Authorization: token $GITHUB_TOKEN" \
-  -X PUT -d "{\"message\":\"Update README\",\"content\":\"$encodedContent\",\"sha\":\"$sha\",\"branch\":\"$GITHUB_REF\"}" \
-  $url
+    sha=$(echo "$response" | jq -r '.sha')
+    url=$(echo "$response" | jq -r '.url')
+
+    curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    -X PUT -d "{\"message\":\"Update README\",\"content\":\"$encodedContent\",\"sha\":\"$sha\",\"branch\":\"$GITHUB_REF\"}" \
+    $url
 fi
