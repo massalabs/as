@@ -1,4 +1,4 @@
-![check-code-coverage](https://img.shields.io/badge/coverage-71%25-orange)\n
+# AS
 
 **MassaLabs** monorepo for assemblyscript libraries.
 
