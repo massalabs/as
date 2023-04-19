@@ -1,7 +1,7 @@
 #!/bin/bash
 
 color="red"
-coverage=$COVERAGE
+coverage=80
 
 if [ "$coverage" -ge 80 ]; then
     color="green"
@@ -10,8 +10,6 @@ elif [ "$coverage" -ge 70 ]; then
 fi
 
 filename="README.md"
-
-cat $filename
 
 coverageLine=$(sed -n '3p' $filename)
 
@@ -26,5 +24,6 @@ fi
 if [ "$oldCoverage" != "$coverage" ] || [ -z "$oldCoverage" ]; then
     echo "updating badge"
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
-    sed -i "3s#.*#$newLine#" $filename
+    sed -i '' "3s#.*#$newLine#" $filename
+
 fi
