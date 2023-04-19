@@ -8,7 +8,9 @@ if (coverage >= 80) {
     color = "orange";
 }
 
-const fs = require('fs');
+import * as fs from 'fs';
+
+import { context, github } from '@actions/github';
 
 const content = fs.readFileSync('README.md', 'utf8');
 const lines = content.split('\n');
