@@ -35,6 +35,14 @@ jobs:
     - name: Update README
       run: |
         "${GITHUB_WORKSPACE}/.github/coverage.sh"
+
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Generate coverage badge"
+        file_pattern: "README.md"
+        # Commit code using massabot account that can bypass push and MR restriction
+        commit_author: massabot <info@massa.net>
  
 
       env:
