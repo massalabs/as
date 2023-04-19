@@ -34,6 +34,7 @@ jobs:
 
     - name: Update README
       uses: actions/github-script@v3
+      if: ${{ github.event_name == 'push' }}
       with:
         script: |
         
@@ -59,7 +60,7 @@ jobs:
             });
 
             lines[1] = `![check-code-coverage](https://img.shields.io/badge/coverage-${coverage}%25-${color})\n`;
-            
+
             await github.repos.createOrUpdateFileContents({
               owner: context.repo.owner,
               repo: context.repo.repo,
