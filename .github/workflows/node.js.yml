@@ -16,6 +16,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
+        # https://github.com/actions/checkout/issues/298#issuecomment-664976337
+        ref: ${{ github.head_ref }}
         # Checkout code using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
