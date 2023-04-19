@@ -33,7 +33,8 @@ jobs:
         echo "coverage=$value" >> $GITHUB_OUTPUT
 
     - name: Update README
-      run: node "${GITHUB_WORKSPACE}/.github/coverage.js"
+      run: |
+        "./${GITHUB_WORKSPACE}/.github/coverage.sh"
  
 
       env:
