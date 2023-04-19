@@ -25,5 +25,5 @@ fi
 if [ "$oldCoverage" != "$coverage" ] || [ -z "$oldCoverage" ]; then
     echo "Updating badge"
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
-    sed -i '3s#.*#$newLine#' $filename
+    sed -i "3s#.*#${newLine}#" $filename
 fi
