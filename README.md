@@ -1,6 +1,6 @@
 # AS
 
-Coverage Badge
+$newLine
 
 **MassaLabs** monorepo for assemblyscript libraries.
 
