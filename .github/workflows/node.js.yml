@@ -2,24 +2,18 @@ name: Unit tests
 
 on:
   push:
-  pull_request:
-  workflow_call:
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 18x
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 18x
         cache: 'npm'
     - name: run test
       run: |
@@ -44,8 +38,5 @@ jobs:
         # Commit code using massabot account that can bypass push and MR restriction
         commit_author: massabot <info@massa.net>
  
-
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERAGE: ${{ steps.coverage.outputs.coverage }}
-        COLOR: ${{ steps.coverage.outputs.color }}
