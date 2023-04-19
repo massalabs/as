@@ -1,6 +1,6 @@
 # AS
 
-$newLine
+![check-code-coverage](https://img.shields.io/badge/coverage-80%25-green)
 
 **MassaLabs** monorepo for assemblyscript libraries.
 
