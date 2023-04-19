@@ -26,7 +26,8 @@ if [ "$oldCoverage" != "$coverage" ] || [ -z "$oldCoverage" ]; then
 
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
 
-    updated_file=$(sed "2s/.*/$new_line/" $filename)
-    echo "$updated_file"
-    echo "$updated_file" > $filename
+    sed -i "2s/.*/$newLine/" $filename
+
+    echo $filename
 fi
+
