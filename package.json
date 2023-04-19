@@ -17,7 +17,7 @@
   "scripts": {
     "build": "npm run build --ws --if-present",
     "test": "asp",
-    "test:ci": "asp --summary",
+    "test:ci": "asp --summary --config as-pect-ci.config.js",
     "prettier": "as-prettier \"**/*.ts\" --check",
     "prettier:fix": "as-prettier \"**/*.ts\" --write",
     "lint": "eslint .",
