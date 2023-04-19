@@ -3,9 +3,12 @@ import { Result } from './result';
 import { Args } from './argument';
 
 /**
- * Value in currency to express an amount.
+ * This module contains the 'Amount' class, which is a useful representation of a {@link Currency} value.
  *
- * For instance $10.34 will be instantiate as the following:
+ * The 'Amount' class provides the following methods {@link add} and {@link subtract}
+ * to perform basic arithmetic operations between amounts of the same currency.
+ *
+ * It also provides the following comparison methods {@link lessThan},{@link equals} and {@link notEqual}.
  *
  * @example
  * ```typescript
@@ -15,10 +18,10 @@ import { Args } from './argument';
  */
 export class Amount {
   /**
-   * Creates a new Amount;
+   * Creates a new Amount .
    *
    * @param value - Amount value.
-   * @param currency - Amount currency.
+   * @param currency - Amount currency (optional).
    */
   constructor(
     public value: u64 = 0,
@@ -28,38 +31,51 @@ export class Amount {
   /**
    * Adds two amounts and return results in a new one.
    *
-   * @param  a - Amount to add.
+   * @param  other - The other Amount to add.
+   *
+   * @returns
+   * - A Result containing the new Amount.
+   * - An error message if the currency is not the same between the two amounts.
+   * - An error message if the addition would overflow 'u64.MAX_VALUE'.
+   *
    */
-  add(a: Amount): Result<Amount> {
-    if (this.currency != a.currency) {
+  @operator('+')
+  add(other: Amount): Result<Amount> {
+    if (this.currency != other.currency) {
       return new Result(
         new Amount(),
         'the sum is impossible: the amounts have different currencies',
       );
     }
 
-    if (a.value > u64.MAX_VALUE - this.value) {
+    if (other.value > u64.MAX_VALUE - this.value) {
       // tests overflow
       return new Result(new Amount(), 'the sum is impossible: overflow');
     }
 
-    return new Result(new Amount(this.value + a.value, this.currency));
+    return new Result(new Amount(this.value + other.value, this.currency));
   }
 
   /**
-   * Substracts two amounts and return results in a new one.
+   * Subtracts two amounts and return results in a new one.
    *
-   * @param  a - Amount to substract.
+   * @param  other - Amount to subtract.
+   *
+   * @returns
+   * - A Result containing the new Amount.
+   * - An error message if the currency is not the same between the two amounts.
+   * - An error message if the subtraction would underflow .
    */
-  substract(a: Amount): Result<Amount> {
-    if (this.currency != a.currency) {
+  @operator('-')
+  subtract(other: Amount): Result<Amount> {
+    if (this.currency != other.currency) {
       return new Result(
         new Amount(),
         'the difference is impossible: the amounts have different currencies',
       );
     }
 
-    if (a.value > this.value) {
+    if (other.value > this.value) {
       // tests underflow
       return new Result(
         new Amount(),
@@ -67,23 +83,37 @@ export class Amount {
       );
     }
 
-    return new Result(new Amount(this.value - a.value, this.currency));
+    return new Result(new Amount(this.value - other.value, this.currency));
   }
 
   /**
    * Check if existent amount is lower than given one.
    *
-   * @param  a - Amount to check against.
+   * @param  other - Amount to check against.
+   *
+   * @returns true if the amount is lower than the given one.
+   *
+   * @throws if the currency is not the same between the two amounts.
    */
   @operator('<')
-  lessThan(a: Amount): bool {
-    return this.value < a.value;
+  lessThan(other: Amount): bool {
+    if (this.currency != other.currency) {
+      abort(
+        'the comparison is impossible: the amounts have different currencies',
+      );
+    }
+    return this.value < other.value;
   }
 
   /**
-   * Creates a Result Amount from given argument
+   * Deserializes an Amount from an {@link Args} 'array of bytes'.
    *
    * @param args - Argument to deserialize.
+   *
+   * @returns
+   * - A Result containing the deserialized Amount.
+   * - An error message if there is an error with deserializing the 'value'.
+   * - An error message if there is an error with deserializing the 'currency'.
    */
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
@@ -103,9 +133,9 @@ export class Amount {
   }
 
   /**
-   * Updates Args with current currency serialized.
+   * Serializes and adds the Amount to the given serialized {@link Args}.
    *
-   * @param args -
+   * @param args -The arguments to add the serialized Amount to.
    */
   addArgs(args: Args): void {
     args.add(this.value);
@@ -113,7 +143,9 @@ export class Amount {
   }
 
   /**
-   * Returns a new Args containing current currency serialized.
+   * Serializes the Amount to a new {@link Args} object.
+   *
+   * @returns The serialized Amount as {@link Args}.
    */
   toArgs(): Args {
     const args = new Args();
@@ -126,7 +158,12 @@ export class Amount {
   /**
    * Tests if two amounts are identical.
    *
-   *  @param other -
+   * @remarks
+   * Two amounts are identical if they have the same value as well as the same currency type!
+   *
+   * @param other - Amount to check against.
+   *
+   * @returns true if the amounts are identical.
    */
   @operator('==')
   equals(other: Amount): boolean {
@@ -136,7 +173,12 @@ export class Amount {
   /**
    * Tests if two amounts are different.
    *
-   *  @param other -
+   * @remarks
+   * Two amounts are different if they have the same currency type even if they have the same value!
+   *
+   * @param other - Amount to check against.
+   *
+   * @returns true if the amounts are different.
    */
   @operator('!=')
   notEqual(other: Amount): boolean {
