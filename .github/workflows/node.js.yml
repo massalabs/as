@@ -19,7 +19,7 @@ jobs:
         # https://github.com/actions/checkout/issues/298#issuecomment-664976337
         ref: ${{ github.head_ref }}
         # Checkout code using massabot account
-        token: ${{ secrets.MASSABOTCLASSIC }}
+        token: ${{ secrets.MASSABOTCLASSIC || github.token }}
 
     - name: Use Node.js
       uses: actions/setup-node@v3
