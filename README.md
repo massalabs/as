@@ -1,4 +1,6 @@
-# as
+# AS
+
+$newLine
 
 **MassaLabs** monorepo for assemblyscript libraries.
 
