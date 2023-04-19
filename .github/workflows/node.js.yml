@@ -34,7 +34,7 @@ jobs:
 
     - name: Update README
       run: |
-        "./${GITHUB_WORKSPACE}/.github/coverage.sh"
+        "${GITHUB_WORKSPACE}/.github/coverage.sh"
  
 
       env:
