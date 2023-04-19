@@ -14,6 +14,7 @@ filename="README.md"
 coverageLine=$(sed -n '3p' $filename)
 
 regex="coverage-([0-9]+)%"
+
 if [[ $coverageLine =~ $regex ]]; then
     oldCoverage="${BASH_REMATCH[1]}"
     echo "Coverage is $coverage%"
@@ -22,7 +23,7 @@ else
 fi
 
 if [ "$oldCoverage" != "$coverage" ] || [ -z "$oldCoverage" ]; then
-    echo "updating badge"
+    echo "Updating badge"
     newLine="![check-code-coverage](https://img.shields.io/badge/coverage-$coverage%25-$color)"
-    sed -i '' '3s#.*#$newLine#' $filename
+    sed -i '3s#.*#$newLine#' $filename
 fi
