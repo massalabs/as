@@ -1,5 +1,7 @@
 # AS
 
+Coverage Badge
+
 **MassaLabs** monorepo for assemblyscript libraries.
 
 This repository is a collection of tools, objects and functions in *AssemblyScript*.
