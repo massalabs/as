@@ -42,7 +42,7 @@ export class Args {
   private serialized: StaticArray<u8> = new StaticArray<u8>(0);
 
   /**
-   * Initializes a new instance of Args.
+   * Initialize a new instance of Args.
    *
    * @param serialized - The serialized arguments to pass to CallSC. Default: []
    * @param offset - The offset to start deserializing from. Default: 0
@@ -70,7 +70,7 @@ export class Args {
   // getters
 
   /**
-   * This method deserializes a string from a serialized array starting from the current offset.
+   * This method deserialize a string from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result object containing an empty string and an error message:
@@ -100,7 +100,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes a bytes array from a serialized array starting from the current offset.
+   * This method deserialize a bytes array from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing an empty StaticArray of u8
@@ -129,7 +129,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an array of objects that are native type from a serialized array
+   * This method deserialize an array of objects that are native type from a serialized array
    * starting from the current offset.
    *
    * @remarks
@@ -167,7 +167,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an array of serializable objects from a serialized array starting from the current offset.
+   * This method deserialize an array of serializable objects from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing an empty array and an error message:
@@ -205,7 +205,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an array of u8 from a serialized array starting from the current offset.
+   * This method deserialize an array of u8 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing an empty Uint8Array and an error message:
@@ -234,7 +234,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an U64 from a serialized array starting from the current offset.
+   * This method deserialize an U64 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -259,7 +259,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an I64 from a serialized array starting from the current offset.
+   * This method deserialize an I64 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -285,7 +285,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an f64 from a serialized array starting from the current offset.
+   * This method deserialize an f64 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -309,7 +309,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an Ff2 from a serialized array starting from the current offset.
+   * This method deserialize an Ff2 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -335,7 +335,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an u32 from a serialized array starting from the current offset.
+   * This method deserialize an u32 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -361,7 +361,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an i32 from a serialized array starting from the current offset.
+   * This method deserialize an i32 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -386,7 +386,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an u8 from a serialized array starting from the current offset.
+   * This method deserialize an u8 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
@@ -409,7 +409,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes a boolean from a serialized array starting from the current offset.
+   * This method deserialize a boolean from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing false and an error message:
