@@ -6,7 +6,7 @@
  */
 export class Result<T> {
   /**
-   * Initialize a Result object.
+   * Initializes a Result object.
    *
    * @param value - expected value for passing case
    * @param error - error message for non-passing case
