@@ -3,8 +3,9 @@ import { Result } from './result';
 import { Args } from './argument';
 
 /**
- * This module contains the `Amount` class, which represents a specific amount of a {@link Currency}.
+ * This module contains the 'Amount' class, which is a useful representation of a {@link Currency} value.
  *
+ * @remarks
  * The 'Amount' class provides the following methods {@link add} and {@link subtract}
  * to perform basic arithmetic operations between amounts of the same currency.
  *
@@ -20,8 +21,8 @@ export class Amount {
   /**
    * Creates a new Amount.
    *
-   * @param value - Amount value.
-   * @param currency - Amount currency (optional).
+   * @param value - The amount value.
+   * @param currency - The currency (optional).
    */
   constructor(
     public value: u64 = 0,
@@ -35,7 +36,7 @@ export class Amount {
    *
    * @returns
    * - A Result containing the new Amount.
-   * - An error message if the currency is not the same.
+   * - An error message if the currency is not the same between the two amounts.
    * - An error message if the addition would overflow 'u64.MAX_VALUE'.
    *
    */
