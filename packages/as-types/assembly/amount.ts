@@ -3,7 +3,7 @@ import { Result } from './result';
 import { Args } from './argument';
 
 /**
- * This module contains the 'Amount' class, which is a useful representation of a {@link Currency} value.
+ * This module contains the `Amount` class, which represents a specific amount of a {@link Currency}.
  *
  * The 'Amount' class provides the following methods {@link add} and {@link subtract}
  * to perform basic arithmetic operations between amounts of the same currency.
