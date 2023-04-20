@@ -1,7 +1,6 @@
 #!/bin/bash
 
 color="red"
-coverage=80
 
 if [ "$coverage" -ge 80 ]; then
     color="green"
