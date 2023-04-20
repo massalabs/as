@@ -35,7 +35,7 @@ export class Amount {
    *
    * @returns
    * - A Result containing the new Amount.
-   * - An error message if the currency is not the same between the two amounts.
+   * - An error message if the currency is not the same.
    * - An error message if the addition would overflow 'u64.MAX_VALUE'.
    *
    */
