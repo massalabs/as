@@ -42,22 +42,26 @@ export class Args {
   private serialized: StaticArray<u8> = new StaticArray<u8>(0);
 
   /**
+   * Initializes a new instance of Args.
    *
-   * @param serialized -
+   * @param serialized - The serialized arguments to pass to CallSC. Default: []
+   * @param offset - The offset to start deserializing from. Default: 0
+   *
    */
   constructor(serialized: StaticArray<u8> = [], offset: i32 = 0) {
     this.serialized = serialized;
     this._offset = offset;
   }
 
+  /**
+   * @returns the offset
+   */
   get offset(): i32 {
     return this._offset;
   }
 
   /**
-   * Returns the serialized string to pass to CallSC.
-   *
-   * @returns the serialized string
+   * @returns the serialized argument to pass to CallSC.
    */
   serialize(): StaticArray<u8> {
     return this.serialized;
@@ -66,9 +70,17 @@ export class Args {
   // getters
 
   /**
-   * Returns the deserialized string.
+   * This method deserializes a string from a serialized array starting from the current offset.
    *
-   * @returns the string
+   * @remarks
+   * If the deserialization failed, it returns a Result object containing an empty string and an error message:
+   * "can't deserialize string from given argument: out of range".
+   * In this case, the offset will not be changed.
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized string starting from the current offset
+   * - Containing an empty string and an error message if the deserialization failed
+   *
    */
   nextString(): Result<string> {
     const length = this.nextU32();
@@ -88,7 +100,17 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized byte.
+   * This method deserializes a bytes array from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing an empty StaticArray of u8
+   * and an error message: "can't deserialize bytes from given argument: out of range".
+   * In this case, the offset will not be changed.
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized StaticArray of u8 starting from the current offset
+   * - Containing an empty StaticArray and an error message if the deserialization failed
+   *
    */
   nextBytes(): Result<StaticArray<u8>> {
     const length = this.nextU32();
@@ -107,7 +129,17 @@ export class Args {
   }
 
   /**
-   * @returns the next array of object that are native type
+   * This method deserializes an array of objects that are native type from a serialized array
+   * starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result object containing an empty array and an error message:
+   * "can't deserialize length of array from given argument".
+   * In this case, the offset will not be changed.
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized array of objects that are native type starting from the current offset
+   * - Containing an empty array and an error message if the deserialization failed
    */
   nextNativeTypeArray<T>(): Result<T[]> {
     const length = this.nextU32();
@@ -135,7 +167,17 @@ export class Args {
   }
 
   /**
-   * @returns the deserialized array of object that implement Serializable
+   * This method deserializes an array of serializable objects from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing an empty array and an error message:
+   * "can't deserialize length of array from given argument".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized array of objects that implement Serializable objects starting from the current
+   *    offset
+   * - Containing an empty array and an error message if the deserialization failed
+   *
    */
   nextSerializableObjectArray<T extends Serializable>(): Result<T[]> {
     const length = this.nextU32();
@@ -163,7 +205,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized Uint8Array.
+   * This method deserializes an array of u8 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing an empty Uint8Array and an error message:
+   * "can't deserialize Uint8Array from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized array of u8 starting from the current offset
+   * - Containing an empty Uint8Array and an error message if the deserialization failed
+   *
    */
   nextUint8Array(): Result<Uint8Array> {
     const length = this.nextU32();
@@ -183,7 +234,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as u64.
+   * This method deserializes an U64 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u64 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized U64 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextU64(): Result<u64> {
     const size: i32 = sizeof<u64>();
@@ -199,7 +259,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as i64.
+   * This method deserializes an I64 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize i64 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized I64 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextI64(): Result<i64> {
     const size: i32 = sizeof<i64>();
@@ -216,7 +285,15 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as f64.
+   * This method deserializes an f64 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize f64 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized f64 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
    */
   nextF64(): Result<f64> {
     const size: i32 = sizeof<f64>();
@@ -232,7 +309,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as f32.
+   * This method deserializes an Ff2 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize f32 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized f32 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextF32(): Result<f32> {
     const size: i32 = sizeof<f32>();
@@ -249,7 +335,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as u32.
+   * This method deserializes an u32 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u32 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized u32 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextU32(): Result<u32> {
     const size: i32 = sizeof<u32>();
@@ -266,7 +361,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized number as i32.
+   * This method deserializes an i32 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize i32 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized i32 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextI32(): Result<i32> {
     const size: i32 = sizeof<i32>();
@@ -282,7 +386,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized u8
+   * This method deserializes an u8 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u8 from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized u8 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
    */
   nextU8(): Result<u8> {
     if (this._offset + sizeof<u8>() > this.serialized.length) {
@@ -296,7 +409,16 @@ export class Args {
   }
 
   /**
-   * Returns the deserialized boolean
+   * This method deserializes a boolean from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing false and an error message:
+   * "can't deserialize bool from given argument: out of range".
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized boolean starting from the current offset
+   * - Containing false and an error message if the deserialization failed
+   *
    */
   nextBool(): Result<bool> {
     if (this._offset + sizeof<u8>() > this.serialized.length) {
@@ -310,9 +432,16 @@ export class Args {
   }
 
   /**
-   * This function deserialize an object by calling its `deserialize` method.
+   * This method deserialize an object by calling its `deserialize` method.
    *
-   * @returns the deserialized object wrapped in a `Result`
+   * @remarks
+   * If the deserialization failed, it returns a Result containing the object and an error message:
+   * "Can't deserialize object " + type of the object.
+   *
+   * @returns a Result object :
+   * - Containing the next deserialized object starting from the current offset
+   * - Containing the object and an error message if the deserialization failed
+   *
    */
   nextSerializable<T extends Serializable>(): Result<T> {
     const object = instantiate<T>();
@@ -325,9 +454,12 @@ export class Args {
   }
 
   /**
-   * Returns the data of requested size for current offset
+   * This function retrieves the next chunk of data from the serialized data array based on the specified size
+   * and returns it as a static array of unsigned 8-bit integers.
    *
    * @param size - The data size
+   *
+   * @returns the data of requested size for current offset
    */
   private getNextData(size: i32): StaticArray<u8> {
     return changetype<StaticArray<u8>>(
@@ -338,9 +470,13 @@ export class Args {
   // Setter
 
   /**
-   * Adds an argument to the serialized byte array if the argument is an
+   * This method adds an argument to the serialized byte array if the argument is an
    * instance of a handled type (bool, String of u32.MAX_VALUE characters maximum,
    * Uint8Array, StaticArray<u8>, u8, u32, i32, u64, i64, f32, f64, Serializable).
+   *
+   * @remarks
+   * If the type of the object to add isn't handled, it returns an error message:
+   * "args doesn't know how to serialize the given type."
    *
    * @param arg - the argument to add
    * @returns the modified Arg instance
@@ -380,7 +516,7 @@ export class Args {
   }
 
   /**
-   * Adds an array.
+   * This method adds an array in the Args object.
    *
    * @remarks
    * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
@@ -400,7 +536,7 @@ export class Args {
   }
 
   /**
-   * Adds an array of element that implement `Serializable`.
+   * This method adds an array of elements that implement `Serializable`.
    *
    * @remarks
    * This will perform a deep copy of your objects thanks to the `serialize` method you define in your class.
