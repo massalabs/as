@@ -6,14 +6,19 @@
  */
 export class Result<T> {
   /**
+   * Initialize a Result object.
    *
    * @param value - expected value for passing case
    * @param error - error message for non-passing case
+   *
    */
   constructor(private value: T, public error: string | null = null) {}
 
   /**
-   * Checks that the result is okay.
+   * Checks if the Result is okay or not.
+   *
+   * @returns true if the Result is okay, false otherwise.
+   *
    */
   @inline
   isOk(): bool {
@@ -21,7 +26,10 @@ export class Result<T> {
   }
 
   /**
-   * Checks that the result is okay.
+   * Checks if the Result is okay or not.
+   *
+   * @returns true if the Result is not okay, false otherwise.
+   *
    */
   @inline
   isErr(): bool {
@@ -29,9 +37,12 @@ export class Result<T> {
   }
 
   /**
-   * Checks that the result is okay and panic if not.
+   * Returns the value if the Result is okay. If the Result is not okay, it throws an assertion
    *
-   * @param msg - panic message that will prefix the error content.
+   * @param msg - A string representing the message to be shown on error.
+   * @returns
+   * - Returns the value if the Result is okay.
+   * - If the Result is not okay, it throws an assertion error with the given message.
    */
   @inline
   expect(msg: string): NonNullable<T> {
@@ -43,7 +54,11 @@ export class Result<T> {
   }
 
   /**
-   * Get the value. Panic if error.
+   * Get the value of the Result. Panic if error.
+   *
+   * @returns
+   * - The value of the Result if everything went well.
+   * - If the Result is not okay, it throws an assertion error with the given message.
    */
   @inline
   unwrap(): NonNullable<T> {
@@ -55,7 +70,9 @@ export class Result<T> {
   }
 
   /**
-   * @returns the value
+   * Get the value of the Result
+   *
+   * @returns the value of the Result
    */
   @inline
   private getValue(): NonNullable<T> {
