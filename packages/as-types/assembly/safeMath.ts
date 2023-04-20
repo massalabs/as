@@ -8,7 +8,7 @@ export class SafeMath {
   /**
    * add - Returns the addition of two unsigned 64-bit integers (u64),
    *       reverting on overflow.
-   * 
+   *
    * @param a - The first operand for addition.
    * @param b - The second operand for addition.
    * @returns The sum of a and b as an unsigned 64-bit integer (u64).
@@ -57,7 +57,6 @@ export class SafeMath {
     return c;
   }
 
-  
   /**
    * div - Returns the integer division of two unsigned 64-bit integers (u64),
    *       Reverts on division by zero. The result is rounded towards zero
