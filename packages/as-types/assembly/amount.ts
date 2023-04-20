@@ -18,7 +18,7 @@ import { Args } from './argument';
  */
 export class Amount {
   /**
-   * Creates a new Amount .
+   * Creates a new Amount.
    *
    * @param value - Amount value.
    * @param currency - Amount currency (optional).
