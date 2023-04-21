@@ -5,16 +5,18 @@ import { Result } from './result';
 /**
  * Monetary unit used to express a value.
  *
+ * @remarks
  * The minor unit of a currency, as described in the ISO 4217 standard,
  * is the maximal size of the fractional part that can be used
  * to describe the value when in a decimal form.
  *
+ * @example
  * For instance, US dollar has a minor unit of 2. This means that value
  * in US dollar must be express with two digits after the decimal separator
  * like in the following: 10.34
+ *
  * This can be done with the following instantiation:
  *
- * @example
  * ```typescript
  * const dollar = new Currency("dollar", 2);
  * ```
@@ -29,9 +31,14 @@ export class Currency {
   constructor(public name: string = '', public minorUnit: u8 = 0) {}
 
   /**
-   * Creates a Result Currency from given argument
+   * Deserializes a Currency from an {@link Args} 'array of bytes'.
    *
-   * @param args -
+   * @param args - the serialized arguments containing the currency data.
+   *
+   * @returns Result containing either a Currency or an Error.
+   * - The deserialized Currency.
+   * - An error message if there is an error with deserializing the 'minorUnit'.
+   * - An error message if there is an error with deserializing the 'name'.
    */
   static fromArgs(args: Args): Result<Currency> {
     const minorUnit = args.nextU8();
@@ -48,9 +55,9 @@ export class Currency {
   }
 
   /**
-   * Updates Args with current currency serialized.
+   * Serializes and adds the Currency to the given serialized {@link Args}.
    *
-   * @param args -
+   * @param args -The arguments to add the serialized Currency to.
    */
   addArgs(args: Args): void {
     args.add(this.minorUnit);
@@ -58,7 +65,9 @@ export class Currency {
   }
 
   /**
-   * Returns a new Args containing current currency serialized.
+   * Serializes the Currency to a new {@link Args} object.
+   *
+   * @returns The serialized Currency as {@link Args}.
    */
   toArgs(): Args {
     const args = new Args();
@@ -69,9 +78,14 @@ export class Currency {
   }
 
   /**
-   * Checks if both currencies are the same.
+   * Tests if two currencies are identical.
    *
-   * @param other -
+   * @remarks
+   * Two currencies are identical if they have the same 'minorUnit' as well as the same 'name'!
+   *
+   * @param other - Currency to check against.
+   *
+   * @returns true if the currencies are identical.
    */
   @operator('==')
   equals(other: Currency): boolean {
@@ -79,9 +93,14 @@ export class Currency {
   }
 
   /**
-   * Checks if both currencies are different.
+   * Tests if two currencies are different.
    *
-   * @param other -
+   * @remarks
+   * Two currencies are different if they have the same 'name' but a different 'minorUnit' value!
+   *
+   * @param other - Currency to check against.
+   *
+   * @returns true if the currencies are different.
    */
   @operator('!=')
   notEqual(other: Currency): boolean {
