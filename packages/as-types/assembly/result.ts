@@ -41,8 +41,7 @@ export class Result<T> {
    *
    * @param msg - The message to be displayed if the `Result` has failed.
    * @returns The value if the `Result` is successful.
-   * - Returns the value if the Result is okay.
-   * - If the Result is not okay, it throws an assertion error with the given message.
+   * @throws If there is an error in the result, it throws an assertion error with the given message.
    */
   @inline
   expect(msg: string): NonNullable<T> {
@@ -56,9 +55,8 @@ export class Result<T> {
   /**
    * Get the value of the Result. Panic if error.
    *
-   * @returns
-   * - The value of the Result if everything went well.
-   * - If the Result is not okay, it throws an assertion error with the given message.
+   * @returns The value of the `Result` if successful.
+   * @throws If there is an error in the result, it throws an assertion error with the given message.
    */
   @inline
   unwrap(): NonNullable<T> {
