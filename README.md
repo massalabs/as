@@ -2,7 +2,7 @@
 
 ![check-code-coverage](https://img.shields.io/badge/coverage-71%25-orange)
 
-As is a monorepo for **AssemblyScript** libraries developed by MassaLabs. It contains a collection of tools, objects, and functions specifically designed for AssemblyScript projects, including classes and helper functions, random draws, and AssemblyScript transformers for unit testing and reading files.
+**As** is a monorepo for **AssemblyScript** libraries developed by MassaLabs. It contains a collection of tools, objects, and functions specifically designed for AssemblyScript projects, including classes and helper functions, random draws, and AssemblyScript transformers for unit testing and reading files.
 
 - [`as-types documentation`](https://as-types.docs.massa.net)
 - [`as-proba documentation`](https://as-proba.docs.massa.net)
