@@ -14,7 +14,7 @@ coverageLine=$(sed -n '3p' $filename)
 
 regex="coverage-([0-9]+)%"
 
-if [[ $COVERAGELine =~ $regex ]]; then
+if [[ $coverageLine =~ $regex ]]; then
     oldCoverage="${BASH_REMATCH[1]}"
     echo "Coverage is $COVERAGE%"
 else
