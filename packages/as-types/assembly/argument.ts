@@ -44,7 +44,7 @@ export class Args {
   /**
    * Initializes a new instance of Args.
    *
-   * @param serialized - The serialized arguments to pass to CallSC. Default: []
+   * @param serialized - The serialized arguments. Default: []
    * @param offset - The offset to start deserializing from. Default: 0
    *
    */
@@ -61,7 +61,7 @@ export class Args {
   }
 
   /**
-   * @returns the serialized argument to pass to CallSC.
+   * @returns the serialized argument.
    */
   serialize(): StaticArray<u8> {
     return this.serialized;
