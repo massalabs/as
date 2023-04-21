@@ -7,7 +7,7 @@ export interface Drawer {
 
 /**
  * This class represents a binomial distribution.
- * This class can be used to compute the probability of a given event
+ * It can be used to compute the probability of a given event
  * and generate random samples from the distribution.
  *
  */
