@@ -1,5 +1,5 @@
 /**
- * Returns a non random secure number between given limits.
+ * Returns an unsafe random integer between the given limits (inclusive).
  *
  * @remarks
  * - Lower and upper limits are possible values.
