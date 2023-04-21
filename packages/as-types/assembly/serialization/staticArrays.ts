@@ -2,7 +2,7 @@
  * Converts a `StaticArray<u8>` to an `Uint8Array`.
  *
  * @param arr - The `StaticArray<u8>` to be converted.
- * @returns A `Uint8Array` representation of the input `StaticArray<u8>`.
+ * @returns An `Uint8Array` representation of the input `StaticArray<u8>`.
  */
 // @ts-ignore: decorator
 @inline
