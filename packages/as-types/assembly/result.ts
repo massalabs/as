@@ -15,7 +15,7 @@ export class Result<T> {
   constructor(private value: T, public error: string | null = null) {}
 
   /**
-   * Checks if the Result is okay or not.
+   * Determines if the `Result` represents a successful outcome.
    *
    * @returns true if the Result is okay, false otherwise.
    *
