@@ -24,7 +24,7 @@ import { Serializable } from '../serializable';
  */
 export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
-  
+
   let targetLength = (<usize>sourceLength) << alignof<T>();
 
   let target = changetype<StaticArray<u8>>(
@@ -43,7 +43,7 @@ export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
  * @remarks
  * This function performs a deep copy of serializable objects. It is inspired
  * by the AssemblyScript standard library array implementation.
- * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81 
+ * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  * | AssemblyScript array implementation}
  *
  * @param source - The array of serializable objects to convert to bytes.
