@@ -3,6 +3,12 @@
  * These functions perform overflow and underflow checks to prevent unwanted behavior
  * when dealing with unsigned 64-bit integers (u64). The SafeMath class should be used
  * when working with arithmetic operations that require increased safety and precision.
+ *
+ * @remarks
+ * The SafeMath class is designed to be a drop-in replacement for standard arithmetic
+ * operations on unsigned 64-bit integers. By using the methods provided by this class,
+ * developers can avoid potential overflow and underflow issues and ensure that their
+ * code behaves correctly even in edge cases.
  */
 export class SafeMath {
   /**
