@@ -457,6 +457,9 @@ export class Args {
    * This function retrieves the next chunk of data from the serialized data array based on the specified size
    * and returns it as a static array of unsigned 8-bit integers.
    *
+   * @remarks
+   * Unlike other 'next' methods, 'getNextData' doesn't increment the offset and therefore is quite usefull to fetch data directly 
+   *
    * @param size - The data size
    *
    * @returns the data of requested size for current offset
