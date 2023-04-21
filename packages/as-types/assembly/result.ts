@@ -26,7 +26,7 @@ export class Result<T> {
   }
 
   /**
-   * Checks if the Result is okay or not.
+   * Determines if the `Result` represents a failed outcome.
    *
    * @returns true if the Result is not okay, false otherwise.
    *
