@@ -29,8 +29,7 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * This method calculates the probability of a given event k using the mass probability function
-   * of the binomial distribution an returns it.
+   * Computes the probability of a given event `k`.
    *
    * @param k - An event.
    * @returns The probability of the event k in the binomial distribution.
