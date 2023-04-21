@@ -11,7 +11,7 @@ export function wrapStaticArray(arr: StaticArray<u8>): Uint8Array {
 }
 
 /**
- * Converts a `Uint8Array` to a `StaticArray<u8>`.
+ * Converts an `Uint8Array` to a `StaticArray<u8>`.
  *
  * @param arr - The `Uint8Array` to be converted.
  * @returns A `StaticArray<u8>` representation of the input `Uint8Array`.
