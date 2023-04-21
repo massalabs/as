@@ -21,7 +21,6 @@ export class Binomial extends Sampler implements Drawer {
    *
    * @param n - Number of independent experiments.
    * @param p - Probability of success of each experiment.
-   * @param m - The greatest probability of the distribution.
    */
   constructor(n: u64, p: f32) {
     super();
