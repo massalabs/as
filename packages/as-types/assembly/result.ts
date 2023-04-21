@@ -53,7 +53,9 @@ export class Result<T> {
   }
 
   /**
-   * Get the value of the Result. Panic if error.
+   * Get the value of the Result.
+   *
+   * @remarks This method panics if the Result is an error.
    *
    * @returns The value of the `Result` if successful.
    * @throws If there is an error in the result, it throws an assertion error with the given message.
