@@ -1,13 +1,13 @@
 /**
- * The SafeMath class provides utility functions for basic arithmetic operations.
+ * This class provides utility functions for basic arithmetic operations.
  * These functions perform overflow and underflow checks to prevent unwanted behavior
  * when dealing with unsigned 64-bit integers (u64). The SafeMath class should be used
  * when working with arithmetic operations that require increased safety and precision.
  */
 export class SafeMath {
   /**
-   * add - Returns the addition of two unsigned 64-bit integers (u64),
-   *       reverting on overflow.
+   * @remarks
+   * Returns the addition of two unsigned 64-bit integers (u64), reverting on overflow.
    *
    * @param a - The first operand for addition.
    * @param b - The second operand for addition.
@@ -22,8 +22,8 @@ export class SafeMath {
   }
 
   /**
-   * sub - Returns the subtraction of two unsigned 64-bit integers (u64),
-   *       reverting on underflow.
+   * @remarks
+   * Returns the subtraction of two unsigned 64-bit integers (u64), reverting on underflow.
    *
    * @param a - The first operand for subtraction (minuend).
    * @param b - The second operand for subtraction (subtrahend).
@@ -38,8 +38,8 @@ export class SafeMath {
   }
 
   /**
-   * mul - Returns the multiplication of two unsigned 64-bit integers (u64),
-   *       reverting on overflow.
+   * @remarks
+   * Returns the multiplication of two unsigned 64-bit integers (u64), reverting on overflow.
    *
    * @param a - The first operand for multiplication.
    * @param b - The second operand for multiplication.
@@ -58,8 +58,8 @@ export class SafeMath {
   }
 
   /**
-   * div - Returns the integer division of two unsigned 64-bit integers (u64),
-   *       Reverts on division by zero. The result is rounded towards zero
+   * @remarks
+   * Returns the integer division of two 64-bit integers, reverts on division by zero and result is rounded towards zero
    *
    * @param a - The dividend,
    * @param b - The divisor,
