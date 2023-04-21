@@ -16,7 +16,7 @@ export class Sampler {
    * @param s - seed for random Math.random function.
    */
   constructor(s: u64 = 0) {
-    Math.seedRandom(s);
+    NativeMath.seedRandom(s);
     this._bounderies = new Float64Array(0);
   }
 
