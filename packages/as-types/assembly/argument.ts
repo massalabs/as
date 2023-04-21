@@ -79,8 +79,8 @@ export class Args {
    * In this case, the offset will not be changed.
    *
    * @returns a Result object :
-   * - Containing the next deserialized string starting from the current offset
-   * - Containing an empty string and an error message if the deserialization failed
+   * - Containing the next deserialized string starting from the current offset.
+   * - Containing an empty string and an error message if the deserialization failed.
    *
    */
   nextString(): Result<string> {
@@ -459,7 +459,7 @@ export class Args {
    * and returns it as a static array of unsigned 8-bit integers.
    *
    * @remarks
-   * Unlike other 'next' methods, 'getNextData' doesn't increment the offset and therefore is quite usefull to fetch data directly 
+   * Unlike other 'next' methods, 'getNextData' doesn't increment the offset.
    *
    * @param size - The data size
    *
