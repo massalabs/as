@@ -44,7 +44,7 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Draws a number from the binomial distribution using the rejection sampling method.
+   * Draws a number from the binomial distribution
    *
    * @remarks
    * - The _m variable is used as the threshold for the rejection sampling method.
