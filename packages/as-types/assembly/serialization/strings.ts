@@ -1,12 +1,12 @@
 /**
- * Converts utf-16 string to a StaticArray<u8>.
+ * Converts a UTF-16 string (AssemblyScript's default) to a UTF-8 encoded StaticArray<u8>.
  *
  * @remarks
  * If the string is empty, returns an empty array.
  *
  * @param str - the string to convert
  *
- * @returns the converted StaticArray<u8>
+ * @returns A StaticArray<u8> representation of the input string.
  */
 export function stringToBytes(str: string): StaticArray<u8> {
   if (!str.length) {
@@ -16,14 +16,14 @@ export function stringToBytes(str: string): StaticArray<u8> {
 }
 
 /**
- * Converts StaticArray<u8> to a string.
+ * Converts a StaticArray<u8> containing UTF-8 encoded data to a UTF-16 string (AssemblyScript's default).
  *
  * @remarks
  * If the array is empty, returns an empty string.
  *
  * @param arr - the array to convert
  *
- * @returns the converted string
+ * @returns A UTF-16 string representation of the input array.
  */
 export function bytesToString(arr: StaticArray<u8>): string {
   if (!arr.length) {
