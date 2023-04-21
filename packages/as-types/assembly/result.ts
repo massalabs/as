@@ -72,6 +72,8 @@ export class Result<T> {
   /**
    * Get the value of the Result
    *
+   * @remarks This method retrieves the value of the Result and also handles nullable types.
+   *
    * @returns the value of the Result
    */
   @inline
