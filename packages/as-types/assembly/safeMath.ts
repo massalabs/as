@@ -20,7 +20,9 @@ export class SafeMath {
    *
    * @param a - The first operand for addition.
    * @param b - The second operand for addition.
+   *
    * @returns The sum of a and b as an unsigned 64-bit integer (u64).
+   *
    * @throws Throws an error if the operation results in an overflow.
    */
   static add(a: u64, b: u64): u64 {
@@ -39,7 +41,9 @@ export class SafeMath {
    *
    * @param a - The first operand for subtraction (minuend).
    * @param b - The second operand for subtraction (subtrahend).
+   *
    * @returns The difference between a and b as an unsigned 64-bit integer (u64).
+   *
    * @throws Throws an error if the operation results in an underflow.
    */
   static sub(a: u64, b: u64): u64 {
@@ -58,7 +62,9 @@ export class SafeMath {
    *
    * @param a - The first operand for multiplication.
    * @param b - The second operand for multiplication.
+   *
    * @returns The product of a and b as an unsigned 64-bit integer (u64).
+   *
    * @throws Throws an error if the operation results in an overflow.
    */
   static mul(a: u64, b: u64): u64 {
@@ -81,7 +87,9 @@ export class SafeMath {
    *
    * @param a - The dividend,
    * @param b - The divisor,
+   *
    * @returns The quotient of a divided by b as an unsigned 64-bit integer (u64).
+   *
    * @throws Throws an error if the operation results in a division by zero.
    */
   static div(a: u64, b: u64): u64 {
