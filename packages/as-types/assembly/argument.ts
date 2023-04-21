@@ -26,15 +26,16 @@ import {
 /**
  * Args for remote function call.
  *
- * This class can serialize assembly script native types into bytes, in order to
- * make smart-contract function call easier.
+ * @remarks
+ * - This class can serialize assembly script native types into bytes, in order to
+ *   make smart-contract function call easier.
  *
- * In a smart-contract exposed function, use this class to deserialize the string
- * argument, using the `next...` methods.
+ * - In a smart-contract exposed function, use this class to deserialize the string
+ *   argument, using the `next...` methods.
  *
- * In a smart-contract, to call another smart-contract function, use this class
- * to serialize the arguments you want to pass to the smart-contract function
- * call.
+ * - In a smart-contract, to call another smart-contract function, use this class
+ *   to serialize the arguments you want to pass to the smart-contract function
+ *   call.
  *
  */
 export class Args {
