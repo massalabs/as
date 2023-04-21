@@ -309,7 +309,7 @@ export class Args {
   }
 
   /**
-   * This method deserializes an Ff2 from a serialized array starting from the current offset.
+   * This method deserializes an F32 from a serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
