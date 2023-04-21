@@ -7,7 +7,7 @@
  *
  * @param ll - included lower limit.
  * @param ul - included upper limit.
- * @returns a non random secure number between given limits.
+ * @returns an unsafe random integer between given limits.
  *
  */
 export function randomInt(ll: u64, ul: u64): u64 {
