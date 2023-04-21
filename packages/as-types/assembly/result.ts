@@ -37,7 +37,7 @@ export class Result<T> {
   }
 
   /**
-   * Returns the value if the Result is okay. If the Result is not okay, it throws an assertion
+   * Returns the value if the `Result` is successful. Throws an assertion error if not.
    *
    * @param msg - A string representing the message to be shown on error.
    * @returns
