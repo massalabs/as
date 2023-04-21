@@ -1,9 +1,12 @@
 /**
- * Create a Result object.
- * A result can be:
- * - expected Type if the treatment was executed as planed.
- * - an error if something went wrong.
+ * This module contains the 'Result' class, which represents wrapper for a value that can be either
+ * a success or an error.
+ *
+ * The 'Result' class provides methods to {@link unwrap} the value, {@link expect} a value
+ * or {@link isOk} or {@link isErr} to check if the result is successful.
+ *
  */
+
 export class Result<T> {
   /**
    * Initializes a Result object.
