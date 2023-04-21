@@ -1,7 +1,14 @@
+/**
+ * This module provides utility functions for serializing and deserializing arrays of both native
+ * types and objects implementing the {@link Serializable} interface. The serialization process
+ * converts arrays into StaticArray<u8> and the deserialization process converts StaticArray<u8>
+ * back to arrays of the original type. These utilities are helpful for working with data in a format
+ * that can be easily stored or transmitted.
+ *
+ */
+
 import { Result } from '../result';
 import { Serializable } from '../serializable';
-
-// Serialize array
 
 /**
  * Convert an array of type parameter to StaticArray<u8>
@@ -13,39 +20,34 @@ import { Serializable } from '../serializable';
  * @see {@link Serializable}
  *
  * @param source - the array to convert
+ * @returns The converted StaticArray<u8> (byte array) representation of the native type array.
  */
 export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
-
-  // ensures that the new array has the proper length.
-  // u16 are encoded using 4 bytes, u64 uses 8
-  // hence we need to multiple by 2 (swap bit) the right number of time (alignof<T>)
+  
   let targetLength = (<usize>sourceLength) << alignof<T>();
 
-  // allocates a new StaticArray<u8> in the memory
   let target = changetype<StaticArray<u8>>(
     // @ts-ignore: Cannot find name '__new'
     __new(targetLength, idof<StaticArray<u8>>()),
   );
 
-  // copies the content of the source buffer to the newly allocated array.
-  // Note: the pointer to the data buffer for Typed Array is in dataStart.
-  // There is no such things for StaticArray.
   memory.copy(changetype<usize>(target), source.dataStart, targetLength);
 
   return target;
 }
 
 /**
- * Convert an array of type parameter to StaticArray<u8>
+ * Serialize a serializable objects array into a `StaticArray<u8>` (byte array).
  *
  * @remarks
- * This will perform a deep copy
- * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * This function performs a deep copy of serializable objects. It is inspired
+ * by the AssemblyScript standard library array implementation.
+ * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81 
+ * | AssemblyScript array implementation}
  *
- * @see {@link Serializable}
- *
- * @param source - the array to convert
+ * @param source - The array of serializable objects to convert to bytes.
+ * @returns The converted StaticArray<u8> (byte array) representation of the serializable objects array.
  */
 export function serializableObjectsArrayToBytes<T extends Serializable>(
   source: T[],
@@ -63,7 +65,6 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
     totalLength += bytes.length;
   }
 
-  // allocates a new StaticArray<u8> in the memory
   const target = changetype<StaticArray<u8>>(
     // @ts-ignore: Cannot find name '__new'
     __new(totalLength, idof<StaticArray<u8>>()),
@@ -71,7 +72,6 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
 
   let offset: usize = 0;
   for (let i = 0; i < nbElements; i++) {
-    // copies the content of the source buffer to the newly allocated array.
     memory.copy(changetype<usize>(target) + offset, pointers[i], sizes[i]);
     offset += sizes[i];
   }
@@ -79,15 +79,16 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
   return target;
 }
 
-// De-serialize array
-
 /**
- * Converts a StaticArray<u8> into a Array of type parameter.
+ * Deserialize a byte array into a native type array.
  *
  * @remarks
- * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * This function is inspired by the AssemblyScript standard library array implementation.
+ * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * | AssemblyScript array implementation}
  *
- * @param source - the array to convert
+ * @param source - The byte array to convert into a native type array.
+ * @returns The converted native type array representation of the byte array.
  */
 export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
   let bufferSize = source.length;
@@ -98,9 +99,16 @@ export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
 }
 
 /**
- * Converts a StaticArray<u8> into a Array of type parameter.
+ * Deserialize a byte array into a serializable objects array.
  *
- * @param source - the array to convert
+ * @remarks
+ * This function takes a `StaticArray<u8>` and attempts to deserialize it into
+ * an array of serializable objects. If deserialization is unsuccessful, a
+ * `Result` object containing an error message is returned.
+ *
+ * @param source - The byte array to convert into a serializable objects array.
+ * @returns A `Result` object containing either the successfully deserialized
+ * array of serializable objects or an error message.
  */
 export function bytesToSerializableObjectArray<T extends Serializable>(
   source: StaticArray<u8>,
