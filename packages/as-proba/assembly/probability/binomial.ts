@@ -51,6 +51,8 @@ export class Binomial extends Sampler implements Drawer {
    * - Rejection sampling method is used to generates an observation
    *   from binomial distribution.
    *
+   * @returns A random value sampled from the binomial distribution.
+   *
    */
   draw(): u64 {
     if (this._m == 0) {
