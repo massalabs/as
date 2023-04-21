@@ -12,8 +12,8 @@
  */
 export class SafeMath {
   /**
-   * Returns the addition of two unsigned 64-bit integers (u64),
-   *       reverting on overflow.
+   * Safely adds two unsigned 64-bit integers (u64), reverting if an
+   * overflow occurs.
    *
    * @remarks
    * This function is used to safely add two unsigned 64-bit integers without causing an overflow.
@@ -33,8 +33,8 @@ export class SafeMath {
   }
 
   /**
-   * Returns the subtraction of two unsigned 64-bit integers (u64),
-   *       reverting on underflow.
+   * Safely subtracts two unsigned 64-bit integers (u64), reverting if an
+   * underflow occurs.
    *
    * @remarks
    * This function is used to safely substract two unsigned 64-bit integers without causing an underflow.
@@ -54,8 +54,8 @@ export class SafeMath {
   }
 
   /**
-   * Returns the multiplication of two unsigned 64-bit integers (u64),
-   *       reverting on overflow.
+   * Safely multiplies two unsigned 64-bit integers (u64), reverting on
+   * overflow.
    *
    * @remarks
    * This function is used to safely mutilply two unsigned 64-bit integers without causing an overflow.
@@ -79,8 +79,8 @@ export class SafeMath {
   }
 
   /**
-   * Returns the integer division of two unsigned 64-bit integers (u64),
-   *       Reverts on division by zero. The result is rounded towards zero
+   * Safely divides two unsigned 64-bit integers (u64), reverting on
+   * division by zero. The result is rounded towards zero.
    *
    * @remarks
    * This function is used to safely divide two unsigned 64-bit integers without causing a division by zero error.
