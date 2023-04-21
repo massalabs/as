@@ -34,10 +34,14 @@ export class Amount {
    *
    * @param  other - The other Amount to add.
    *
+   * @see {@link Result} for more information about the return type.
+   *
    * @returns
-   * - A Result containing the new Amount.
-   * - An error message if the currency is not the same between the two amounts.
-   * - An error message if the addition would overflow 'u64.MAX_VALUE'.
+   * A Result object containing:
+   * - The new Amount if operation was successful.
+   * - An error message if:
+   *    - the Amount objects are not the same.
+   *    - the addition would overflow of the 'u64.MAX_VALUE' limit.
    *
    */
   @operator('+')
@@ -60,12 +64,16 @@ export class Amount {
   /**
    * Subtracts two amounts and return results in a new one.
    *
+   * @see {@link Result} for more information about the return type.
+   *
    * @param  other - Amount to subtract.
    *
    * @returns
-   * - A Result containing the new Amount.
-   * - An error message if the currency is not the same between the two amounts.
-   * - An error message if the subtraction would underflow .
+   * A Result object containing:
+   * - The new Amount if the operation was successful.
+   * - An error message if:
+   *    - the currency is not the same between the two amounts.
+   *    - the subtraction would underflow .
    */
   @operator('-')
   subtract(other: Amount): Result<Amount> {
@@ -90,6 +98,9 @@ export class Amount {
   /**
    * Check if existent amount is lower than given one.
    *
+   * @remarks
+   * You should not compare amounts of different currencies.
+   *
    * @param  other - Amount to check against.
    *
    * @returns true if the amount is lower than the given one.
@@ -109,12 +120,16 @@ export class Amount {
   /**
    * Deserializes an Amount from an {@link Args} 'array of bytes'.
    *
+   * @see {@link Result} for more information about the return type.
+   *
    * @param args - Argument to deserialize.
    *
    * @returns
-   * - A Result containing the deserialized Amount.
-   * - An error message if there is an error with deserializing the 'value'.
-   * - An error message if there is an error with deserializing the 'currency'.
+   * A Result object containing:
+   * - The deserialized Amount if succeeded.
+   * - An error message if:
+   *  - if there is an error with deserializing the 'value'.
+   *  - if there is an error with deserializing the 'currency'.
    */
   static fromArgs(args: Args): Result<Amount> {
     const value = args.nextU64();
