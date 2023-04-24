@@ -1,7 +1,7 @@
 
 # as-proba
 
-**MassaLabs** as-probalibrary.
+**MassaLabs** as-proba library.
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
