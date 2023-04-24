@@ -8,7 +8,6 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
-import { hasDecorator } from './helpers/node.js';
 
 const callTransformers = [File2ByteArray, TestTable];
 
@@ -16,7 +15,7 @@ const protobufTransformerDecorator = 'exportUsingPB';
 
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
-    if (hasDecorator(node, protobufTransformerDecorator)) {
+    if (utils.hasDecorator(node, protobufTransformerDecorator)) {
       console.log(node.name.text);
       // generateProtoFile(); TODO: #109
       // generateProtoHelpers(); TODO: #164
