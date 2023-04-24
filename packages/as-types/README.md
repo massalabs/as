@@ -1,7 +1,7 @@
 
-# as-proba
+# as-types
 
-**MassaLabs** as-proba library.
+**MassaLabs** as-types library.
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
@@ -17,7 +17,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 The complete documentation of all available functions and objects is here:
 
-- [`as-proba documentation`](https://as-proba.docs.massa.net)
+- [`as-types documentation`](https://as-types.docs.massa.net)
 
 ## Warning
 **Non-secure random functions are used here.**
@@ -29,7 +29,7 @@ Using non-secure random functions is the only way to have onchain randomness but
 Packages are independant you can choose to install what you need
 
 ```sh
-npm i --save-dev @massalabs/as-proba
+npm i --save-dev @massalabs/as-types
 ```
 
 ## Development guide
