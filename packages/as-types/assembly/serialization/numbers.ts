@@ -13,7 +13,7 @@
  * Converts a u8 in a StaticArray<u8>.
  *
  * @remarks
- * This is done by adding the passed number at index 0 of a size 1 StaticArray<u8>.
+ * This function creates a new StaticArray<u8> of size 1, and sets the first element to the passed u8 value.
  *
  * @param val - the number to convert
  *
