@@ -12,21 +12,21 @@ import { randomInt } from './random';
  *    of a probability function.
  */
 export class Sampler {
-  _bounderies: Float64Array;
+  _boundaries: Float64Array;
 
   /**
    * Creates an instance of the Sampler class.
    *
    * @privateRemarks
    * - The constructor uses an optional seed for the Math.random() function.
-   * - The _bounderies field is initialized with an empty Float64Array.
+   * - The _boundaries field is initialized with an empty Float64Array.
    *
    * @param s - seed for random Math.random function. Default value is 0.
    *
    */
   constructor(s: u64 = 0) {
     Math.seedRandom(s);
-    this._bounderies = new Float64Array(0);
+    this._boundaries = new Float64Array(0);
   }
 
   /**
@@ -75,13 +75,13 @@ export class Sampler {
    *
    *  1- randomly find the potential observation k by using an uniform random
    *     function with lower limit 0 and upper limit 4.
-   *     Lets say k = 0.
+   *     Lets say k = 0
    *  2- draw a number x, from an uniform random function with lower limit 0
    *     and upper limit p_max.
    *     Lets say x \> p_0. In that case we restart the process from
    *     the beginning.
    *  3- randomly find k.
-   *     Lets say k = 2.
+   *     Lets say k = 2
    *  4- randomly find x.
    *     Lets say x \< p_2. In that case the process stop and
    *     the observation is returned.
@@ -119,21 +119,21 @@ export class Sampler {
   }
 
   /**
-   * This method populates observation zone bounderies.
+   * This method populates observation zone boundaries.
    *
    * @privateRemarks
    * - This method is used by the {@link inverseCumulativeDistributionSampling} method.
    *
    * @param n - Sampling upper limit
    */
-  private populateBounderies(n: u64): void {
-    this._bounderies = new Float64Array(i32(n));
+  private populateBoundaries(n: u64): void {
+    this._boundaries = new Float64Array(i32(n));
 
-    this._bounderies[0];
+    this._boundaries[0];
     this.probability(0);
 
     for (let i = 1; i < i32(n); i++) {
-      this._bounderies[i] = this._bounderies[i - 1] + this.probability(i);
+      this._boundaries[i] = this._boundaries[i - 1] + this.probability(i);
     }
   }
 
@@ -148,7 +148,7 @@ export class Sampler {
    *
    * The process is the following:
    *
-   * 1- The cumulative distribution function is used to define bounderies
+   * 1- The cumulative distribution function is used to define boundaries
    *    of observation zone.
    * 2- An number x is drawn using a uniform distribution function
    * 3- The zone in which the number x falls is the observation
@@ -177,7 +177,7 @@ export class Sampler {
    *    0 1  2 3 4
    *
    * x is drawn and the corresponding observation zone is identified
-   * using bounderies:
+   * using boundaries:
    *
    *    ├┼x┼───┼┼──┤
    *    0 1  2 3 4
@@ -186,14 +186,14 @@ export class Sampler {
    * @returns Observation
    */
   inverseCumulativeDistribution(n: u64): u64 {
-    if (this._bounderies.length == 0) {
-      this.populateBounderies(n);
+    if (this._boundaries.length == 0) {
+      this.populateBoundaries(n);
     }
 
-    const x = Math.random() * this._bounderies[i32(n - 1)];
+    const x = Math.random() * this._boundaries[i32(n - 1)];
 
     for (let i = 0; i < i32(n); i++) {
-      if (x <= this._bounderies[i]) {
+      if (x <= this._boundaries[i]) {
         return u64(i);
       }
     }
