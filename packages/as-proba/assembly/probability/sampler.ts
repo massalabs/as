@@ -17,7 +17,7 @@ export class Sampler {
   /**
    * Creates an instance of the Sampler class.
    *
-   * @remarks
+   * @privateRemarks
    * - The constructor uses an optional seed for the Math.random() function.
    * - The _bounderies field is initialized with an empty Float64Array.
    *
