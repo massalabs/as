@@ -14,7 +14,7 @@ describe('Doc tests', () => {
     // Amount a1 is lower than amout a2
     // Substraction is therefore negative which is forbidden.
     // Therefore new amount is not valid anymore.
-    expect(a1.substract(a2).isOk()).toBeFalsy('underflow');
+    expect(a1.subtract(a2).isOk()).toBeFalsy('underflow');
 
     //
     // serialization / deserialization use case
@@ -38,6 +38,6 @@ describe('Blackbox tests', () => {
     const a = new Amount(u64.MAX_VALUE);
     expect(a.add(new Amount(1)).isOk()).toBeFalsy('overflow');
     expect(a.add(new Amount(0)).isOk()).toBeTruthy('MAX_VALUE + 0');
-    expect(new Amount().substract(a).isOk()).toBeFalsy('underflow');
+    expect(new Amount().subtract(a).isOk()).toBeFalsy('underflow');
   });
 });
