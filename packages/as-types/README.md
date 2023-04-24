@@ -1,72 +1,79 @@
 # as-types
 
-This package provides AssemblyScript classes meant to be used for smart-contract development.
+**MassaLabs** as-types library.
+
+This library provides useful *AssemblyScript* objects and functions to help you deal with types :
+
+- **Amount** object to safely express amounts in every currency
+- **Args** object to serialize assembly script native types into bytes
+- **Currency** object to represent monetary units used to express a value
+- **Result** object which represents wrapper for a value that can be either a success or an error
+- **Serializable** an interface that allows you to use `Args` to serialize/de-serialize your objects
+- **SafeMath** a module to avoid overflows and divisions by zero while doing operations
+- Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
+
+The complete documentation of all available functions and objects is here:
 
 - [`as-types documentation`](https://as-types.docs.massa.net)
 
+
+## Install
+
+Packages are independant you can choose to install what you need
+
+```sh
+npm i --save-dev @massalabs/as-types
+```
+
+## Development guide
+
+### Build
+
+```plain
+npm run build
+```
+
+### Code linting and formatting
+
+```plain
+npm run fmt
+```
+
+### Test
+
+```plain
+npm run test
+```
+
+### Generate doc
+From the root folder :
+```plain
+npm run doc
+```
+
 ## Usage
+After installing *as-types*, you can import the object classes and functions that you need in your AssemblyScript file.
 
-### Requirements
-
-- NodeJS 14+
-- npm
-
-### Installation
-
-`npm install @massalabs/as-types`
-
-### Classes
-
-This section contains a description of the classes available in this package.
-
-#### Result
-
-This class provides a wrapper around a type and an error.
-
-It will allow you to check the returns of various methods available in this package.
-
-Available class methods :
-
-- `isOk`
-- `isErr`
-- `expect`
-Checks that the result is okay and panic if not.
-- `unwrap`
-Get the value inside Result object. Panic if error.
-
-#### Currency
-
-This class allows for the creation of a currency object with ease.
-It also provides useful methods to manipulate currencies objects, such as :
-
-- `equals`
-- `notEqual`
-- `toArgs`
-- `fromArgs`
-
+For example, to use the "args" object, you can import and use it like this:
 ```typescript
-const dollar = new Currency("dollar", 2);
+import { Args, i32ToBytes } from  '@massalabs/as-types';
+
+// This main function is called automatically when the smart contract is executed by the blockchain.
+//the argument args contains the serialized values n and k as i32
+export function main(binaryArgs: StaticArray<u8>): StaticArray<u8>{
+	const args = new  Args(binaryArgs);
+	const  n = args.nextI32();
+	const  k = args.nextI32();
+	return i32ToBytes(a + b)
+}
 ```
+## Contributing
+We welcome contributions from the community!
 
-#### Amount
+If you would like to contribute to Massa-as-sdk, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
-This class allows for the creation of an amount object with ease.
-It also provides useful methods to manipulate amounts objects, such as :
+## License
+Massa-as-sdk is released under the [MIT License](LICENSE).
 
-- `equals`
-- `notEqual`
-- `lessThan`
-- `toArgs`
-- `fromArgs`
-
-```typescript
-const dollar = new Currency("dollar", 2);
-const price = new Amount(1034, dollar);
-```
-
-Note that if you try to add or substract amounts that are defined in different types of currencies, it will result in an error.
-
-#### Argument
-
-This class is very important to write smart contracts.
-It allows for the serialization/deserialization of a regular type (int, float, string), into a binary format.
+## Powered By
+Massa-as-sdk is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
