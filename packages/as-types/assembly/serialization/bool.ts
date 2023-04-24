@@ -2,7 +2,9 @@
  * Converts a StaticArray<u8> to boolean.
  *
  * @remarks
- * This is done by checking if the first byte is 0 or not.
+ * The conversion is performed by checking if the first byte of the 
+ * `StaticArray<u8>` is non-zero (i.e., it represents a `true` value) 
+ * or zero (i.e., it represents a `false` value).
  *
  * @param arr - the StaticArray<u8> to convert
  *
