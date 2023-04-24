@@ -39,6 +39,7 @@ export class Sampler {
    *   distribution must be known.
    *
    * @param _ - sample.
+   
    * @returns the probability of the given sample. 1 if you don't override this method.
    *
    */
