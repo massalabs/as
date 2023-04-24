@@ -1,19 +1,26 @@
 /**
- * Create a Result object.
- * A result can be:
- * - expected Type if the treatment was executed as planed.
- * - an error if something went wrong.
+ * This module contains the 'Result' class, which represents wrapper for a value that can be either
+ * a success or an error.
+ *
+ * The 'Result' class provides methods to {@link unwrap} the value, {@link expect} a value
+ * or {@link isOk} or {@link isErr} to check if the result is successful.
+ *
  */
+
 export class Result<T> {
   /**
+   * Initializes a Result object.
    *
    * @param value - expected value for passing case
    * @param error - error message for non-passing case
+   *
    */
   constructor(private value: T, public error: string | null = null) {}
 
   /**
-   * Checks that the result is okay.
+   * Determines if the `Result` represents a successful outcome.
+   *
+   * @returns true if the Result is okay, false otherwise.
    */
   @inline
   isOk(): bool {
@@ -21,7 +28,9 @@ export class Result<T> {
   }
 
   /**
-   * Checks that the result is okay.
+   * Determines if the `Result` represents a failed outcome.
+   *
+   * @returns true if the Result is not okay, false otherwise.
    */
   @inline
   isErr(): bool {
@@ -29,9 +38,13 @@ export class Result<T> {
   }
 
   /**
-   * Checks that the result is okay and panic if not.
+   * Returns the value if the `Result` is successful. Throws an assertion error if not.
    *
-   * @param msg - panic message that will prefix the error content.
+   * @param msg - The message to be displayed if the `Result` has failed.
+   *
+   * @returns The value if the `Result` is successful.
+   *
+   * @throws If there is an error in the result, it throws an assertion error with the given message.
    */
   @inline
   expect(msg: string): NonNullable<T> {
@@ -43,7 +56,13 @@ export class Result<T> {
   }
 
   /**
-   * Get the value. Panic if error.
+   * Get the value of the Result.
+   *
+   * @remarks This method panics if the Result is an error.
+   *
+   * @returns The value of the `Result` if successful.
+   *
+   * @throws If there is an error in the result, it throws an assertion error with the given message.
    */
   @inline
   unwrap(): NonNullable<T> {
@@ -55,7 +74,11 @@ export class Result<T> {
   }
 
   /**
-   * @returns the value
+   * Get the value of the Result
+   *
+   * @remarks This method retrieves the value of the Result and also handles nullable types.
+   *
+   * @returns the value of the Result
    */
   @inline
   private getValue(): NonNullable<T> {
