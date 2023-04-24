@@ -2,7 +2,7 @@
 
 **MassaLabs** as-types library.
 
-This library provides useful *AssemblyScript* objects and functions to help you deal with types :
+This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
 - **Amount** object to safely express amounts in every currency
 
