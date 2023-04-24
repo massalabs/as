@@ -46,6 +46,7 @@ export function partialPermutation(n: u64, k: u64): f64 {
  * - The function uses a loop to multiply all the integers from 2 to n inclusive to obtain the factorial.
  * 
  * @param n - Number of elements.
+
  * @return The factorial of n.
  * 
  */
