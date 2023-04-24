@@ -52,7 +52,7 @@ export class Sampler {
    *
    * This method uses a uniform random function to generate:
    *  - the number k, the potential observation
-   *  - the number x, an aleatory number between 0 and the greatest probability of the distribution
+   *  - the number x, a random number between 0 and the greatest probability of the distribution
    *
    *  If the number x is lower or equal to the probability of event k,
    *  then it's an observation.
