@@ -1,4 +1,15 @@
 /**
+ * This module aim's to provide number variable types serialization and conversion helper functions.
+ *
+ * @remarks
+ * This module is part of the {@link serialization} module.
+ *
+ * Some of the functions are generic templated functions, therefore you must use them with care
+ * because they accept only specific type params. Otherwise the compiler will throw an error.
+ *
+ */
+
+/**
  * Converts a u8 in a StaticArray<u8>.
  *
  * @remarks
@@ -33,9 +44,13 @@ export function byteToU8(arr: StaticArray<u8>): u8 {
 }
 
 /**
- * Convert an integer number to StaticArray<u8>
+ * Converts an integer number to StaticArray<u8>
  *
- * @typeParam T - the type of the number to convert (it must be an integer type)
+ * @remarks
+ * Won't compile if the type param is not an integer.
+ * @see {@link isInteger}
+ *
+ * @typeParam T - the type of the number to convert (it must be an integer type, such as i32, u32, i64, or u64)
  *
  * @param val - the number to convert
  *
@@ -51,9 +66,13 @@ export function toBytes<T>(val: T): StaticArray<u8> {
 }
 
 /**
- * Convert a StaticArray<u8> to number
+ * Converts a StaticArray<u8> to number
  *
- * @typeParam T - the type of the number result (it must be an integer type)
+ * @remarks
+ * Won't compile if the type param is not an integer.
+ * @see {@link isInteger}
+ *
+ *  * @typeParam T - the type of the number result (it must be an integer type, such as i32, u32, i64, or u64)
  *
  * @param arr - the array to convert
  *
@@ -169,6 +188,8 @@ export function i64ToBytes(val: i64): StaticArray<u8> {
  * Converts a StaticArray<u8> into a i64.
  *
  * @param arr - the array to convert
+ *
+ * @returns the converted i64
  */
 export function bytesToI64(arr: StaticArray<u8>): i64 {
   return changetype<i64>(bytesToU64(arr));
