@@ -2,8 +2,8 @@
  * Converts a StaticArray<u8> to boolean.
  *
  * @remarks
- * The conversion is performed by checking if the first byte of the 
- * `StaticArray<u8>` is non-zero (i.e., it represents a `true` value) 
+ * The conversion is performed by checking if the first byte of the
+ * `StaticArray<u8>` is non-zero (i.e., it represents a `true` value)
  * or zero (i.e., it represents a `false` value).
  *
  * @param arr - the StaticArray<u8> to convert
@@ -18,6 +18,11 @@ export function byteToBool(arr: StaticArray<u8>): bool {
 
 /**
  * Converts a boolean to StaticArray<u8>.
+ *
+ * @remarks
+ * The conversion is performed by creating a StaticArray<u8> of length 1,
+ * where the first byte represents the boolean value.
+ * If the value is true, the byte is set to 1, otherwise, it is set to 0.
  *
  * @param val - the boolean value to convert
  *
