@@ -1,28 +1,28 @@
 
 # as-proba
 
-**MassaLabs** as-probalibrary.
+**MassaLabs** as-proba library.
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
-- **Amount** is an object to safely express amounts with any currency.
+- **Binomial** in an object that represent a binomial distribution. It can be used to compute probabilities of a given event and generate random samples
 
-- **Args** is an object to serialize assembly script native types into byte arrays.
+- Useful methods to compute **combinations** an **partial permutations** 
 
-- **Currency** is an object to represent monetary units used to express a value.
+- **randomInt**, a method to generate a random number between given limits
 
-- **Result** is an object which represents wrapper for a value that can be either store the value on success and an error on failure.
+- **Sampler**, an object wich allows you to generate samples based on the probability distribution you built
 
-- **Serializable** is an interface that allows you to use `Args` to serialize/de-serialize your customized object types.
 
-- **SafeMath** is a module to avoid overflows and divisions by zero while doing operations.
-
-- Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
 
 The complete documentation of all available functions and objects is here:
 
-- [`as-probadocumentation`](https://as-proba.docs.massa.net)
+- [`as-proba documentation`](https://as-proba.docs.massa.net)
 
+## Warning
+**Non-secure random functions are used here.**
+
+Using non-secure random functions is the only way to have onchain randomness but **these functions do not generate truly random** values, making it easier for attackers to predict the output and exploit weaknesses in your smart contract.
 
 ## Install
 
