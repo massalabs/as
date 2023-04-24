@@ -8,7 +8,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Args** is an object to serialize assembly script native types into byte arrays.
 
-- **Currency** object to represent monetary units used to express a value
+- **Currency** is an object to represent monetary units used to express a value.
 
 - **Result** object which represents wrapper for a value that can be either a success or an error
 
