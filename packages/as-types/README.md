@@ -14,7 +14,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Serializable** is an interface that allows you to use `Args` to serialize/de-serialize your customized object types.
 
-- **SafeMath** a module to avoid overflows and divisions by zero while doing operations
+- **SafeMath** is a module to avoid overflows and divisions by zero while doing operations.
 
 - Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
 
