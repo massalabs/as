@@ -119,7 +119,7 @@ export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
  * an array of serializable objects @see {@link Serializable}. If deserialization is unsuccessful, a
  * `Result` object containing an error message is returned.
  *
- * @param source - The byte array to convert into a serializable objects array.
+ * @param source - The byte array to convert into an array of serializable objects.
  *
  * @returns A `Result` object containing either the successfully deserialized
  * array of serializable objects or an error message.
