@@ -1,4 +1,5 @@
 
+
 # as-proba
 
 **MassaLabs** as-proba library.
@@ -61,17 +62,19 @@ npm run doc
 ## Usage
 After installing *as-proba*, you can import the object classes and functions that you need in your AssemblyScript file.
 
-For example, to use the "args" object, you can import and use it like this:
+For example, to compute the combination of 2 numbers, you can use as-proba like this:
 ```typescript
-import { Args, i32ToBytes } from  '@massalabs/as-proba';
+import { Args, u64ToBytes} from '@massalabs/as-types';
+import { combination } from '@massalabs/as-proba';
 
 // This main function is called automatically when the smart contract is executed by the blockchain.
-//the argument args contains the serialized values n and k as i32
+//the argument args contains the serialized values n and k as U64 (n >= k)
 export function main(binaryArgs: StaticArray<u8>): StaticArray<u8>{
 	const args = new  Args(binaryArgs);
-	const  n = args.nextI32();
-	const  k = args.nextI32();
-	return i32ToBytes(a + b)
+	const  n = args.nextU64();
+	const  k = args.nextU64();
+	cont result = combination(n, k);
+	return u6432ToBytes(result)
 }
 ```
 ## Contributing
