@@ -5,6 +5,7 @@
 This library provides useful *AssemblyScript* objects and functions to help you deal with types :
 
 - **Amount** object to safely express amounts in every currency
+<br/>
 - **Args** object to serialize assembly script native types into bytes
 - **Currency** object to represent monetary units used to express a value
 - **Result** object which represents wrapper for a value that can be either a success or an error
