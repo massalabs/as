@@ -116,7 +116,7 @@ export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
  *
  * @remarks
  * This function takes a `StaticArray<u8>` and attempts to deserialize it into
- * an array of serializable objects. If deserialization is unsuccessful, a
+ * an array of serializable objects @see {@link Serializable}. If deserialization is unsuccessful, a
  * `Result` object containing an error message is returned.
  *
  * @param source - The byte array to convert into a serializable objects array.
