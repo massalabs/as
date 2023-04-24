@@ -5,12 +5,17 @@
 This library provides useful *AssemblyScript* objects and functions to help you deal with types :
 
 - **Amount** object to safely express amounts in every currency
-<br/>
+
 - **Args** object to serialize assembly script native types into bytes
+
 - **Currency** object to represent monetary units used to express a value
+
 - **Result** object which represents wrapper for a value that can be either a success or an error
+
 - **Serializable** an interface that allows you to use `Args` to serialize/de-serialize your objects
+
 - **SafeMath** a module to avoid overflows and divisions by zero while doing operations
+
 - Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
 
 The complete documentation of all available functions and objects is here:
