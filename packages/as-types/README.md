@@ -10,7 +10,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Currency** is an object to represent monetary units used to express a value.
 
-- **Result** object which represents wrapper for a value that can be either a success or an error
+- **Result** is an object which represents wrapper for a value that can be either store the value on success and an error on failure.
 
 - **Serializable** an interface that allows you to use `Args` to serialize/de-serialize your objects
 
