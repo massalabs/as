@@ -6,7 +6,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Amount** is an object to safely express amounts with any currency.
 
-- **Args** object to serialize assembly script native types into bytes
+- **Args** is an object to serialize assembly script native types into byte arrays.
 
 - **Currency** object to represent monetary units used to express a value
 
