@@ -1,8 +1,8 @@
 /**
- * Converts StaticArray<u8> to Uint8Array.
+ * Converts a `StaticArray<u8>` to an `Uint8Array`.
  *
- * @param arr -
- * @returns Uint8Array
+ * @param arr - The `StaticArray<u8>` to be converted.
+ * @returns An `Uint8Array` representation of the input `StaticArray<u8>`.
  */
 // @ts-ignore: decorator
 @inline
@@ -11,10 +11,10 @@ export function wrapStaticArray(arr: StaticArray<u8>): Uint8Array {
 }
 
 /**
- * Converts a Uint8Array to StaticArray<u8>.
+ * Converts an `Uint8Array` to a `StaticArray<u8>`.
  *
- * @param arr - array to convert
- * @returns converted array
+ * @param arr - The `Uint8Array` to be converted.
+ * @returns A `StaticArray<u8>` representation of the input `Uint8Array`.
  */
 // @ts-ignore: decorator
 @inline
