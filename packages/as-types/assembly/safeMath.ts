@@ -88,7 +88,7 @@ export class SafeMath {
    * @param a - The dividend,
    * @param b - The divisor,
    *
-   * @returns The quotient of a divided by b as an unsigned 64-bit integer (u64).
+   * @returns The quotient of `a` divided by `b` as an unsigned 64-bit integer (u64).
    *
    * @throws Throws an error if the operation results in a division by zero.
    */
