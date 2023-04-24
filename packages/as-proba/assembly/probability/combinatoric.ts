@@ -27,6 +27,7 @@ export function combination(n: u64, k: u64): f64 {
  * 
  * @param n - Number of elements in set.
  * @param k - Number of elements in subset.
+
  * @return 
  * - The number of ordered subsets of k elements taken from a set of n elements.
  * - If k > n : the value of n!.
