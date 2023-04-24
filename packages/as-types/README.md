@@ -4,7 +4,7 @@
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
-- **Amount** object to safely express amounts in every currency
+- **Amount** is an object to safely express amounts with any currency.
 
 - **Args** object to serialize assembly script native types into bytes
 
