@@ -10,7 +10,7 @@ This repository is a collection of tools, objects and functions in *AssemblyScri
 
 - *Random draws* with **as-proba**
 
-- *AssemblyScript transformers for unit testing and reading a file* with **as-transformer**
+- *AssemblyScript transformers, dynamic code replacement features* with **as-transformer**
 
 The complete documentation of all available functions and objects is here:
 
