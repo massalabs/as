@@ -107,8 +107,6 @@ export class Amount {
    * @param  other - Amount to check against.
    *
    * @returns true if the amount is lower than the given one.
-   *
-   * @throws if the currency is not the same between the two amounts.
    */
   @operator('<')
   lessThan(other: Amount): bool {
