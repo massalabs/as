@@ -19,7 +19,7 @@ export function byteToBool(arr: StaticArray<u8>): bool {
 /**
  * Converts a boolean to StaticArray<u8>.
  *
- * @param val - the boolean value to convert*
+ * @param val - the boolean value to convert
  *
  * @returns the serialized boolean as a byte in a StaticArray<u8> 'byte array'
  */
