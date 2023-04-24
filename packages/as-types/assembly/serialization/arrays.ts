@@ -17,9 +17,18 @@ import { Serializable } from '../serializable';
  * This will perform a deep copy only for native types.
  * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  *
- * @see {@link Serializable}
+ *
+ * @privateRemarks
+ * The length of the new array is calculated based on the length of the source array and the alignment
+ * of the type parameter T.
+ * A new StaticArray<u8> is allocated in memory and the content of the source buffer is copied to
+ * the newly allocated array.
+ * Note: the pointer to the data buffer for Typed Array is in dataStart.
+ * There is no such thing for StaticArray.
+ *
  *
  * @param source - the array to convert
+ *
  * @returns The converted StaticArray<u8> (byte array) representation of the native type array.
  */
 export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
@@ -43,10 +52,12 @@ export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
  * @remarks
  * This function performs a deep copy of serializable objects. It is inspired
  * by the AssemblyScript standard library array implementation.
+ *
  * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  * | AssemblyScript array implementation}
  *
  * @param source - The array of serializable objects to convert to bytes.
+ *
  * @returns The converted StaticArray<u8> (byte array) representation of the serializable objects array.
  */
 export function serializableObjectsArrayToBytes<T extends Serializable>(
@@ -84,10 +95,12 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
  *
  * @remarks
  * This function is inspired by the AssemblyScript standard library array implementation.
+ *
  * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
  * | AssemblyScript array implementation}
  *
  * @param source - The byte array to convert into a native type array.
+ *
  * @returns The converted native type array representation of the byte array.
  */
 export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
@@ -107,6 +120,7 @@ export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
  * `Result` object containing an error message is returned.
  *
  * @param source - The byte array to convert into a serializable objects array.
+ *
  * @returns A `Result` object containing either the successfully deserialized
  * array of serializable objects or an error message.
  */
