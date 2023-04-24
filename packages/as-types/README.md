@@ -12,7 +12,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Result** is an object which represents wrapper for a value that can be either store the value on success and an error on failure.
 
-- **Serializable** an interface that allows you to use `Args` to serialize/de-serialize your objects
+- **Serializable** is an interface that allows you to use `Args` to serialize/de-serialize your customized object types.
 
 - **SafeMath** a module to avoid overflows and divisions by zero while doing operations
 
