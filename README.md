@@ -56,7 +56,7 @@ npm run doc
 ## Usage
 After installing *As*, you can import the object classes and functions that you need in your AssemblyScript file.
 
-For example, to use the "combination" function to determine the combination of 12 and 5, you can import and use it like this:
+For example, to use the "combination" function to determine the combination of 2 numbers, you can import and use it like this:
 ```typescript
 import { combination } from  '@massalabs/as-proba';
 import { Args } from  '@massalabs/as-types';
