@@ -5,13 +5,19 @@
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
-- **Binomial** in an object that represent a binomial distribution. It can be used to compute probabilities of a given event and generate random samples
+- **Amount** object to safely express amounts in every currency
 
-- Useful methods to compute **combinations** an **partial permutations** 
+- **Args** object to serialize assembly script native types into bytes
 
-- **randomInt**, a method to generate a random number between given limits
+- **Currency** object to represent monetary units used to express a value
 
-- **Sampler**, an object wich allows you to generate samples based on the probability distribution you built
+- **Result** object which represents wrapper for a value that can be either a success or an error
+
+- **Serializable** an interface that allows you to use `Args` to serialize/de-serialize your objects
+
+- **SafeMath** a module to avoid overflows and divisions by zero while doing operations
+
+- Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
 
 
 
@@ -59,11 +65,11 @@ npm run doc
 ```
 
 ## Usage
-After installing *as-proba*, you can import the object classes and functions that you need in your AssemblyScript file.
+After installing *as-types*, you can import the object classes and functions that you need in your AssemblyScript file.
 
 For example, to use the "args" object, you can import and use it like this:
 ```typescript
-import { Args, i32ToBytes } from  '@massalabs/as-proba';
+import { Args, i32ToBytes } from  '@massalabs/as-types';
 
 // This main function is called automatically when the smart contract is executed by the blockchain.
 //the argument args contains the serialized values n and k as i32
