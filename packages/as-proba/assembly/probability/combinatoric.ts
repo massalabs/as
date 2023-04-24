@@ -9,7 +9,7 @@
  * @param n - Number of elements in set.
  * @param k - Number of elements in subset.
 
- * @return 
+ * @returns 
  * - If n > k >= 0 : the number of unordered subsets of k elements taken from a set of n elements.
  * - If k >= n : the value of n!/k!
  * 
@@ -28,7 +28,7 @@ export function combination(n: u64, k: u64): f64 {
  * @param n - Number of elements in set.
  * @param k - Number of elements in subset.
 
- * @return 
+ * @returns 
  * - The number of ordered subsets of k elements taken from a set of n elements.
  * - If k > n : the value of n!.
  * 
@@ -39,7 +39,7 @@ export function partialPermutation(n: u64, k: u64): f64 {
 
 /**
  * 
- * This method calculates the factorial of a non-negative integer n
+ * This method calculates the factorial of a non-negative integer n.
  * ie the number of permutation of n elements.
  * 
  * @remarks
@@ -47,7 +47,7 @@ export function partialPermutation(n: u64, k: u64): f64 {
  * 
  * @param n - Number of elements.
 
- * @return The factorial of n.
+ * @returns The factorial of n.
  * 
  */
 export function factorial(n: u64): f64 {
