@@ -17,7 +17,7 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 The complete documentation of all available functions and objects is here:
 
-- [`as-probadocumentation`](https://as-proba.docs.massa.net)
+- [`as-proba documentation`](https://as-proba.docs.massa.net)
 
 ## Warning
 **Non-secure random functions are used here.**
