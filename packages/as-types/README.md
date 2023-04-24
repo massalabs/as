@@ -1,34 +1,35 @@
-# as-types
 
-**MassaLabs** as-types library.
+# as-proba
+
+**MassaLabs** as-probalibrary.
 
 This library provides useful *AssemblyScript* objects and functions to help you deal with types:
 
-- **Amount** is an object to safely express amounts with any currency.
+- **Binomial** in an object that represent a binomial distribution. It can be used to compute probabilities of a given event and generate random samples
 
-- **Args** is an object to serialize assembly script native types into byte arrays.
+- Useful methods to compute **combinations** an **partial permutations** 
 
-- **Currency** is an object to represent monetary units used to express a value.
+- **randomInt**, a method to generate a random number between given limits
 
-- **Result** is an object which represents wrapper for a value that can be either store the value on success and an error on failure.
+- **Sampler**, an object wich allows you to generate samples based on the probability distribution you built
 
-- **Serializable** is an interface that allows you to use `Args` to serialize/de-serialize your customized object types.
 
-- **SafeMath** is a module to avoid overflows and divisions by zero while doing operations.
-
-- Serialization and Deserialization methods for arrays, staticArrays, booleans, strings and numbers
 
 The complete documentation of all available functions and objects is here:
 
-- [`as-types documentation`](https://as-types.docs.massa.net)
+- [`as-probadocumentation`](https://as-proba.docs.massa.net)
 
+## Warning
+**Non-secure random functions are used here.**
+
+Using non-secure random functions is the only way to have onchain randomness but **these functions do not generate truly random** values, making it easier for attackers to predict the output and exploit weaknesses in your smart contract.
 
 ## Install
 
 Packages are independant you can choose to install what you need
 
 ```sh
-npm i --save-dev @massalabs/as-types
+npm i --save-dev @massalabs/as-proba
 ```
 
 ## Development guide
@@ -58,11 +59,11 @@ npm run doc
 ```
 
 ## Usage
-After installing *as-types*, you can import the object classes and functions that you need in your AssemblyScript file.
+After installing *as-proba*, you can import the object classes and functions that you need in your AssemblyScript file.
 
 For example, to use the "args" object, you can import and use it like this:
 ```typescript
-import { Args, i32ToBytes } from  '@massalabs/as-types';
+import { Args, i32ToBytes } from  '@massalabs/as-proba';
 
 // This main function is called automatically when the smart contract is executed by the blockchain.
 //the argument args contains the serialized values n and k as i32
