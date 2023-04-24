@@ -11,6 +11,9 @@ import { Args } from './argument';
  *
  * It also provides the following comparison methods {@link lessThan},{@link equals} and {@link notEqual}.
  *
+ * Best practice:
+ * Before manipulating several `Amount` objects, you should always check if they use the same {@link Currency}.
+ *
  * @example
  * ```typescript
  * const dollar = new Currency("dollar", 2);
@@ -99,7 +102,7 @@ export class Amount {
    * Check if existent amount is lower than given one.
    *
    * @remarks
-   * You should not compare amounts of different currencies.
+   * Comparison between amounts with different {@link Currency} will result in returning false.
    *
    * @param  other - Amount to check against.
    *
@@ -110,9 +113,7 @@ export class Amount {
   @operator('<')
   lessThan(other: Amount): bool {
     if (this.currency != other.currency) {
-      abort(
-        'the comparison is impossible: the amounts have different currencies',
-      );
+      return false;
     }
     return this.value < other.value;
   }
