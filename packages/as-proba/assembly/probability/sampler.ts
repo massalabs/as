@@ -104,6 +104,7 @@ export class Sampler {
    *
    * @param n - sampling upper limit
    * @param max - greatest probability of the distribution
+
    * @returns an observation
    *
    */
