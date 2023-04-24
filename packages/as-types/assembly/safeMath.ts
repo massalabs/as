@@ -85,7 +85,7 @@ export class SafeMath {
    * @remarks
    * This function is used to safely divide two unsigned 64-bit integers without causing a division by zero error.
    *
-   * @param a - The dividend,
+   * @param a - The dividend.
    * @param b - The divisor.
    *
    * @returns The quotient of `a` divided by `b` as an unsigned 64-bit integer (u64).
