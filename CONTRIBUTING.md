@@ -1,5 +1,5 @@
 # Contributing to as
-Thank you for considering contributing to As!
+Thank you for considering contributing to as!
 
 ## Reporting Bugs
 If you discover a bug, please create a [new issue](https://github.com/massalabs/as/issues/new?assignees=&labels=issue%3Abug&template=bug.md&title=) on our GitHub repository.
