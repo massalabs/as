@@ -1,4 +1,3 @@
-
 # Contributing to as-types
 Thank you for considering contributing to as-types !
 
