@@ -1,4 +1,4 @@
-# Contributing to As
+# Contributing to as
 Thank you for considering contributing to As!
 
 ## Reporting Bugs
