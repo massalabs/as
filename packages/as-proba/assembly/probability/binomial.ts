@@ -6,7 +6,9 @@ export interface Drawer {
 }
 
 /**
- * Binomial distribution
+ * This class represents a binomial distribution.
+ * It can be used to compute the probability of a given event
+ * and generate random samples from the distribution.
  *
  */
 export class Binomial extends Sampler implements Drawer {
@@ -27,12 +29,10 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Returns the probability of an event.
+   * Computes the probability of a given event `k`.
    *
-   * The mass probability function is used to compute the probability of
-   * event k.
-   *
-   * @param k - Event.
+   * @param k - An event.
+   * @returns The probability of the event k in the binomial distribution.
    */
   probability(k: u64): f64 {
     return (
@@ -43,10 +43,17 @@ export class Binomial extends Sampler implements Drawer {
   }
 
   /**
-   * Draws a number.
+   * Draws a number from the binomial distribution
    *
+   * @remarks
    * Rejection sampling method is used to generates an observation
-   * from binomial distribution.
+   *   from binomial distribution.
+   *
+   * @privateRemarks
+   * The _m variable is used as the threshold for the rejection sampling method.
+   *
+   * @returns A random value sampled from the binomial distribution.
+   *
    */
   draw(): u64 {
     if (this._m == 0) {
