@@ -2,7 +2,7 @@
 
 **MassaLabs** as-proba library.
 
-This library provides useful *AssemblyScript* objects and functions to help you deal with types:
+This library provides useful *AssemblyScript* objects and functions :
 
 - **Binomial** in an object that represent a binomial distribution. It can be used to compute probabilities of a given event and generate random samples
 
@@ -77,7 +77,7 @@ export function main(binaryArgs: StaticArray<u8>): StaticArray<u8>{
 ## Contributing
 We welcome contributions from the community!
 
-If you would like to contribute to Massa-as-sdk, please read the [CONTRIBUTING file](CONTRIBUTING.md).
+If you would like to contribute to as-proba, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
 ## License
 as-proba is released under the [MIT License](LICENSE).
