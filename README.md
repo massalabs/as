@@ -6,7 +6,7 @@
 
 This repository is a collection of tools, objects and functions in *AssemblyScript*.
 
-- *Classes and helper functions* with **as-types**
+- *Most essential Classes and helper functions* with **as-types**
 
 - *Random draws* with **as-proba**
 
