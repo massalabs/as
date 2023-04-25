@@ -1,5 +1,6 @@
 name: Generate Powered-By
-on:  [push]
+on: 
+  push
 
 jobs:
   generate-powered-by-transfomer:
