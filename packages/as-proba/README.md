@@ -30,32 +30,6 @@ Packages are independant you can choose to install what you need
 npm i --save-dev @massalabs/as-proba
 ```
 
-## Development guide
-
-### Build
-
-```plain
-npm run build
-```
-
-### Code linting and formatting
-
-```plain
-npm run fmt
-```
-
-### Test
-
-```plain
-npm run test
-```
-
-### Generate doc
-From the root folder :
-```plain
-npm run doc
-```
-
 ## Usage
 After installing *as-proba*, you can import the object classes and functions that you need in your AssemblyScript file.
 
