@@ -12,8 +12,6 @@ This library provides useful *AssemblyScript* objects and functions to help you 
 
 - **Sampler**, an object wich allows you to generate samples based on the probability distribution you built
 
-
-
 The complete documentation of all available functions and objects is here:
 
 - [`as-proba documentation`](https://as-proba.docs.massa.net)
