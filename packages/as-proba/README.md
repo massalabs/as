@@ -71,7 +71,7 @@ export function main(binaryArgs: StaticArray<u8>): StaticArray<u8>{
 	const  n = args.nextU64();
 	const  k = args.nextU64();
 	cont result = combination(n, k);
-	return u6432ToBytes(result)
+	return u64toBytes(result)
 }
 ```
 ## Contributing
