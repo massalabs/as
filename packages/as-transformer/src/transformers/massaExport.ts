@@ -32,7 +32,7 @@ export function transform(node: FunctionDeclaration): FunctionDeclaration {
 
   const protoContent = generateProtoFile(name, args, returnType);
 
-  const protoFile = path.join(protoPath, name);
+  const protoFile = path.join(protoPath, `${name}.proto`);
 
   writeFileSync(protoFile, protoContent);
 
