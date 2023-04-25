@@ -17,7 +17,7 @@ export class File2ByteArray {
   static strPattern = 'fileToByteArray';
 
   /**
-   * Transforms a {@link CallExpression} into a {@link Expression} by replacing the call with the new expression.
+   * Transforms a 'fileToByteArray'  {@link CallExpression} into an {@link Expression} to extract the file as a byte array.
    *
    * @param node - A {@link CallExpression}
    *
