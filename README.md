@@ -73,7 +73,7 @@ export function main(args: StaticArray<u8>): void {
 ## Contributing
 We welcome contributions from the community!
 
-If you would like to contribute to Massa-as-sdk, please read the [CONTRIBUTING file](CONTRIBUTING.md).
+If you would like to contribute to As, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
 ## License
 As is released under the [MIT License](LICENSE).
