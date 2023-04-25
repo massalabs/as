@@ -19,7 +19,8 @@ The complete documentation of all available functions and objects is here:
 ## Warning
 **Non-secure random functions are used here.**
 
-Using non-secure random functions is the only way to have onchain randomness but **these functions do not generate truly random** values, making it easier for attackers to predict the output and exploit weaknesses in your smart contract.
+Using non-secure random functions is the only way to have onchain randomness but **these functions generates pseudo-random values (predictable and repeatable randomness), it is NOT a real randomness**.
+Therefore it is easier for attackers to predict the output and exploit weaknesses in your smart contract.
 
 ## Install
 
