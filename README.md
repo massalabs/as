@@ -76,7 +76,7 @@ We welcome contributions from the community!
 If you would like to contribute to Massa-as-sdk, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
 ## License
-Massa-as-sdk is released under the [MIT License](LICENSE).
+As is released under the [MIT License](LICENSE).
 
 ## Powered By
-Massa-as-sdk is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
+As is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
