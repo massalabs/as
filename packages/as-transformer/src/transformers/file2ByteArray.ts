@@ -9,14 +9,20 @@ import { SimpleParser } from 'visitor-as';
 import * as fs from 'fs';
 
 /**
- * File2ByteArray transformer
+ * The File2ByteArray transformer object allows to transform writes a function call which aims to transform
+ * an ast into a byteArray.
+ *
  */
 export class File2ByteArray {
   static strPattern = 'fileToByteArray';
 
   /**
+   * Transforms a {@link CallExpression} into a {@link Expression} by replacing the call with the new expression.
    *
-   * @param node -
+   * @param node - A {@link CallExpression}
+   *
+   * @returns the updated node as {@link Expression}
+   *
    */
   static transform(node: CallExpression): Expression {
     let arg0 = node.args[0] as StringLiteralExpression;

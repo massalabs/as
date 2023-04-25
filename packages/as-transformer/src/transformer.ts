@@ -19,6 +19,12 @@ const callTransformers = [File2ByteArray, TestTable];
 
 const protobufTransformerDecorator = 'massaExport';
 
+const  = 'exportUsingPB';
+
+/**
+ * The Transformer class allows you to parse the {@link CallExpression} to look for a specific method and
+ * update it as you need.
+ */
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
     if (utils.hasDecorator(node, protobufTransformerDecorator)) {
@@ -28,6 +34,12 @@ export class Transformer extends TransformVisitor {
     return super.visitFunctionDeclaration(node);
   }
 
+  /**
+   * Looks for a specific method and replaces it with the new expression.
+   *
+   * @param node - A {@link CallExpression} containing a call to a function.
+   * @returns The updated node as {@link Expression} if the method is found, otherwise the original node.
+   */
   visitCallExpression(node: CallExpression): Expression {
     const inputText = (node.expression as IdentifierExpression)?.text;
 
@@ -40,6 +52,11 @@ export class Transformer extends TransformVisitor {
     return super.visitCallExpression(node);
   }
 
+  /**
+   * Visits the sources and replaces the {@link CallExpression} with the new expression.
+   *
+   * @param parser - A {@link Parser} object.
+   */
   afterParse(parser: Parser): void {
     let sources = parser.sources.filter(
       (source) =>
