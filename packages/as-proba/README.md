@@ -1,5 +1,3 @@
-
-
 # as-proba
 
 **MassaLabs** as-proba library.
