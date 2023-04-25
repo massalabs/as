@@ -1,4 +1,3 @@
-
 # Contributing to As
 Thank you for considering contributing to As!
 
