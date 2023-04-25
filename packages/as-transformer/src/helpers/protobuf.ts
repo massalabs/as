@@ -42,7 +42,7 @@ message ${name} {
 ${fields}
 }`;
 
-  if (returnedType != '' && returnedType != 'null') {
+  if (returnedType != 'void' && returnedType != 'null') {
     const argumentResponse: Argument = {
       name: 'value',
       type: returnedType,
