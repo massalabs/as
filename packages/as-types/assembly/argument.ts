@@ -82,7 +82,7 @@ export class Args {
    * "can't deserialize string from given argument: out of range".
    * In this case, the offset will not be changed.
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized string starting from the current offset.
    * - Containing an empty string and an error message if the deserialization failed.
    *
@@ -112,7 +112,7 @@ export class Args {
    * and an error message: "can't deserialize bytes from given argument: out of range".
    * In this case, the offset will not be changed.
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized StaticArray of u8 starting from the current offset
    * - Containing an empty StaticArray and an error message if the deserialization failed
    *
@@ -142,7 +142,7 @@ export class Args {
    * "can't deserialize length of array from given argument".
    * In this case, the offset will not be changed.
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized array of objects that are native type starting from the current offset
    * - Containing an empty array and an error message if the deserialization failed
    */
@@ -178,7 +178,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing an empty array and an error message:
    * "can't deserialize length of array from given argument".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized array of objects that implement Serializable objects starting from the current
    *    offset
    * - Containing an empty array and an error message if the deserialization failed
@@ -216,7 +216,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing an empty Uint8Array and an error message:
    * "can't deserialize Uint8Array from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized array of u8 starting from the current offset
    * - Containing an empty Uint8Array and an error message if the deserialization failed
    *
@@ -245,7 +245,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize u64 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized U64 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -270,7 +270,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize i64 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized I64 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -296,7 +296,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize f64 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized f64 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    */
@@ -320,7 +320,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize f32 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized f32 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -346,7 +346,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize u32 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized u32 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -372,7 +372,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize i32 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized i32 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -397,7 +397,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize u8 from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized u8 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
    *
@@ -420,7 +420,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing false and an error message:
    * "can't deserialize bool from given argument: out of range".
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized boolean starting from the current offset
    * - Containing false and an error message if the deserialization failed
    *
@@ -443,7 +443,7 @@ export class Args {
    * If the deserialization failed, it returns a Result containing the object and an error message:
    * "Can't deserialize object " + type of the object.
    *
-   * @returns a Result object :
+   * @returns a Result object:
    * - Containing the next deserialized object starting from the current offset
    * - Containing the object and an error message if the deserialization failed
    *
