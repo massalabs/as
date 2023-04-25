@@ -33,6 +33,7 @@ jobs:
         npm ci
         npm run build
         npm run fmt:check
+        npm run test:ts
         npm run test:ci
 
     - name: Extract coverage
