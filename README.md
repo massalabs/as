@@ -8,7 +8,7 @@ This repository is a collection of tools, objects and functions in *AssemblyScri
 
 - *Most essential Classes and helper functions* with **as-types**
 
-- *Random draws* with **as-proba**
+- *Probabilistic simulation functionalities for smart contracts* with **as-proba**
 
 - *AssemblyScript transformers, dynamic code replacement features* with **as-transformer**
 
