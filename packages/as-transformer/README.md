@@ -1,10 +1,14 @@
 # `as-transformer`
 
+**MassaLabs** as-transformer library.
+
 An [AssemblyScript transformer](https://www.assemblyscript.org/compiler.html#transforms) helper module.
+
+The complete documentation of all available functions and objects can be found here:
 
 - [`as-transformer documentation`](https://as-transformer.docs.massa.net)
 
-## Installation
+## Install
 
 To install this module, run the following command at your project root directory :
 
@@ -12,7 +16,34 @@ To install this module, run the following command at your project root directory
 npm install -D @massalabs/as-transformer
 ```
 
-## Usage
+## Development guide
+
+### Build
+
+```plain
+npm run build
+```
+
+### Code linting and formatting
+
+```plain
+npm run fmt
+```
+
+### Test
+
+```plain
+npm run test
+```
+
+### Generate doc
+From the root folder :
+```plain
+npm run doc
+```
+
+
+### Usage
 
 Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.
 
@@ -48,10 +79,13 @@ export function main(_args: string): i32 {
 }
 ```
 
-#### Create a transformer
+## Contributing
+We welcome contributions from the community!
 
-Transformers are located in `src/transformers` folder.
-To create a new "call expression" transformer, the created class must implements:
+If you would like to contribute to as-transformer, please read the [CONTRIBUTING file](CONTRIBUTING.md).
 
-- a constant member `strPattern` which define the expression to be matched by the transformer
-- a `transform` method which implement the transformer itself
+## License
+as-transformer is released under the [MIT License](LICENSE).
+
+## Powered By
+as-transformer is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
