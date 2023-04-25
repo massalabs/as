@@ -39,7 +39,7 @@ jobs:
         commit_author: massabot <info@massa.net>
         push_options: '--force'
 
- generate-powered-by-proba:
+  generate-powered-by-proba:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -76,7 +76,7 @@ jobs:
         commit_author: massabot <info@massa.net>
         push_options: '--force'
 
- generate-powered-by-types:
+  generate-powered-by-types:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
