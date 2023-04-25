@@ -62,7 +62,9 @@ export class Args {
   }
 
   /**
-   * @returns the serialized argument.
+   * Returns the serialized arguments.
+   *
+   * @returns The serialized arguments as a static array of bytes.
    */
   serialize(): StaticArray<u8> {
     return this.serialized;
