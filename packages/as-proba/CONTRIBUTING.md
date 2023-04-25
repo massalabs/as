@@ -1,5 +1,3 @@
-
-
 # Contributing to as-proba
 Thank you for considering contributing to as-proba!
 
