@@ -72,7 +72,7 @@ Example:
 ```typescript
 export function main(_args: string): i32 {
     const bytes = fileToByteArray('./build/sc.wasm'); // will read `build/sc.wasm`, will encode it in array and then put the result in a string used to initialize `bytes`.
-    const sc_addr = createSc(bytes);
+    const sc_addr = createSC(bytes);
     call(sc_addr, "advance", "", 0);
     generateEvent("SC deployed at addr: " + sc_addr);
     return 0;
