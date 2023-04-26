@@ -43,5 +43,35 @@ export function transform(node: FunctionDeclaration): FunctionDeclaration {
 
   generateASHelpers(protoFile, asHelpersPath);
 
+  const wrapperContent = generateWrapper(name, args, returnType);
+
+  const wrapperFile = path.join(protoPath, "__pending.ts");
+
+  writeFileSync(wrapperFile, wrapperContent);
+
   return node;
 }
+
+export function generateWrapper(
+    name: string,
+    args: Argument[],
+    returnedType: string,
+  ): string {
+    const argDecodings = args.map((arg) => `args.${arg.name}`).join(", ");
+
+    let wrapper = `export function ${name}(_args: StaticArray<u8>): ${returnedType ? "StaticArray<u8>":"void"} {\n`;
+    
+    if (args.length > 0) {
+        wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+    }
+
+    if (returnedType) {
+        wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(${args.length > 0 ? argDecodings: ""})));
+  generateEvent(\`${name}Response: \${response}\`);
+  return changetype<StaticArray<u8>>(response.buffer);\n`;
+    }
+
+    wrapper += "}";
+
+    return wrapper;
+  }
