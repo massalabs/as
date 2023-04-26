@@ -67,7 +67,7 @@ npm run doc
 ## Usage
 After installing *as-types*, you can import the object classes and functions that you need in your AssemblyScript file.
 
-For example, to use the "args" object, you can import and use it like this:
+One way to use the "args" object is by importing and utilizing it in the following manner:
 ```typescript
 import { Args, i32ToBytes } from  '@massalabs/as-types';
 
