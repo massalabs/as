@@ -1,3 +1,3 @@
 import config from './as-pect.config.js';
-config.coverage = ['**/assembly/**/*.ts'];
+config.coverage = ['packages/**/assembly/**/*.ts'];
 export default config;
