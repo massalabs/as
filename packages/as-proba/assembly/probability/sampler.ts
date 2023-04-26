@@ -119,7 +119,7 @@ export class Sampler {
   }
 
   /**
-   * This method populates observation zone boundaries.
+   * Populates observation zone boundaries.
    *
    * @privateRemarks
    * - Used by the {@link inverseCumulativeDistributionSampling} method.
