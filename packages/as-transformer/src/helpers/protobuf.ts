@@ -1,3 +1,5 @@
+import { spawnSync } from 'child_process';
+
 enum ProtoType {
   Double = 'double',
   Float = 'float',
@@ -122,4 +124,18 @@ function getTypeName(type: string): FieldSpec {
   spec.repeated = type.indexOf('Array') > -1;
 
   return spec;
+}
+
+export function generateASHelpers(protoFile: string, outputPath: string): void {
+  let protocProcess = spawnSync('protoc', [
+    `--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen`,
+    `--as_out=${outputPath}`,
+    `--as_opt=gen-helper-methods`,
+    protoFile,
+  ]);
+
+  if (protocProcess.status !== 0) {
+    console.error(`Failed to generate AS helpers code for ${protoFile}`);
+    console.error(protocProcess.stderr);
+  }
 }

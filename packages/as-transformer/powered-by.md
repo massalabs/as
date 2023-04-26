@@ -9,6 +9,22 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** 
 
+## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 1.3.0
+
+**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
+
+## [as-proto-gen](git+https://github.com/piotr-oles/as-proto.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 1.3.0
+
+**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
+
 ## [assemblyscript](git+https://github.com/AssemblyScript/assemblyscript.git)
 
 **License:** Apache-2.0 - perpetual
