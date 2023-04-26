@@ -4,9 +4,9 @@ Thank you for considering contributing to !
 
 ## Reporting Bugs
 
-If you discover a bug, please create a [new issue](https://github.com/massalabs/as/issues/new?assignees=&
+If you discover a bug, please create a [new issue](https://github.com/massalabs/as/issues/new?assignees=&labels=bug&template=bug.md&title=Bug:)
 In your issue, please include a clear and concise description of the bug, any relevant code snippets, error messages, and 
-
+steps to reproduce the issue.
 
 ## Installation
 
@@ -16,6 +16,7 @@ npm install
 ```
 
 This will install all the required packages listed in the package.json file, allowing you to update, fix, or improve 
+as-transformer in any way you see fit. 
 
 
 ## Contributing Code
@@ -64,7 +65,7 @@ npm run test
 
 ## License
 
-By contributing to as-transformer, you agree that your contributions will be licensed under the MIT License.
+By contributing to as-transformer, you agree that your contributions will be licensed under the [MIT License](LICENSE.md).
 
 ## Documentation
 
