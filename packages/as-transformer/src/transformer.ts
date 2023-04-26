@@ -8,7 +8,8 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
-import { transform } from './transformers/massaExport.js';
+import { getUpdates, resetUpdates, transform } from './transformers/massaExport.js';
+import { writeFileSync } from 'fs';
 
 const callTransformers = [File2ByteArray, TestTable];
 
@@ -42,8 +43,32 @@ export class Transformer extends TransformVisitor {
         !utils.isLibrary(source),
     );
 
-    // loadUdpatedSource(this.program); TODO: #132
+    sources.forEach(
+      source => {
 
-    this.visit(sources);
+        resetUpdates();
+        this.visit(source);
+
+        let content = source.text;
+    
+        const updates = getUpdates();
+
+        if(updates.length > 0) {
+        //TODO: add additional imports
+
+        updates.forEach(update => {
+          content = content.substring(0, update.begin) + update.content + content.substring(update.end);
+        })
+        
+        writeFileSync(`./build/${source.simplePath}.ts`, content);
+        
+         // loadUdpatedSource(this.program); TODO: #132
+      }
+        
+    
+      }
+    )
+
+    // loadUdpatedSource(this.program); TODO: #132
   }
 }

@@ -45,9 +45,11 @@ export function transform(node: FunctionDeclaration): FunctionDeclaration {
 
   const wrapperContent = generateWrapper(name, args, returnType);
 
-  const wrapperFile = path.join(protoPath, '__pending.ts');
-
-  writeFileSync(wrapperFile, wrapperContent);
+  Updates.push({
+    begin: node.range.start,
+    end: node.range.end,
+    content: wrapperContent,
+  });
 
   return node;
 }
@@ -78,4 +80,21 @@ export function generateWrapper(
   wrapper += '}';
 
   return wrapper;
+}
+
+
+export interface Update {
+    begin: number;
+    end: number;
+    content: string;
+}
+
+let Updates: Update[] = [];
+
+export function resetUpdates() {
+    Updates = [];
+}
+
+export function getUpdates(): Update[] {
+    return Updates;
 }
