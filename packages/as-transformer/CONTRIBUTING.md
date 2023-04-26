@@ -55,7 +55,7 @@ npm run fmt
 
 Please ensure that your changes include any necessary tests.
 We use [as-pect library](https://as-pect.gitbook.io/as-pect/) for unit testing.
-You can run the following command to run the tests:
+You can run the following command to run the tests in the root folder:
 
 ```sh
 npm run test
