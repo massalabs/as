@@ -11,5 +11,5 @@ jobs:
         uses: peter-evans/create-or-update-project-card@v2
         with:
           project-number: 13
-          column-name: "🚀 PR"
+          column-name: PR
           issue-number: ${{ github.event.pull_request.number }}
