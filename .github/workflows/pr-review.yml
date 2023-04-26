@@ -2,8 +2,6 @@ name: Move PR Request
 on:
   pull_request:
     types: [review_requested]
-    labels:
-      - 'task'
 
 jobs:
   move-card-to-PR:
@@ -12,6 +10,6 @@ jobs:
       - name: Create or Update Project Card
         uses: peter-evans/create-or-update-project-card@v2
         with:
-          project-name: "Run Team"
+          project-number: 13
           column-name: "🚀 PR"
           issue-number: ${{ github.event.pull_request.number }}
