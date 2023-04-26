@@ -10,6 +10,7 @@ jobs:
       - name: Create or Update Project Card
         uses: peter-evans/create-or-update-project-card@v2
         with:
+          token: ${{ secrets.PAT }}
           project-number: 13
-          column-name: PR
+          column-name: ":rocket: PR"
           issue-number: ${{ github.event.pull_request.number }}
