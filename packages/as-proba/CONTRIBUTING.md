@@ -44,7 +44,6 @@ npm run fmt
 ```
 
 ## Tests
-We are in a monorepo which contains 3 packages (as-types, as-transformer and as-proba). Inside each package is a folder /assembly/__tests__ which contains the test files related to the current package.
 
 Please ensure that your changes include any necessary tests.
 We use [as-pect library](https://as-pect.gitbook.io/as-pect/) for unit testing.
