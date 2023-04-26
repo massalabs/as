@@ -19,8 +19,6 @@ const callTransformers = [File2ByteArray, TestTable];
 
 const protobufTransformerDecorator = 'massaExport';
 
-const  = 'exportUsingPB';
-
 /**
  * The Transformer class allows you to parse the {@link CallExpression} to look for a specific method and
  * update it as you need.
