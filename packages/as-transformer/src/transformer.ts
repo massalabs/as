@@ -57,7 +57,9 @@ export class Transformer extends TransformVisitor {
    * Visits the sources and replaces the {@link CallExpression} with the new expression.
    *
    * @privateRemarks
-   * This is one of the three transformer hooks as defined here. It is the first one, called just after parsing the cod
+   * This is one of the three transformer hooks as defined
+   * [here](https://www.assemblyscript.org/compiler.html#transforms). It is the first one,
+   * called just after parsing the cod
    *
    * @param parser - A {@link Parser} object.
    */
