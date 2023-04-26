@@ -35,7 +35,7 @@ export class Transformer extends TransformVisitor {
   }
 
   /**
-   * Looks for a given **call expression** in the AST Nodes and tries to replace it with the new 
+   * Looks for a given **call expression** in the AST Nodes and tries to replace it with the new
    * **expression** node with the registered custom transformers.
    *
    * @param node - A {@link CallExpression} containing a call to a function.
