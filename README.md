@@ -6,9 +6,11 @@
 
 This repository is a collection of tools, objects and functions in *AssemblyScript*.
 
-- *Classes and helper functions* with **as-types**
-- *random draws* with **as-proba**
-- *AssemblyScript transformers for unit testing and reading a file* with **as-transformer**
+- *Essential Classes and helper functions* with **as-types**
+
+- *Probabilistic simulation functionalities for smart contracts* with **as-proba**
+
+- *AssemblyScript transformers, dynamic code replacement features* with **as-transformer**
 
 The complete documentation of all available functions and objects is here:
 
@@ -51,3 +53,29 @@ npm run test
 ```plain
 npm run doc
 ```
+## Usage
+After installing *As*, you can import the object classes and functions that you need in your AssemblyScript file.
+
+For example, to use the `combination` function to determine the combination of 2 numbers, you can import and use it like this:
+```typescript
+import { combination } from  '@massalabs/as-proba';
+import { Args } from  '@massalabs/as-types';
+
+//the argument args contains the serialized values n and k (n >= k) as U64
+export function calculateCombination(args: StaticArray<u8>): void {
+	const  n = args.nextU64();
+	const  k = args.nextU64();
+	const  result = combination(n, k);
+	generateEvent(`The result of the combination of ${n.toString()} and ${k.toString()} is ${result.toString()}`);
+}
+```
+## Contributing
+We welcome contributions from the community!
+
+If you would like to contribute to As, please read the [CONTRIBUTING file](CONTRIBUTING.md).
+
+## License
+As is released under the [MIT License](LICENSE).
+
+## Powered By
+As is developed with love by MassaLabs and powered by a variety of [open-source projects](powered-by.md).
