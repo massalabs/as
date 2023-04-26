@@ -6,7 +6,7 @@
 
 This repository is a collection of tools, objects and functions in *AssemblyScript*.
 
-- *Most essential Classes and helper functions* with **as-types**
+- *Essential Classes and helper functions* with **as-types**
 
 - *Probabilistic simulation functionalities for smart contracts* with **as-proba**
 
