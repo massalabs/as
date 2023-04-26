@@ -61,9 +61,8 @@ For example, to use the `combination` function to determine the combination of 2
 import { combination } from  '@massalabs/as-proba';
 import { Args } from  '@massalabs/as-types';
 
-// This main function is called automatically when the smart contract is executed by the blockchain.
 //the argument args contains the serialized values n and k (n >= k) as U64
-export function main(args: StaticArray<u8>): void {
+export function calculateCombination(args: StaticArray<u8>): void {
 	const  n = args.nextU64();
 	const  k = args.nextU64();
 	const  result = combination(n, k);
