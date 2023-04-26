@@ -1,32 +1,48 @@
 import { randomInt } from './random';
 
 /**
- * Generates samples based on a probability distribution.
+ * This module exports a class named Sampler that allows the generation of observations based on a
+ * probability distribution.
  *
- * This class shall be extended with your own probability.
+ * @remarks
+ * - This class shall be extended with your own probability.
+ * - Two methods are available to generate observations: {@link rejectionSampling} and
+ * {@link inverseCumulativeDistributionSampling}.
+ *    These methods use different techniques to generate observations and require the implementation
+ *    of a probability function.
  */
 export class Sampler {
-  _bounderies: Float64Array;
+  _boundaries: Float64Array;
 
   /**
-   * Instanciates a sampler.
+   * Creates an instance of the Sampler class.
    *
-   * This constructor calls seedRandom.
+   * @privateRemarks
+   * - The constructor uses an optional seed for the Math.random() function.
+   * - The _boundaries field is initialized with an empty Float64Array.
    *
-   * @param s - seed for random Math.random function.
+   * @param s - seed for random Math.random function. Default value is 0.
+   *
    */
   constructor(s: u64 = 0) {
     Math.seedRandom(s);
-    this._bounderies = new Float64Array(0);
+    this._boundaries = new Float64Array(0);
   }
 
   /**
-   * Returns the probability of given sample.
+   * Returns the probability of the given sample.
    *
-   * Probability function doesn't need to be normalized,
-   * but the greatest probability of the distribution must be knowned.
+   *
+   * @remarks
+   * - Override this method in the child class to match the desired probability distribution.
+   * - The probability function doesn't need to be normalized, but the greatest probability of the
+   *   distribution must be known.
+   * - An example of probability distribution is {@link Binomial}.
    *
    * @param _ - sample.
+   
+   * @returns the probability of the given sample. 1 if you don't override this method.
+   *
    */
   probability(_: u64): f64 {
     return 1;
@@ -37,7 +53,7 @@ export class Sampler {
    *
    * This method uses a uniform random function to generate:
    *  - the number k, the potential observation
-   *  - the number x, an alea
+   *  - the number x, a random number between 0 and the greatest probability of the distribution
    *
    *  If the number x is lower or equal to the probability of event k,
    *  then it's an observation.
@@ -60,20 +76,20 @@ export class Sampler {
    *
    *  1- randomly find the potential observation k by using an uniform random
    *     function with lower limit 0 and upper limit 4.
-   *     Lets say k = 0.
-   *  2- draw a number x, from an unifrom random function with lower limit 0
+   *     Lets say k = 0
+   *  2- draw a number x, from an uniform random function with lower limit 0
    *     and upper limit p_max.
    *     Lets say x \> p_0. In that case we restart the process from
-   *     the begining.
+   *     the beginning.
    *  3- randomly find k.
-   *     Lets say k = 2.
-   *  4- randmly find x.
+   *     Lets say k = 2
+   *  4- randomly find x.
    *     Lets say x \< p_2. In that case the process stop and
    *     the observation is returned.
    *
    *  Graphically, the following process can be represented as the following:
    *
-   *   pmax ────┬─┬────
+   *   p_max ────┬─┬────
    *            │o│ ┌─┐
    *         x┌─┤ │ │ │
    *        ┌─┤ │ ├─┤ │
@@ -83,12 +99,15 @@ export class Sampler {
    *  Where x represents the failed attempt and o the success one.
    *
    *  Intuitively we "see" the returned observations will match
-   *  the underliying probabilities because observations with
+   *  the underlying probabilities because observations with
    *  greater probability will have a higher chance of being returned
    *  than observation with lower one.
    *
    * @param n - sampling upper limit
    * @param max - greatest probability of the distribution
+
+   * @returns an observation
+   *
    */
   rejectionSampling(n: u64, max: f32): u64 {
     while (true) {
@@ -101,18 +120,21 @@ export class Sampler {
   }
 
   /**
-   * Populate observation zone bounderies.
+   * Populates observation zone boundaries.
+   *
+   * @privateRemarks
+   * - Used by the {@link inverseCumulativeDistributionSampling} method.
    *
    * @param n - Sampling upper limit
    */
-  private populateBounderies(n: u64): void {
-    this._bounderies = new Float64Array(i32(n));
+  private populateBoundaries(n: u64): void {
+    this._boundaries = new Float64Array(i32(n));
 
-    this._bounderies[0];
+    this._boundaries[0];
     this.probability(0);
 
     for (let i = 1; i < i32(n); i++) {
-      this._bounderies[i] = this._bounderies[i - 1] + this.probability(i);
+      this._boundaries[i] = this._boundaries[i - 1] + this.probability(i);
     }
   }
 
@@ -123,11 +145,11 @@ export class Sampler {
    * - the cumulative distribution function to breakdown its from/input set
    *   into observations zone
    * - a uniform random function to generate a number x, that will be used
-   *   to identify which observation zone is choosen.
+   *   to identify which observation zone is chosen.
    *
    * The process is the following:
    *
-   * 1- The cumulative distribution function is used to define bounderies
+   * 1- The cumulative distribution function is used to define boundaries
    *    of observation zone.
    * 2- An number x is drawn using a uniform distribution function
    * 3- The zone in which the number x falls is the observation
@@ -156,7 +178,7 @@ export class Sampler {
    *    0 1  2 3 4
    *
    * x is drawn and the corresponding observation zone is identified
-   * using bounderies:
+   * using boundaries:
    *
    *    ├┼x┼───┼┼──┤
    *    0 1  2 3 4
@@ -165,14 +187,14 @@ export class Sampler {
    * @returns Observation
    */
   inverseCumulativeDistribution(n: u64): u64 {
-    if (this._bounderies.length == 0) {
-      this.populateBounderies(n);
+    if (this._boundaries.length == 0) {
+      this.populateBoundaries(n);
     }
 
-    const x = Math.random() * this._bounderies[i32(n - 1)];
+    const x = Math.random() * this._boundaries[i32(n - 1)];
 
     for (let i = 0; i < i32(n); i++) {
-      if (x <= this._bounderies[i]) {
+      if (x <= this._boundaries[i]) {
         return u64(i);
       }
     }
