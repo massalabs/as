@@ -52,7 +52,7 @@ You can run the following command to run the tests:
 
 ```sh
 npm run test
-```
+However, please note that these package tests must also be run from the root of the monorepo when the CI executes npm run test to ensure the package works correctly in the larger context.
 
 ## License
 By contributing to As, you agree that your contributions will be licensed under the MIT License.
