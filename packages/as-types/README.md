@@ -75,8 +75,8 @@ import { Args, i32ToBytes } from  '@massalabs/as-types';
 //the argument args contains the serialized values n and k as i32
 export function sum(binaryArgs: StaticArray<u8>): StaticArray<u8>{
 	const args = new  Args(binaryArgs);
-	const  n = args.nextI32();
-	const  k = args.nextI32();
+	const  a = args.nextI32();
+	const  b = args.nextI32();
 	return i32ToBytes(a + b)
 }
 ```
