@@ -73,7 +73,7 @@ import { Args, i32ToBytes } from  '@massalabs/as-types';
 
 // This main function is called automatically when the smart contract is executed by the blockchain.
 //the argument args contains the serialized values n and k as i32
-export function main(binaryArgs: StaticArray<u8>): StaticArray<u8>{
+export function sum(binaryArgs: StaticArray<u8>): StaticArray<u8>{
 	const args = new  Args(binaryArgs);
 	const  n = args.nextI32();
 	const  k = args.nextI32();
