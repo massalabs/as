@@ -20,6 +20,11 @@ export class File2ByteArray {
    * Transforms a 'fileToByteArray'  {@link CallExpression} into an {@link Expression} to
    * extract the file as a byte array.
    *
+   * @privateRemarks
+   * This transformer is updating the AST by:
+   * - replacing the node containing a call to the fileToByteArray function having a file as argument
+   * - a node containing an array of bytes corresponding to the content of the file given as argument.
+   *
    * @param node - A {@link CallExpression}
    *
    * @returns the updated node as {@link Expression}
