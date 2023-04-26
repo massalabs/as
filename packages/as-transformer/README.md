@@ -16,34 +16,7 @@ To install this module, run the following command at your project root directory
 npm install -D @massalabs/as-transformer
 ```
 
-## Development guide
-
-### Build
-
-```plain
-npm run build
-```
-
-### Code linting and formatting
-
-```plain
-npm run fmt
-```
-
-### Test
-
-```plain
-npm run test
-```
-
-### Generate doc
-From the root folder :
-```plain
-npm run doc
-```
-
-
-### Usage
+## Usage
 
 Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.
 
