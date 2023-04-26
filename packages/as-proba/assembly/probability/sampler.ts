@@ -37,6 +37,7 @@ export class Sampler {
    * - Override this method in the child class to match the desired probability distribution.
    * - The probability function doesn't need to be normalized, but the greatest probability of the
    *   distribution must be known.
+   * - An example of probability distribution is {@link Binomial}.
    *
    * @param _ - sample.
    
