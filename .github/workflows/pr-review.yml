@@ -8,6 +8,7 @@ on:
 jobs:
   move-card-to-PR:
     runs-on: ubuntu-latest
+    steps:
       - name: Create or Update Project Card
         uses: peter-evans/create-or-update-project-card@v2
         with:
