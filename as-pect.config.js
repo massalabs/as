@@ -23,8 +23,7 @@ export default {
     };
     return instantiate(binary, createImports(myImports));
   },
-  /** Enable code coverage. */
-  // coverage: ["assembly/**/*.ts"],
+
   /**
    * Specify if the binary wasm file should be written to the file system.
    */
