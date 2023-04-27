@@ -135,7 +135,6 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
   ]);
 
   if (protocProcess.status !== 0) {
-    console.error(`Failed to generate AS helpers code for ${protoFile}`);
-    console.error(protocProcess.stderr);
+    console.error(`Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`);
   }
 }
