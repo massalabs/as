@@ -70,32 +70,32 @@ describe('Args tests', () => {
   it('With i64', () => {
     const args1 = new Args();
     args1.add(97 as i64);
-    amt.addArgs(args1);
+    args1.add(amt);
     args1.add(113 as i64);
 
     expect(args1.nextI64().unwrap()).toBe(97);
-    expect(Amount.fromArgs(args1).unwrap()).toBe(amt);
+    expect(args1.nextSerializable<Amount>().unwrap()).toBe(amt);
     expect(args1.nextI64().unwrap()).toBe(113);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextI64().unwrap()).toBe(97);
-    expect(Amount.fromArgs(args2).unwrap()).toBe(amt);
+    expect(args2.nextSerializable<Amount>().unwrap()).toBe(amt);
     expect(args2.nextI64().unwrap()).toBe(113);
   });
 
   it('With u64', () => {
     const args1 = new Args();
     args1.add(97 as u64);
-    amt.addArgs(args1);
+    args1.add(amt);
     args1.add(113 as u64);
 
     expect(args1.nextU64().unwrap()).toBe(97);
-    expect(Amount.fromArgs(args1).unwrap()).toBe(amt);
+    expect(args1.nextSerializable<Amount>().unwrap()).toBe(amt);
     expect(args1.nextU64().unwrap()).toBe(113);
 
     const args2 = new Args(args1.serialize());
     expect(args2.nextU64().unwrap()).toBe(97);
-    expect(Amount.fromArgs(args2).unwrap()).toBe(amt);
+    expect(args2.nextSerializable<Amount>().unwrap()).toBe(amt);
     expect(args2.nextU64().unwrap()).toBe(113);
   });
 

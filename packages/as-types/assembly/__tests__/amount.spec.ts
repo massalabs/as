@@ -19,11 +19,12 @@ describe('Doc tests', () => {
     //
     // serialization / deserialization use case
     //
-    const serializedBytes = a1.toArgs();
+    const serializedBytes = a1.serialize();
+    const anotherAmount = new Amount();
 
-    const anotherAmount = Amount.fromArgs(serializedBytes);
+    anotherAmount.deserialize(serializedBytes, 0);
 
-    expect(anotherAmount.unwrap()).toBe(a1);
+    expect(anotherAmount).toBe(a1);
   });
 });
 
