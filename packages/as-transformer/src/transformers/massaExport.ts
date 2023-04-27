@@ -85,7 +85,7 @@ export function generateWrapper(
   return wrapper;
 }
 
-function generateImports(
+export function generateImports(
   name: string,
   args: Argument[],
   returnedType: string,

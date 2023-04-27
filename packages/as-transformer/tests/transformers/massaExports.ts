@@ -1,5 +1,5 @@
 import { Argument } from '../../src/helpers/protobuf';
-import { generateWrapper } from '../../src/transformers/massaExport';
+import { generateWrapper, generateImports } from '../../src/transformers/massaExport';
 
 describe('generateWrapper', () => {
   it('should generate a void wrapper function', () => {
@@ -48,3 +48,57 @@ describe('generateWrapper', () => {
     expect(actualWrapper).toEqual(expectedWrapper);
   });
 });
+
+describe('generateImports', () => {
+  it('should return an empty array when args and returnedType are empty', () => {
+    const name = 'SayHello';
+    const args: Argument[] = [];
+    const returnedType = '';
+
+    const expectedImports: string[] = [];
+    const actualImports = generateImports(name, args, returnedType);
+
+    expect(actualImports).toEqual(expectedImports);
+  });
+
+  it('should return only deserializing helper when args is not an empty and returnedType is', () => {
+    const name = 'SayHello';
+    const args = [{ name: 'language', type: 'string' }, { name: 'name', type: 'string' }];
+    const returnedType = '';
+
+    const expectedImports = [`import { decode${name} } from "./build/${name}";`];
+    const actualImports = generateImports(name, args, returnedType);
+
+    expect(actualImports).toEqual(expectedImports);
+  });
+
+  it('should return (de)serializing helpers and generatedEvent when args is empty and returnedType is not', () => {
+    const name = 'SayHello';
+    const args: Argument[] = [];
+    const returnedType = 'string';
+
+    const expectedImports = [
+      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
+    ];
+    const actualImports = generateImports(name, args, returnedType);
+
+    expect(actualImports).toEqual(expectedImports);
+  });
+
+  it('should return everything when args and returnedType are not empty', () => {
+    const name = 'SayHello';
+    const args: Argument[] = [{ name: 'language', type: 'string' }, { name: 'name', type: 'string' }];
+    const returnedType = 'string';
+
+    const expectedImports = [
+      `import { decode${name} } from "./build/${name}";`,
+      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
+    ];
+    const actualImports = generateImports(name, args, returnedType);
+
+    expect(actualImports).toEqual(expectedImports);
+  });
+});
+
