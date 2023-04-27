@@ -86,7 +86,7 @@ describe('generateImports', () => {
     const returnedType = 'string';
 
     const expectedImports = [
-      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
       `import { generateEvent } from '@massalabs/massa-as-sdk';`,
     ];
     const actualImports = generateImports(name, args, returnedType);
@@ -103,8 +103,8 @@ describe('generateImports', () => {
     const returnedType = 'string';
 
     const expectedImports = [
-      `import { decode${name} } from "./build/${name}";`,
-      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+      `import { decode${name} } from "./${name}";`,
+      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
       `import { generateEvent } from '@massalabs/massa-as-sdk';`,
     ];
     const actualImports = generateImports(name, args, returnedType);

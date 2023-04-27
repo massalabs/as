@@ -64,7 +64,10 @@ export function generateWrapper(
 ): string {
   const argDecodings = args.map((arg) => `args.${arg.name}`).join(', ');
 
-  let wrapper = `export function ${name}(_args: StaticArray<u8>): ${
+  let wrapper = `@external("massa", "assembly_script_generate_event")
+  declare function generateEvent(event: string): void;
+  
+  export function ${name}(_args: StaticArray<u8>): ${
     returnedType ? 'StaticArray<u8>' : 'void'
   } {\n`;
 
@@ -93,14 +96,13 @@ export function generateImports(
   let imports: string[] = [];
 
   if (args.length > 0) {
-    imports.push(`import { decode${name} } from "./build/${name}";`);
+    imports.push(`import { decode${name} } from "./${name}";`);
   }
 
   if (returnedType) {
     imports.push(
-      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
     );
-    imports.push(`import { generateEvent } from '@massalabs/massa-as-sdk';`);
   }
 
   return imports;
