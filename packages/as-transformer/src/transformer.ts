@@ -8,7 +8,11 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
-import { getUpdates, resetUpdates, transform } from './transformers/massaExport.js';
+import {
+  getUpdates,
+  resetUpdates,
+  transform,
+} from './transformers/massaExport.js';
 import { writeFileSync } from 'fs';
 
 const callTransformers = [File2ByteArray, TestTable];
@@ -43,32 +47,53 @@ export class Transformer extends TransformVisitor {
         !utils.isLibrary(source),
     );
 
-    sources.forEach(
-      source => {
+    let additionalImports = new Map<string, boolean>();
 
-        resetUpdates();
-        this.visit(source);
+    sources.forEach((source) => {
+      resetUpdates();
+      this.visit(source);
 
-        let content = source.text;
-    
-        const updates = getUpdates();
+      let content = source.text;
+      let neededImports = new Map<string, boolean>();
 
-        if(updates.length > 0) {
-        //TODO: add additional imports
+      const updates = getUpdates();
 
-        updates.forEach(update => {
-          content = content.substring(0, update.begin) + update.content + content.substring(update.end);
-        })
-        
+      if (updates.length > 0) {
+        updates.forEach((update) => {
+          const token = 'export function ';
+          const index = content.indexOf(token, update.begin) + token.length;
+
+          if (index < token.length)
+            throw (
+              `exported function not found in file ${source.internalPath}` +
+              `, but decorator ${protobufTransformerDecorator} was.`
+            );
+
+          content =
+            content.substring(0, update.begin) +
+            'function _' +
+            content.substring(index, update.end) +
+            '\n\n' +
+            update.content +
+            content.substring(update.end);
+
+          update.imports.forEach((i) => {
+            neededImports.set(i, true);
+            additionalImports.set(i, true);
+          });
+        });
+
+        content = '\n' + content;
+
+        Array.from(neededImports.keys()).forEach(
+          (i) => (content = i + '\n' + content),
+        );
+
         writeFileSync(`./build/${source.simplePath}.ts`, content);
-        
-         // loadUdpatedSource(this.program); TODO: #132
-      }
-        
-    
-      }
-    )
 
+        // loadUdpatedSource(this.program); TODO: #132
+      }
+    });
     // loadUdpatedSource(this.program); TODO: #132
   }
 }
