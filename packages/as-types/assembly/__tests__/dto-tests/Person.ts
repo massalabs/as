@@ -1,6 +1,6 @@
-import { Args } from './argument';
-import { Result } from './result';
-import { Serializable } from './serializable';
+import { Args } from '../../argument';
+import { Result } from '../../result';
+import { Serializable } from '../../serializable';
 
 export class Person {
   constructor(public age: i32 = 0, public name: string = '') {}
