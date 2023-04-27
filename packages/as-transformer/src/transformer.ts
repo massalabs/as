@@ -91,11 +91,11 @@ export class Transformer extends TransformVisitor {
           const token = 'export function ';
           const index = content.indexOf(token, update.begin) + token.length;
 
-          if (index < token.length)
-            throw new Error(
-              `exported function not found in file ${source.internalPath}` +
-                `, but decorator ${protobufTransformerDecorator} was.`,
-            );
+          assert(
+            index >= token.length,
+            `exported function not found in file ${source.internalPath}` +
+              `, but decorator ${protobufTransformerDecorator} was.`,
+          );
 
           content =
             content.substring(0, update.begin) +
@@ -121,24 +121,27 @@ export class Transformer extends TransformVisitor {
 
         const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
 
-        //console.log(dependencies);
+        // console.log(dependencies);
 
         dependencies
-        .map(dep => parseFile(dep, new Parser(parser.diagnostics), source.internalPath.replace(source.simplePath, "")))
-        .forEach(source => this.program.sources.push(source))
+          .map((dep) =>
+            parseFile(
+              dep,
+              new Parser(parser.diagnostics),
+              source.internalPath.replace(source.simplePath, ''),
+            ),
+          )
+          .forEach((source) => this.program.sources.push(source));
 
         let newParser = new Parser(parser.diagnostics);
-        newParser.parseFile(
-          content,
-          source.internalPath + ".ts",
-          true
-        );
-  
+        newParser.parseFile(content, source.internalPath + '.ts', true);
+
         let newSource = newParser.sources.pop()!;
         utils.updateSource(this.program, newSource);
       }
 
-      //this.program.sources.forEach((source) => console.log(source.internalPath, source.simplePath, source.normalizedPath))
+      // this.program.sources.forEach(source =>
+      //   console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
   }
 }

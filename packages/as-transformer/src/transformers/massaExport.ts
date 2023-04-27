@@ -69,7 +69,7 @@ export function generateWrapper(
   
   export function ${name}(_args: StaticArray<u8>): ${
     returnedType ? 'StaticArray<u8>' : 'void'
-  } {\n`;
+} {\n`;
 
   if (args.length > 0) {
     wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
