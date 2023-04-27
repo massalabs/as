@@ -14,6 +14,8 @@ import {
   transform,
 } from './transformers/massaExport.js';
 import { writeFileSync } from 'fs';
+import { getDependencies } from './helpers/typescript.js';
+import { hasDecorator, parseFile } from './helpers/node.js';
 
 const callTransformers = [File2ByteArray, TestTable];
 
@@ -27,7 +29,7 @@ const protobufTransformerDecorator = 'massaExport';
  */
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
-    if (utils.hasDecorator(node, protobufTransformerDecorator)) {
+    if (hasDecorator(node, protobufTransformerDecorator)) {
       return transform(node);
     }
 
@@ -117,9 +119,26 @@ export class Transformer extends TransformVisitor {
 
         writeFileSync(`./build/${source.simplePath}.ts`, content);
 
-        // loadUdpatedSource(this.program); TODO: #132
+        const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
+
+        //console.log(dependencies);
+
+        dependencies
+        .map(dep => parseFile(dep, new Parser(parser.diagnostics), source.internalPath.replace(source.simplePath, "")))
+        .forEach(source => this.program.sources.push(source))
+
+        let newParser = new Parser(parser.diagnostics);
+        newParser.parseFile(
+          content,
+          source.internalPath + ".ts",
+          true
+        );
+  
+        let newSource = newParser.sources.pop()!;
+        utils.updateSource(this.program, newSource);
       }
+
+      //this.program.sources.forEach((source) => console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
-    // loadUdpatedSource(this.program); TODO: #132
   }
 }
