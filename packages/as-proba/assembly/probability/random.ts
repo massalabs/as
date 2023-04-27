@@ -10,6 +10,6 @@
  * @returns an unsafe random integer between given limits.
  *
  */
-export function randomInt(ll: u64, ul: u64): u64 {
+export function unsafeBoundedRandom(ll: u64, ul: u64): u64 {
   return ll + u64(Math.round(f64(ul - ll) * Math.random()));
 }

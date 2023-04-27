@@ -1,4 +1,4 @@
-import { randomInt } from '../probability/random';
+import { unsafeBoundedRandom } from '../probability/random';
 import { drawHistogram } from './helper';
 
 describe('Doc test', () => {
@@ -7,7 +7,7 @@ describe('Doc test', () => {
     const upperLimit = 5;
 
     for (let i = 0; i < 5; i++) {
-      const s = randomInt(lowerLimit, upperLimit);
+      const s = unsafeBoundedRandom(lowerLimit, upperLimit);
 
       expect<u64>(s).toBeGreaterThanOrEqual(0);
       expect<u64>(s).toBeLessThanOrEqual(5);
@@ -24,7 +24,7 @@ describe('Blackbox test', () => {
     }
 
     for (let i = 0; i < 1000000; i++) {
-      a[i32(randomInt(0, 40))] += 1;
+      a[i32(unsafeBoundedRandom(0, 40))] += 1;
     }
 
     drawHistogram(a, 160);
