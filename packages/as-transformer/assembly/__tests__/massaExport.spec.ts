@@ -1,7 +1,9 @@
+export function test(): void {}
+
 @massaExport()
-export function sayHello2(language: string, name: string): string {
+export function SayHello(language: string, name: string): string {
   let greetings = 'Hello,' + language;
   return greetings + name + '!';
 }
 
-export function test(): void {}
+export function test2(): void {}
