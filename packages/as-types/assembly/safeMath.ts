@@ -26,9 +26,7 @@ export class SafeMath {
    * @throws if the operation results in a number bigger than u64.MAX_VALUE.
    */
   static add(a: u64, b: u64): u64 {
-    assert(a + b >= a, 'SafeMath: addition overflow');
-    assert(a + b >= 0, 'SafeMath: addition overflow');
-    assert(a + b <= u64.MAX_VALUE, 'SafeMath: addition overflow');
+    assert(b < u64.MAX_VALUE - a, 'SafeMath: addition overflow');
 
     const c: u64 = a + b;
 
@@ -71,10 +69,10 @@ export class SafeMath {
    * @throws if the operation results in a number bigger than u64.MAX_VALUE.
    */
   static mul(a: u64, b: u64): u64 {
-    if (a == 0 || b == 0) {
+    if (a == 0) {
       return 0;
     }
-    assert((a * b) / a == b, 'SafeMath: multiplication overflow');
+    assert(b < u64.MAX_VALUE / a, 'SafeMath: multiplication overflow');
 
     const c = a * b;
 
