@@ -64,9 +64,9 @@ export class Transformer extends TransformVisitor {
           const index = content.indexOf(token, update.begin) + token.length;
 
           if (index < token.length)
-            throw (
+            throw new Error(
               `exported function not found in file ${source.internalPath}` +
-              `, but decorator ${protobufTransformerDecorator} was.`
+                `, but decorator ${protobufTransformerDecorator} was.`,
             );
 
           content =
