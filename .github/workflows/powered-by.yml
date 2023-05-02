@@ -1,13 +1,14 @@
 name: Generate Powered-By
-on:
-  pull_request_target:
-    types:
-      - closed
+on: 
+  push:
 
 jobs:
-  generate-powered:
-    if: github.event.pull_request.merged == true
+  generate-powered-by-transfomer:
     runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: read|write
 
     steps:
     - name: Checkout code
