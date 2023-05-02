@@ -1,10 +1,12 @@
 name: Generate Powered-By
 on:
-  pull_request_target: 
-    types: [assigned, opened, synchronize, close, reopened]
+  pull_request_target:
+    branches: [main]
+    types: [close]
 
 jobs:
   generate-powered:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
