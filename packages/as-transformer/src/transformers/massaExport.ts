@@ -20,7 +20,8 @@ const asHelpersPath = './build';
  * @remarks
  * It achieves this by parsing the smart contracts and generating the protobuf files and the AS helpers.
  * It allows specific contract interactions and automatic serialization/deserialization of the data.
- * It doesn't change the smart contract AST, it only generates the protobuf files and the AS helpers in a build directory.
+ * It doesn't change the smart contract AST, it only generates the protobuf files and the AS helpers in
+ * a build directory.
  *
  * @param node - The AST {@link FunctionDeclaration} node containing the function to export.
  *
