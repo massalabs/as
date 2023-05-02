@@ -1,8 +1,8 @@
 name: Generate Powered-By
 on:
   pull_request_target:
-    types:
-      - closed
+    branches: [main]
+    types: [close]
 
 jobs:
   generate-powered:
@@ -13,7 +13,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # Checkout code using massabot account
+        ref: ${{ github.event.pull_request.head.sha }}
+        # Checkout the code using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
     - name: Install node 
