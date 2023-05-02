@@ -12,7 +12,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-        # Checkout code using massabot account
+        # Checkout the code using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
     - name: Install node 
