@@ -17,7 +17,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # Checkout code using massabot account
+        # Checkout using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
     - name: Install node 
