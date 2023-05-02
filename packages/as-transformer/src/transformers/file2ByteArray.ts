@@ -9,26 +9,26 @@ import { SimpleParser } from 'visitor-as';
 import * as fs from 'fs';
 
 /**
- * The File2ByteArray transformer object allows to transform writes a function call which aims to transform
- * an ast into a byteArray.
+ * The File2ByteArray is a specific transformer that works by replacing a 'fileToByteArray'
+ * {@link CallExpression} with an {@link Expression} that represents the file content as a byte array.
  *
  */
 export class File2ByteArray {
   static strPattern = 'fileToByteArray';
 
   /**
-   * Transforms a 'fileToByteArray'  {@link CallExpression} into an {@link Expression} to
-   * extract the file as a byte array.
+   * This method takes a {@link CallExpression} and transforms it by:
+   *
+   * - Replacing the node containing a call to the 'fileToByteArray' function, which has a file as an argument
+   * - Inserting a new node that contains an array of bytes, which represents the content of the file given as argument
    *
    * @privateRemarks
-   * This transformer is updating the AST by:
-   * - replacing the node containing a call to the fileToByteArray function having a file as argument
-   * - a node containing an array of bytes corresponding to the content of the file given as argument.
+   * The transformation process involves updating the AST. The new node retains the attributes of the
+   * original node, with only the content being updated.
    *
    * @param node - A {@link CallExpression}
    *
-   * @returns the updated node as {@link Expression}
-   *
+   * @returns The updated node as an {@link Expression} that represents the file content as a byte array.
    */
   static transform(node: CallExpression): Expression {
     let arg0 = node.args[0] as StringLiteralExpression;

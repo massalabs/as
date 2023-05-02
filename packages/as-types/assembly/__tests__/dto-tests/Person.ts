@@ -1,4 +1,3 @@
-<<<<<<< refs/remotes/origin/main:packages/as-types/assembly/__tests__/dto-tests/Person.ts
 import { Args } from '../../argument';
 import { Result } from '../../result';
 import { Serializable } from '../../serializable';
@@ -39,5 +38,3 @@ export class Hero extends Divinity implements Serializable {
     return new Result(args.offset);
   }
 }
-=======
->>>>>>> update transformer doc:packages/as-types/assembly/Person.ts
