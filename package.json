@@ -1,14 +1,19 @@
 {
   "name": "massalabs-as-monorepo",
   "version": "1.1.0",
-  "description": "Massalabs assemblyscript monorepo",
+  "description": "A collection of essential classes, helper functions, and transformers for AssemblyScript development",
   "type": "module",
   "author": "Massa Labs <info@massa.net>",
   "contributors": [
     "Evgeni Pirianov evgeni.pirianov@gmail.com",
-    "Grégory Libert <greg_libert@yahoo.fr>"
+    "Grégory Libert <greg_libert@yahoo.fr>",
+    "Benjamin Reynes <br@massa.net>",
+    "Nathan Hervier <nh@massa.net>",
+    "Nathan Seva <ns@massa.net>",
+    "Pierre Seznec <ps@massa.net>",
+    "Tristan Gremont <tg@massa.net>"
   ],
-  "license": "(MIT AND Apache-2.0)",
+  "license": "MIT",
   "homepage": "https://github.com/massalabs/as",
   "repository": {
     "type": "git",
