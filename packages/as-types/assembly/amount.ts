@@ -1,6 +1,7 @@
 import { Currency } from './currency';
 import { Result } from './result';
 import { Args } from './argument';
+import { Serializable } from './serializable';
 
 /**
  * This module contains the 'Amount' class, which is a useful representation of a {@link Currency} value.
@@ -20,7 +21,7 @@ import { Args } from './argument';
  * const price = new Amount(1034, dollar);
  * ```
  */
-export class Amount {
+export class Amount implements Serializable {
   /**
    * Creates a new Amount.
    *
@@ -31,6 +32,51 @@ export class Amount {
     public value: u64 = 0,
     public currency: Currency = new Currency(),
   ) {}
+
+  /**
+   * Serializes an Amount into an 'array of bytes'.
+   *
+   * @see {@link Serializable}
+   *
+   * @returns the serialized data as a 'StaticArray<u8>'.
+   *
+   */
+  serialize(): StaticArray<u8> {
+    return new Args()
+      .add<u64>(this.value)
+      .add<Currency>(this.currency)
+      .serialize();
+  }
+
+  /**
+   * Deserializes an Amount from an 'array of bytes'.
+   *
+   * @see {@link Serializable}
+   *
+   * @param data - The 'array of bytes' to deserialize.
+   * @param offset - The position in the 'array of bytes' to start reading from.
+   *
+   * @returns Result containing either an the new offset of the byte array or an Error.
+   */
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    let args = new Args(data, offset);
+    const resultValue = args.nextU64();
+
+    if (resultValue.isErr()) {
+      return new Result(0, "Can't deserialize Value.");
+    }
+
+    const resultCurrency = args.nextSerializable<Currency>();
+
+    if (resultCurrency.isErr()) {
+      return new Result(0, "Can't deserialize Currency.");
+    }
+
+    this.value = resultValue.unwrap();
+    this.currency = resultCurrency.unwrap();
+
+    return new Result(args.offset);
+  }
 
   /**
    * Adds two amounts and return results in a new one.
@@ -117,57 +163,21 @@ export class Amount {
   }
 
   /**
-   * Deserializes an Amount from an {@link Args} 'array of bytes'.
+   * Check if existent amount is greater than given one.
    *
-   * @see {@link Result} for more information about the return type.
+   * @remarks
+   * Comparison between amounts with different {@link Currency} will result in returning false.
    *
-   * @param args - Argument to deserialize.
+   * @param  other - Amount to check against.
    *
-   * @returns
-   * A Result object containing:
-   * - The deserialized Amount if succeeded.
-   * - An error message if:
-   *  - if there is an error with deserializing the 'value'.
-   *  - if there is an error with deserializing the 'currency'.
+   * @returns true if the amount is greater than the given one.
    */
-  static fromArgs(args: Args): Result<Amount> {
-    const value = args.nextU64();
-    if (value.isErr()) {
-      return new Result(new Amount(), 'deserializing Amount: ' + value.error!);
+  @operator('>')
+  greaterThan(other: Amount): bool {
+    if (this.currency != other.currency) {
+      return false;
     }
-
-    const currency = Currency.fromArgs(args);
-    if (currency.isErr()) {
-      return new Result(
-        new Amount(),
-        'deserializing Currency: ' + currency.error!,
-      );
-    }
-
-    return new Result(new Amount(value.unwrap(), currency.unwrap()));
-  }
-
-  /**
-   * Serializes and adds the Amount to the given serialized {@link Args}.
-   *
-   * @param args -The arguments to add the serialized Amount to.
-   */
-  addArgs(args: Args): void {
-    args.add(this.value);
-    this.currency.addArgs(args);
-  }
-
-  /**
-   * Serializes the Amount to a new {@link Args} object.
-   *
-   * @returns The serialized Amount as {@link Args}.
-   */
-  toArgs(): Args {
-    const args = new Args();
-
-    this.addArgs(args);
-
-    return args;
+    return this.value > other.value;
   }
 
   /**

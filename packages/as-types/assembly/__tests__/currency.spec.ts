@@ -11,11 +11,12 @@ describe('Doc tests', () => {
 
     // serialization / deserialization
 
-    const serializedBytes = c1.toArgs();
+    const serializedBytes = c1.serialize();
 
-    const anotherCurrency = Currency.fromArgs(serializedBytes);
+    const anotherCurrency = new Currency();
+    anotherCurrency.deserialize(serializedBytes, 0);
 
-    expect(anotherCurrency.unwrap()).toBe(c1);
+    expect(anotherCurrency).toBe(c1);
   });
 });
 

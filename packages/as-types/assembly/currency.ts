@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { Args } from './argument';
 import { Result } from './result';
+import { Serializable } from './serializable';
 
 /**
  * Monetary unit used to express a value.
@@ -21,7 +22,7 @@ import { Result } from './result';
  * const dollar = new Currency("dollar", 2);
  * ```
  */
-export class Currency {
+export class Currency implements Serializable {
   /**
    * Creates a new instance of Currency.
    *
@@ -31,50 +32,44 @@ export class Currency {
   constructor(public name: string = '', public minorUnit: u8 = 0) {}
 
   /**
-   * Deserializes a Currency from an {@link Args} 'array of bytes'.
+   * Serializes a Currency into an 'array of bytes'.
    *
-   * @param args - the serialized arguments containing the currency data.
+   * @see {@link Serializable}
    *
-   * @returns Result containing either a Currency or an Error.
-   * - The deserialized Currency.
-   * - An error message if there is an error with deserializing the 'minorUnit'.
-   * - An error message if there is an error with deserializing the 'name'.
+   * @returns the serialized data as a 'StaticArray<u8>'.
    */
-  static fromArgs(args: Args): Result<Currency> {
-    const minorUnit = args.nextU8();
-    if (minorUnit.isErr()) {
-      return new Result(new Currency(), minorUnit.error);
-    }
-
-    const name = args.nextString();
-    if (name.isErr()) {
-      return new Result(new Currency(), name.error);
-    }
-
-    return new Result(new Currency(name.unwrap(), minorUnit.unwrap()));
+  serialize(): StaticArray<u8> {
+    return new Args().add(this.name).add(this.minorUnit).serialize();
   }
 
   /**
-   * Serializes and adds the Currency to the given serialized {@link Args}.
+   * Deserializes a Currency from an 'array of bytes'.
    *
-   * @param args -The arguments to add the serialized Currency to.
-   */
-  addArgs(args: Args): void {
-    args.add(this.minorUnit);
-    args.add(this.name);
-  }
-
-  /**
-   * Serializes the Currency to a new {@link Args} object.
+   * @see {@link Serializable}
    *
-   * @returns The serialized Currency as {@link Args}.
+   * @param data - The 'array of bytes' to deserialize.
+   * @param offset - The position in the 'array of bytes' to start reading from.
+   *
+   * @returns Result containing either an the new offset of the byte array or an Error.
    */
-  toArgs(): Args {
-    const args = new Args();
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    let args = new Args(data, offset);
+    const resultName = args.nextString();
 
-    this.addArgs(args);
+    if (resultName.isErr()) {
+      return new Result(0, "Can't deserialize Name.");
+    }
 
-    return args;
+    const resultMinorUnit = args.nextU8();
+
+    if (resultMinorUnit.isErr()) {
+      return new Result(0, "Can't deserialize MinorUnit.");
+    }
+
+    this.name = resultName.unwrap();
+    this.minorUnit = resultMinorUnit.unwrap();
+
+    return new Result(args.offset);
   }
 
   /**

@@ -1,3 +1,4 @@
+import { Result } from './../../result';
 import { Args } from '../../argument';
 import { Result } from '../../result';
 import { Serializable } from '../../serializable';
@@ -13,8 +14,21 @@ export class Divinity extends Person implements Serializable {
 
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     const args = new Args(data, offset);
-    this.age = args.nextI32().expect("Can't deserialize the age");
-    this.name = args.nextString().expect("Can't deserialize the name");
+    const resultAge = args.nextI32();
+
+    if (resultAge.isErr()) {
+      return new Result(0, "Can't deserialize Age.");
+    }
+
+    const resultName = args.nextString();
+
+    if (resultName.isErr()) {
+      return new Result(0, "Can't deserialize Name.");
+    }
+
+    this.age = resultAge.unwrap();
+    this.name = resultName.unwrap();
+
     return new Result(args.offset);
   }
 }
@@ -22,18 +36,20 @@ export class Divinity extends Person implements Serializable {
 export class Hero extends Divinity implements Serializable {
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     const args = new Args(data, offset);
+    const resultAge = args.nextI32();
 
-    const age = args.nextI32();
-    if (age.isErr()) {
-      return new Result(0, "Can't deserialize the age");
+    if (resultAge.isErr()) {
+      return new Result(0, "Can't deserialize Age.");
     }
-    this.age = age.unwrap();
 
-    const name = args.nextString();
-    if (name.isErr()) {
-      return new Result(0, "Can't deserialize the name");
+    const resultName = args.nextString();
+
+    if (resultName.isErr()) {
+      return new Result(0, "Can't deserialize Name.");
     }
-    this.name = name.unwrap();
+
+    this.age = resultAge.unwrap();
+    this.name = resultName.unwrap();
 
     return new Result(args.offset);
   }
