@@ -72,7 +72,7 @@ export class SafeMath {
     if (a == 0) {
       return 0;
     }
-    assert(b < u64.MAX_VALUE / a, 'SafeMath: multiplication overflow');
+    assert(b <= u64.MAX_VALUE / a, 'SafeMath: multiplication overflow');
 
     const c = a * b;
 
