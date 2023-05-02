@@ -1,19 +1,16 @@
 name: Generate Powered-By
-on: 
-  push:
+on:
+  pull_request_target:
 
 jobs:
-  generate-powered-by-transfomer:
+  generate-powered:
     runs-on: ubuntu-latest
-
-    permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
-      contents: [read, write]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
+        ref: ${{ github.event.pull_request.head.sha }}
         # Checkout code using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
