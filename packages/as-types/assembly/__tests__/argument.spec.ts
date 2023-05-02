@@ -1,7 +1,7 @@
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
-import { Divinity, Hero, Person } from '../Person';
+import { Divinity, Hero, Person } from './dto-tests/Person';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 

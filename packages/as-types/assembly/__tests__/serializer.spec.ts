@@ -1,4 +1,4 @@
-import { Divinity, Hero, Person } from '../Person';
+import { Divinity, Hero, Person } from './dto-tests/Person';
 import {
   boolToByte,
   bytesToF32,

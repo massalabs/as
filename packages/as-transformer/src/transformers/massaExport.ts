@@ -43,5 +43,82 @@ export function transform(node: FunctionDeclaration): FunctionDeclaration {
 
   generateASHelpers(protoFile, asHelpersPath);
 
+  const wrapperContent = generateWrapper(name, args, returnType);
+
+  const imports = generateImports(name, args, returnType);
+
+  Updates.push({
+    begin: node.range.start,
+    end: node.range.end,
+    content: wrapperContent,
+    imports: imports,
+  });
+
   return node;
+}
+
+export function generateWrapper(
+  name: string,
+  args: Argument[],
+  returnedType: string,
+): string {
+  const argDecodings = args.map((arg) => `args.${arg.name}`).join(', ');
+
+  let wrapper = `export function ${name}(_args: StaticArray<u8>): ${
+    returnedType ? 'StaticArray<u8>' : 'void'
+  } {\n`;
+
+  if (args.length > 0) {
+    wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+  }
+
+  if (returnedType) {
+    wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(${
+      args.length > 0 ? argDecodings : ''
+    })));
+  generateEvent(\`${name}Response: \${response}\`);
+  return changetype<StaticArray<u8>>(response.buffer);\n`;
+  }
+
+  wrapper += '}';
+
+  return wrapper;
+}
+
+export function generateImports(
+  name: string,
+  args: Argument[],
+  returnedType: string,
+): string[] {
+  let imports: string[] = [];
+
+  if (args.length > 0) {
+    imports.push(`import { decode${name} } from "./build/${name}";`);
+  }
+
+  if (returnedType) {
+    imports.push(
+      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
+    );
+    imports.push(`import { generateEvent } from '@massalabs/massa-as-sdk';`);
+  }
+
+  return imports;
+}
+
+export interface Update {
+  begin: number;
+  end: number;
+  content: string;
+  imports: string[];
+}
+
+let Updates: Update[] = [];
+
+export function resetUpdates() {
+  Updates = [];
+}
+
+export function getUpdates(): Update[] {
+  return Updates;
 }

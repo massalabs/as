@@ -1,4 +1,4 @@
-import { randomInt } from './random';
+import { unsafeBoundedRandom } from './random';
 
 /**
  * This module exports a class named Sampler that allows the generation of observations based on a
@@ -111,7 +111,7 @@ export class Sampler {
    */
   rejectionSampling(n: u64, max: f32): u64 {
     while (true) {
-      const k = randomInt(0, n - 1);
+      const k = unsafeBoundedRandom(0, n - 1);
       const x = Math.random() * max;
       if (x <= this.probability(k)) {
         return k;

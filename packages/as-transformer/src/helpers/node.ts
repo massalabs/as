@@ -7,7 +7,6 @@ import {
 // TODO: check if it's still needed.
 export function hasDecorator(node: FunctionDeclaration, name: string): bool {
   let decl = node;
-
   if ((node as any)['declaration'] !== undefined) {
     decl = (node as any).declaration;
   }
