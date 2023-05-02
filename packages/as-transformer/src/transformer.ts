@@ -20,7 +20,7 @@ const callTransformers = [File2ByteArray, TestTable];
 const protobufTransformerDecorator = 'massaExport';
 
 /**
- * The `Transformer` class extends the `TransformVisitor` class from visitor-as  and overrides its methods to perform
+ * The `Transformer` class extends the `TransformVisitor` class from visitor-as and overrides its methods to perform
  * custom transformations on the AST during the compilation process.
  * It looks for specific function calls or decorators and replaces them with new expressions
  * or functions as needed.
