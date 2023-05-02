@@ -26,12 +26,6 @@ const protobufTransformerDecorator = 'massaExport';
  * or functions as needed.
  */
 export class Transformer extends TransformVisitor {
-  /**
-   * Checks if the function declaration node has a specific decorator, and if so, transforms it.
-   *
-   * @param node - A {@link FunctionDeclaration} to visit.
-   * @returns The transformed node if it has the specific decorator, otherwise the original node.
-   */
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
     if (utils.hasDecorator(node, protobufTransformerDecorator)) {
       return transform(node);
