@@ -1,10 +1,12 @@
 name: Generate Powered-By
-on: 
-  push:
-    branches: [ main ]
+on:
+  pull_request_target:
+    types:
+      - closed
 
 jobs:
-  generate-powered-by-transfomer:
+  generate-powered:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     permissions:
@@ -16,7 +18,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         # Checkout code using massabot account
-        token: ${{ secrets.MASSABOTCLASSIC || github.token }}
+        token: ${{ secrets.MASSABOTCLASSIC }}
 
     - name: Install node 
       uses: actions/setup-node@v3
@@ -34,21 +36,17 @@ jobs:
         npm ci
 
     - name: Generate Powered-By for 'as-types'
-      run: |
-        cd packages/as-types && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-types && npm i && ./../../generate_powered-by.sh && cd ../../
 
     - name: Generate Powered-By for 'as-proba'
-      run: |
-        cd packages/as-proba && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-proba && npm i && ./../../generate_powered-by.sh && cd ../../
 
     - name: Generate Powered-By for 'as-transformer'
-      run: |
-        cd packages/as-transformer && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-transformer && npm i && ./../../generate_powered-by.sh && cd ../../
 
     - name: Commit Changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        token: 
         commit_message: "Generate powered-by"
         file_pattern: "**/powered-by.md"
         # Commit code using massabot account that can bypass push and MR restriction
