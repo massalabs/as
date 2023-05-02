@@ -15,7 +15,7 @@ const asHelpersPath = './build';
 
 /**
  * The Massa Export transformer is responsible to export smart contract functions to make them usable
- * remotely using their signatures (instead of doing a massa-as-sdk 'call' dynamically).
+ * remotely using their signatures (instead of doing a massa-as-sdk 'call' manually).
  *
  * @remarks
  * It achieves this by parsing the smart contracts and generating the protobuf files and the AS helpers.
