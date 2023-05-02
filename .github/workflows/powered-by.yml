@@ -46,7 +46,6 @@ jobs:
     - name: Commit Changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        token: 
         commit_message: "Generate powered-by"
         file_pattern: "**/powered-by.md"
         # Commit code using massabot account that can bypass push and MR restriction
