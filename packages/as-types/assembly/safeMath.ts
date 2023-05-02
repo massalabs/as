@@ -26,7 +26,7 @@ export class SafeMath {
    * @throws if the operation results in a number bigger than u64.MAX_VALUE.
    */
   static add(a: u64, b: u64): u64 {
-    assert(b < u64.MAX_VALUE - a, 'SafeMath: addition overflow');
+    assert(b <= u64.MAX_VALUE - a, 'SafeMath: addition overflow');
 
     const c: u64 = a + b;
 
