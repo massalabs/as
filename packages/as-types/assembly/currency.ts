@@ -55,11 +55,13 @@ export class Currency implements Serializable {
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     let args = new Args(data, offset);
     const resultName = args.nextString();
-    const resultMinorUnit = args.nextU8();
 
     if (resultName.isErr()) {
       return new Result(0, "Can't deserialize Name.");
     }
+
+    const resultMinorUnit = args.nextU8();
+
     if (resultMinorUnit.isErr()) {
       return new Result(0, "Can't deserialize MinorUnit.");
     }
