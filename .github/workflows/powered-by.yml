@@ -1,20 +1,22 @@
 name: Generate Powered-By
 on:
-  pull_request_target:
-    branches: [main]
-    types: [close]
+  push:
+    branches:
+      - main
 
 jobs:
   generate-powered:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
+      contents: write
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        # Checkout the code using massabot account
+        # Checkout using massabot account
         token: ${{ secrets.MASSABOTCLASSIC }}
 
     - name: Install node 
