@@ -60,10 +60,19 @@ export class Amount implements Serializable {
    */
   deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
     let args = new Args(data, offset);
-    this.value = args.nextU64().expect("Can't deserialize the Amount value");
-    this.currency = args
-      .nextSerializable<Currency>()
-      .expect("Can't deserialize the Amount currency") as Currency;
+    const resultValue = args.nextU64();
+    const resultCurrency = args.nextSerializable<Currency>();
+
+    if (resultValue.isErr()) {
+      return new Result(0, "Can't deserialize Value.");
+    }
+    if (resultCurrency.isErr()) {
+      return new Result(0, "Can't deserialize Currency.");
+    }
+
+    this.value = resultValue.unwrap();
+    this.currency = resultCurrency.unwrap();
+
     return new Result(args.offset);
   }
 
