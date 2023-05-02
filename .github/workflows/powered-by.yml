@@ -1,6 +1,6 @@
 name: Generate Powered-By
 on:
-  pull_request_target:
+  pull_request_target: [assigned, unassigned]
 
 jobs:
   generate-powered:
