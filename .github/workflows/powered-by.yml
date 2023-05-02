@@ -1,10 +1,12 @@
 name: Generate Powered-By
-on: 
-  push:
-    branches: [ 224-fix-powered_by-ci ]
+on:
+  pull_request_target:
+    types:
+      - closed
 
 jobs:
-  generate-powered-by-transfomer:
+  generate-powered:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     permissions:
