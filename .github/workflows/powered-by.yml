@@ -1,7 +1,7 @@
 name: Generate Powered-By
 on:
   pull_request_target: 
-    types: [assigned, unassigned]
+    types: [assigned, opened, synchronize, close, reopened]
 
 jobs:
   generate-powered:
