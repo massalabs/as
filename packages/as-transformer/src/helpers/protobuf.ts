@@ -29,7 +29,7 @@ export interface Argument {
 }
 
 /**
- * Generates the protobuf file data for the passed function.
+ * Generates the protobuf file data for the passed function signature.
  *
  * @remarks
  * The protobuf file is written with the proto3 syntax.
