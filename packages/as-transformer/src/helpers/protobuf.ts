@@ -153,10 +153,11 @@ function getTypeName(type: string): FieldSpec {
 }
 
 /**
- * Generates the AS helpers code for the passed protobuf file.
+ * Generates the AS helpers functions for the passed protobuf file.
  *
  * @remarks
  * The AS helpers code is generated using the as-proto-gen plugin with protoc compiler.
+ * These generated functions are used to call the smart contract functions without having to pre-serialize the data.
  *
  * @param protoFile - The data of the protobuf file.
  * @param outputPath - The path to write the generated code to.
