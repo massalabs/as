@@ -35,7 +35,7 @@ function getAllDependencies(
           exportedDeclaration &&
           typeof exportedDeclaration.getSourceFile === 'function',
       )
-      .map((exportedDeclaration) => exportedDeclaration!.getSourceFile());
+      .map((exportedDeclaration) => exportedDeclaration?.getSourceFile());
 
     const sources = [...importedSources, ...exportedSourceFiles];
 

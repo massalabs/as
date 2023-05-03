@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TransformVisitor, utils } from 'visitor-as';
 import {
   Expression,
@@ -139,7 +140,6 @@ export class Transformer extends TransformVisitor {
         let newSource = newParser.sources.pop()!;
         utils.updateSource(this.program, newSource);
       }
-
       // this.program.sources.forEach(source =>
       //   console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
