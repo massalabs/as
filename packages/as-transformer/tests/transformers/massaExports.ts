@@ -16,7 +16,7 @@ describe('generateWrapper', () => {
     wrapper += `}`;
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(wrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function with args', () => {
@@ -40,7 +40,7 @@ describe('generateWrapper', () => {
 
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(wrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function without args', () => {
@@ -60,7 +60,7 @@ describe('generateWrapper', () => {
 
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(wrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 });
 
@@ -73,7 +73,7 @@ describe('generateImports', () => {
     const expectedImports: string[] = [];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return only deserializing helper when args is not an empty and returnedType is', () => {
