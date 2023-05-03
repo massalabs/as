@@ -1,7 +1,7 @@
 /**
- * This class provides utility functions for basic arithmetic operations.
+ * This class provides utility functions for basic arithmetic operations on **unsigned** real positive integers.
  * These functions perform overflow and underflow checks to prevent unwanted behavior
- * when dealing with unsigned 64-bit integers (u64). The SafeMath class should be used
+ * when dealing with **unsigned** 64-bit integers (u64). The SafeMath class should be used
  * when working with arithmetic operations that require increased safety and precision.
  *
  * @remarks
@@ -26,8 +26,9 @@ export class SafeMath {
    * @throws if the operation results in a number bigger than u64.MAX_VALUE.
    */
   static add(a: u64, b: u64): u64 {
+    assert(b <= u64.MAX_VALUE - a, 'SafeMath: addition overflow');
+
     const c: u64 = a + b;
-    assert(c >= a, 'SafeMath: addition overflow');
 
     return c;
   }
@@ -71,9 +72,9 @@ export class SafeMath {
     if (a == 0) {
       return 0;
     }
+    assert(b <= u64.MAX_VALUE / a, 'SafeMath: multiplication overflow');
 
     const c = a * b;
-    assert(c / a == b, 'SafeMath: multiplication overflow');
 
     return c;
   }
