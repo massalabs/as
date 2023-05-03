@@ -66,7 +66,7 @@ export function generateWrapper(
 
   let wrapper = `@external("massa", "assembly_script_generate_event")`;
   wrapper += `\ndeclare function generateEvent(event: string): void;`;
-  wrapper += `\nexport function ${name}(_args: StaticArray<u8>): ${
+  wrapper += `\n\nexport function ${name}(_args: StaticArray<u8>): ${
     returnedType ? 'StaticArray<u8>' : 'void'
   } {\n`;
 
@@ -78,8 +78,8 @@ export function generateWrapper(
     wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(${
       args.length > 0 ? argDecodings : ''
     })));`;
-    wrapper += `\ngenerateEvent(\`${name}Response: \${response}\`)`;
-    wrapper += `\nreturn changetype<StaticArray<u8>>(response.buffer);\n`;
+    wrapper += `\n\n  generateEvent(\`${name}Response: \${response}\`)`;
+    wrapper += `\n  return changetype<StaticArray<u8>>(response.buffer);\n`;
   }
 
   wrapper += '}';
