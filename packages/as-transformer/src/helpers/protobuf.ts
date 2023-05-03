@@ -28,6 +28,20 @@ export interface Argument {
   type: string;
 }
 
+/**
+ * Generates the protobuf file data for the passed function signature.
+ *
+ * @remarks
+ * The protobuf file is written with the proto3 syntax.
+ *
+ * @see [proto3](https://protobuf.dev/programming-guides/proto3/)
+ *
+ * @param name - The name of the function.
+ * @param args - The arguments of the function.
+ * @param returnedType - The return type of the function.
+ *
+ * @returns the protobuf file as a string.
+ */
 export function generateProtoFile(
   name: string,
   args: Argument[],
@@ -62,6 +76,18 @@ ${response}
   return protoFile;
 }
 
+/**
+ * Generates the function argument protobuf text.
+ *
+ * @remarks
+ * The protobuf argument is written with the proto3 syntax.
+ * @see [proto3](https://protobuf.dev/programming-guides/proto3/)
+ *
+ * @param arg - The argument to generate the protobuf for.
+ * @param index - The index of the argument.
+ *
+ * @returns the protobuf argument as a string.
+ */
 function generateArgumentMessage(arg: Argument, index: number): string {
   const fieldName = arg.name;
   const fieldSpec = getTypeName(arg.type);
@@ -126,6 +152,16 @@ function getTypeName(type: string): FieldSpec {
   return spec;
 }
 
+/**
+ * Generates the AS helpers functions for the passed protobuf file.
+ *
+ * @remarks
+ * The AS helpers code is generated using the as-proto-gen plugin with protoc compiler.
+ * These generated functions are used to call the smart contract functions without having to pre-serialize the data.
+ *
+ * @param protoFile - The data of the protobuf file.
+ * @param outputPath - The path to write the generated code to.
+ */
 export function generateASHelpers(protoFile: string, outputPath: string): void {
   let protocProcess = spawnSync('protoc', [
     `--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen`,
