@@ -84,12 +84,10 @@ describe('generateImports', () => {
     ];
     const returnedType = '';
 
-    const expectedImports = [
-      `import { decode${name} } from "./build/${name}";`,
-    ];
+    const expectedImports = [`import { decode${name} } from "./${name}";`];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return (de)serializing helpers and generatedEvent when args is empty and returnedType is not', () => {
@@ -99,11 +97,10 @@ describe('generateImports', () => {
 
     const expectedImports = [
       `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
-      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
     ];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return everything when args and returnedType are not empty', () => {
@@ -117,10 +114,9 @@ describe('generateImports', () => {
     const expectedImports = [
       `import { decode${name} } from "./${name}";`,
       `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
-      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
     ];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 });
