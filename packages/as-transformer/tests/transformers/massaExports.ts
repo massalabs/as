@@ -9,12 +9,14 @@ describe('generateWrapper', () => {
     const name = 'SayHello';
     const args: Argument[] = [];
     const returnedType = '';
+    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    wrapper += `declare function generateEvent(event: string): void;\n\n`;
 
-    const expectedWrapper = `export function ${name}(_args: StaticArray<u8>): void {
-}`;
+    wrapper += `export function ${name}(_args: StaticArray<u8>): void {\n`;
+    wrapper += `}`;
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(expectedWrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function with args', () => {
@@ -25,15 +27,20 @@ describe('generateWrapper', () => {
     ];
     const returnedType = 'string';
 
-    const expectedWrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {
-  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));
-  const response = encode${name}Response(new ${name}Response(_${name}(args.language, args.name)));
-  generateEvent(\`${name}Response: \${response}\`);
-  return changetype<StaticArray<u8>>(response.buffer);
-}`;
+    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    wrapper += `declare function generateEvent(event: string): void;\n\n`;
+
+    wrapper += `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+    wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(args.language, args.name)));\n\n`;
+
+    wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
+    wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
+    wrapper += '}';
+
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(expectedWrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function without args', () => {
@@ -41,14 +48,19 @@ describe('generateWrapper', () => {
     const args: Argument[] = [];
     const returnedType = 'string';
 
-    const expectedWrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {
-  const response = encode${name}Response(new ${name}Response(_${name}()));
-  generateEvent(\`${name}Response: \${response}\`);
-  return changetype<StaticArray<u8>>(response.buffer);
-}`;
+    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    wrapper += `declare function generateEvent(event: string): void;\n\n`;
+
+    wrapper += `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}()));\n\n`;
+
+    wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
+    wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
+    wrapper += '}';
+
     const actualWrapper = generateWrapper(name, args, returnedType);
 
-    expect(actualWrapper).toEqual(expectedWrapper);
+    expect(actualWrapper).toStrictEqual(wrapper);
   });
 });
 
@@ -61,7 +73,7 @@ describe('generateImports', () => {
     const expectedImports: string[] = [];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return only deserializing helper when args is not an empty and returnedType is', () => {
@@ -72,12 +84,10 @@ describe('generateImports', () => {
     ];
     const returnedType = '';
 
-    const expectedImports = [
-      `import { decode${name} } from "./build/${name}";`,
-    ];
+    const expectedImports = [`import { decode${name} } from "./${name}";`];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return (de)serializing helpers and generatedEvent when args is empty and returnedType is not', () => {
@@ -86,12 +96,11 @@ describe('generateImports', () => {
     const returnedType = 'string';
 
     const expectedImports = [
-      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
-      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
+      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
     ];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return everything when args and returnedType are not empty', () => {
@@ -103,12 +112,11 @@ describe('generateImports', () => {
     const returnedType = 'string';
 
     const expectedImports = [
-      `import { decode${name} } from "./build/${name}";`,
-      `import { ${name}Response, encode${name}Response } from "./build/${name}Response";`,
-      `import { generateEvent } from '@massalabs/massa-as-sdk';`,
+      `import { decode${name} } from "./${name}";`,
+      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
     ];
     const actualImports = generateImports(name, args, returnedType);
 
-    expect(actualImports).toEqual(expectedImports);
+    expect(actualImports).toStrictEqual(expectedImports);
   });
 });
