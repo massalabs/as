@@ -28,6 +28,7 @@ describe('generateWrapper', () => {
     const expectedWrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {
   const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));
   const response = encode${name}Response(new ${name}Response(_${name}(args.language, args.name)));
+
   generateEvent(\`${name}Response: \${response}\`);
   return changetype<StaticArray<u8>>(response.buffer);
 }`;
@@ -43,6 +44,7 @@ describe('generateWrapper', () => {
 
     const expectedWrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {
   const response = encode${name}Response(new ${name}Response(_${name}()));
+
   generateEvent(\`${name}Response: \${response}\`);
   return changetype<StaticArray<u8>>(response.buffer);
 }`;
