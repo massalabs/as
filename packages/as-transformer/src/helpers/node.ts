@@ -6,8 +6,18 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { readFileSync } from 'fs';
 
-// inspired from https://github.com/as-pect/visitor-as/blob/master/src/utils.ts#L35
 // TODO: check if it's still needed.
+/**
+ * Checks if the passed function declaration has a given decorator.
+ *
+ * @privateRemarks
+ * @see [inspiration](https://github.com/as-pect/visitor-as/blob/master/src/utils.ts#L35)
+ *
+ * @param node - The function declaration AST node to search a decorator from.
+ * @param name - The name of the decorator to search for.
+ *
+ * @returns true if the function has indeed the passed decorator.
+ */
 export function hasDecorator(node: FunctionDeclaration, name: string): bool {
   let decl = node;
 
@@ -23,7 +33,18 @@ export function hasDecorator(node: FunctionDeclaration, name: string): bool {
     ) == true
   );
 }
-
+/**
+ * Gets the sources from the given filepath.
+ *
+ * @remarks
+ * This function is able to parse the file wether it is located in the `node_modules` or elsewhere.
+ *
+ * @param filePath - The filepath to parse.
+ * @param parser - The parser to use configuration from.
+ * @param subDir - The subdirectory where the file is located.
+ *
+ * @returns The source data of the filepath as a {@link Source} object.
+ */
 export function parseFile(
   filePath: string,
   parser: Parser,

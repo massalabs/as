@@ -122,8 +122,6 @@ export class Transformer extends TransformVisitor {
 
         const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
 
-        // console.log(dependencies);
-
         dependencies
           .map((dep) =>
             parseFile(
@@ -140,8 +138,6 @@ export class Transformer extends TransformVisitor {
         let newSource = newParser.sources.pop()!;
         utils.updateSource(this.program, newSource);
       }
-      // this.program.sources.forEach(source =>
-      //   console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
   }
 }

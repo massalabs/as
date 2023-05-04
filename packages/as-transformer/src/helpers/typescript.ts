@@ -1,5 +1,12 @@
 import { EnumDeclaration, Project, SourceFile } from 'ts-morph';
 
+/**
+ * Returns the dependencies paths for a given source file.
+ *
+ * @param file - the filepath of the source file to get dependencies from.
+ *
+ * @returns An array of filepaths containing the dependencies.
+ */
 export function getDependencies(file: string): string[] {
   const project = new Project();
   project.addSourceFileAtPath(file);
@@ -13,6 +20,18 @@ export function getDependencies(file: string): string[] {
   return Array.from(dependencies).filter((d) => d.indexOf(subpath) < 0);
 }
 
+/**
+ * Fills an array of filepaths dependencies.
+ *
+ * @remarks
+ * This functions achieves dependencies fetching by searching them recursively
+ * for each found dependency.
+ *
+ * @param sourceFiles - The registered source files found during search
+ * (initially the file to search dependencies for only)
+ * @param dependencies - The array of file paths dependencies to fill.
+ *
+ */
 function getAllDependencies(
   sourceFiles: SourceFile[],
   dependencies: Set<string>,
