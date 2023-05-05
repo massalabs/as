@@ -14,7 +14,7 @@ export interface Drawer {
 export class Binomial extends Sampler implements Drawer {
   _n: u64; // Number of independent experiments.
   _p: f32; // Success probability of each experiment.
-  _m: f32; // Maximal probability value returned by mass probability function.
+  _m: f32; // Maximal probability value returned by the probability function.
 
   /**
    * Instantiates a binomial distribution.
@@ -26,6 +26,7 @@ export class Binomial extends Sampler implements Drawer {
     super();
     this._n = n;
     this._p = p;
+    this._m = f32(n) * p;
   }
 
   /**
@@ -46,8 +47,7 @@ export class Binomial extends Sampler implements Drawer {
    * Draws a number from the binomial distribution
    *
    * @remarks
-   * Rejection sampling method is used to generates an observation
-   *   from binomial distribution.
+   * Rejection sampling method is used to generates an observation from binomial distribution.
    *
    * @privateRemarks
    * The _m variable is used as the threshold for the rejection sampling method.
