@@ -66,6 +66,7 @@ export function transform(node: FunctionDeclaration): FunctionDeclaration {
     end: node.range.end,
     content: wrapperContent,
     imports: imports,
+    funcToPrivate: node.name.text,
   });
 
   return node;
@@ -148,6 +149,7 @@ export interface Update {
   end: number;
   content: string;
   imports: string[];
+  funcToPrivate?: string;
 }
 
 let Updates: Update[] = [];

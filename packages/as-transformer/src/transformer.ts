@@ -97,14 +97,11 @@ export class Transformer extends TransformVisitor {
             `exported function not found in file ${source.internalPath}` +
               `, but decorator ${protobufTransformerDecorator} was.`,
           );
-
-          content =
-            content.substring(0, update.begin) +
-            'function _' +
-            content.substring(index, update.end) +
-            '\n\n' +
-            update.content +
-            content.substring(update.end);
+          content.replace(
+            token + update.funcToPrivate,
+            'function _' + update.funcToPrivate,
+          );
+          content += '\n' + update.content + '\n';
 
           update.imports.forEach((i) => {
             neededImports.set(i, true);
