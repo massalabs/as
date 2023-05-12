@@ -117,33 +117,35 @@ export class Transformer extends TransformVisitor {
         Array.from(neededImports.keys()).forEach(
           (i) => (content = i + '\n' + content),
         );
-        const depsFilter = Array.from(
-          Array.from(neededImports.keys()).map((elem) => {
-            let splitted = elem.split('from ".');
-            if (splitted.length > 1 && splitted[1])
-              return 'build' + splitted[1].replace('";', '');
-            return elem;
-          }),
+
+        // Creating a filter list of generated dependencies to import
+        const depsFilter = Array.from(neededImports.keys()).map((elem) =>
+          elem.substring(
+            elem.indexOf('from "./') + 'from "./'.length,
+            elem.length - 2,
+          ),
         );
 
         writeFileSync(`./build/${source.simplePath}.ts`, content);
 
         const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
 
-        // console.log(dependencies);
-
         dependencies
           .filter(
+            // Filtering dependencies to push for compilation
             (dep) =>
               dep.includes('as-proto') ||
               depsFilter.some((filter) => dep.includes(filter)),
           )
-          .map((dep) =>
-            parseFile(
-              dep,
-              new Parser(parser.diagnostics),
-              source.internalPath.replace(source.simplePath, ''),
-            ),
+          .map(
+            (
+              dep, // Parsing dependencies sources
+            ) =>
+              parseFile(
+                dep,
+                new Parser(parser.diagnostics),
+                source.internalPath.replace(source.simplePath, ''),
+              ),
           )
           .forEach((source) => this.program.sources.push(source));
 
