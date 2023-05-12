@@ -105,7 +105,7 @@ export function generateWrapper(
     wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(${
       args.length > 0 ? argDecodings : ''
     })));\n\n`;
-    wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
+    // wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
   }
 
