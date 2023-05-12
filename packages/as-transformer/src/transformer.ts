@@ -117,6 +117,13 @@ export class Transformer extends TransformVisitor {
         Array.from(neededImports.keys()).forEach(
           (i) => (content = i + '\n' + content),
         );
+        const depsFilter = Array.from(Array.from(neededImports.keys()).map(
+          (elem) => {
+            let splitted = elem.split('from ".');
+            if (splitted.length > 1 && splitted[1])
+              return "build" + splitted[1].replace('";', '');
+            return elem;
+          }));
 
         writeFileSync(`./build/${source.simplePath}.ts`, content);
 
@@ -125,6 +132,7 @@ export class Transformer extends TransformVisitor {
         // console.log(dependencies);
 
         dependencies
+          .filter((dep)=> dep.includes("as-proto") || depsFilter.some(filter => dep.includes(filter)))
           .map((dep) =>
             parseFile(
               dep,

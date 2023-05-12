@@ -90,10 +90,10 @@ export function generateWrapper(
 ): string {
   const argDecodings = args.map((arg) => `args.${arg.name}`).join(', ');
 
-  let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-  wrapper += `declare function generateEvent(event: string): void;\n\n`;
+  // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+  // wrapper += `declare function generateEvent(event: string): void;\n\n`;
 
-  wrapper += `export function ${name}(_args: StaticArray<u8>): ${
+  let wrapper = `export function ${name}(_args: StaticArray<u8>): ${
     returnedType ? 'StaticArray<u8>' : 'void'
   } {\n`;
 
