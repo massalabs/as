@@ -1,7 +1,7 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
-## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-0.0.3-dev.20230505092838.tgz)
+## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-0.0.3-dev.20230512142241.tgz)
 
 **License:** ISC - perpetual
 
@@ -32,6 +32,14 @@ The following is a list of all the dependencies of this project:
 **Used version:** 0.24.1
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
+
+## [ts-morph](git+https://github.com/dsherret/ts-morph.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 18.0.0
+
+**Many thanks to:** David Sherret
 
 ## [visitor-as](git+https://github.com/as-pect/visitor-as.git)
 
