@@ -1,11 +1,11 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
-## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-0.0.3-dev.20230512142241.tgz)
+## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-0.0.3-dev.20230514190928.tgz)
 
 **License:** ISC - perpetual
 
-**Used version:** 0.0.3-dev.20230124135348
+**Used version:** 0.0.3
 
 **Many thanks to:** 
 
