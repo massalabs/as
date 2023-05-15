@@ -167,6 +167,7 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
     `--plugin=protoc-gen-as=./node_modules/.bin/as-proto-gen`,
     `--as_out=${outputPath}`,
     `--as_opt=gen-helper-methods`,
+    `--proto_path=./build`,
     protoFile,
   ]);
 

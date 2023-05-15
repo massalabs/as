@@ -9,10 +9,10 @@ describe('generateWrapper', () => {
     const name = 'SayHello';
     const args: Argument[] = [];
     const returnedType = '';
-    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
 
-    wrapper += `export function ${name}(_args: StaticArray<u8>): void {\n`;
+    let wrapper = `export function ${name}(_args: StaticArray<u8>): void {\n`;
     wrapper += `}`;
     const actualWrapper = generateWrapper(name, args, returnedType);
 
@@ -27,14 +27,14 @@ describe('generateWrapper', () => {
     ];
     const returnedType = 'string';
 
-    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
 
-    wrapper += `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    let wrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
     wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(args.language, args.name)));\n\n`;
 
-    wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
+    // wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
@@ -48,13 +48,13 @@ describe('generateWrapper', () => {
     const args: Argument[] = [];
     const returnedType = 'string';
 
-    let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
+    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
 
-    wrapper += `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    let wrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
     wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}()));\n\n`;
 
-    wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
+    // wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
