@@ -12,6 +12,7 @@ import { TestTable } from './transformers/testTable.js';
 import { MassaExport } from './transformers/massaExport.js';
 
 import { TransformUpdates } from './transformers/interfaces/Update.js';
+import { MassaFunctionNode } from './helpers/node.js';
 
 const callTransformers = [new File2ByteArray(), new TestTable()];
 const functionTransformers = [new MassaExport()];
@@ -24,10 +25,14 @@ const functionTransformers = [new MassaExport()];
  */
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
+    let massaNode = MassaFunctionNode.createFromASTNode(node);
+
     for (let transformer of functionTransformers) {
-      if (transformer.isMatching(node)) node = transformer.transform(node);
+      if (transformer.isMatching(massaNode))
+        node = transformer.transform(massaNode);
+      massaNode = MassaFunctionNode.createFromASTNode(node);
     }
-    return super.visitFunctionDeclaration(node);
+    return super.visitFunctionDeclaration(massaNode.node!);
   }
 
   /**

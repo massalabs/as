@@ -1,10 +1,41 @@
 import {
   FunctionDeclaration,
   IdentifierExpression,
+  NamedTypeNode,
   Parser,
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { readFileSync } from 'fs';
+import { Argument } from './protobuf';
+
+export class MassaFunctionNode {
+  name: string;
+  returnType: string;
+  args: Argument[];
+  node: FunctionDeclaration | undefined;
+
+  static createFromASTNode(node: FunctionDeclaration) {
+    const name = node.name.text;
+    const returnType = (node.signature.returnType as NamedTypeNode).name
+      .identifier.text;
+    const args = node.signature.parameters.map((arg) => {
+      return {
+        name: arg.name.text,
+        type: (arg.type as NamedTypeNode).name.identifier.text,
+      };
+    }) as Argument[];
+
+    let newNode = new MassaFunctionNode(name, returnType, args);
+    newNode.node = node;
+    return newNode;
+  }
+
+  constructor(name: string, returnType: string, args: Argument[]) {
+    this.name = name;
+    this.args = args;
+    this.returnType = returnType;
+  }
+}
 
 // inspired from https://github.com/as-pect/visitor-as/blob/master/src/utils.ts#L35
 // TODO: check if it's still needed.

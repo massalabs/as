@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   FunctionDeclaration,
-  NamedTypeNode,
   Parser,
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
@@ -16,7 +15,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as path from 'path';
 import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
 import { TransformUpdates, Update } from './interfaces/Update.js';
-import { hasDecorator, parseFile } from '../helpers/node.js';
+import { MassaFunctionNode, hasDecorator, parseFile } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 
 const protoPath = './build';
@@ -27,17 +26,10 @@ export class MassaExport implements IFunctionTransformer {
   returnType: string | undefined = undefined;
   args: Argument[] = [];
 
-  private _setFunctionSignatureData(node: FunctionDeclaration) {
-    this.functionName = node.name.text;
-    this.returnType = (
-      node.signature.returnType as NamedTypeNode
-    ).name.identifier.text;
-    this.args = node.signature.parameters.map((arg) => {
-      return {
-        name: arg.name.text,
-        type: (arg.type as NamedTypeNode).name.identifier.text,
-      };
-    }) as Argument[];
+  private _setFunctionSignatureData(node: MassaFunctionNode) {
+    this.functionName = node.name;
+    this.returnType = node.returnType;
+    this.args = node.args;
   }
 
   private _resetFunctionSignatureData() {
@@ -46,8 +38,8 @@ export class MassaExport implements IFunctionTransformer {
     this.args = [];
   }
 
-  isMatching(node: FunctionDeclaration): boolean {
-    return hasDecorator(node, 'massaExport');
+  isMatching(node: MassaFunctionNode): boolean {
+    return hasDecorator(node.node!, 'massaExport');
   }
 
   /**
@@ -64,7 +56,7 @@ export class MassaExport implements IFunctionTransformer {
    *
    * @returns The unchanged node.
    */
-  transform(node: FunctionDeclaration): FunctionDeclaration {
+  transform(node: MassaFunctionNode): FunctionDeclaration {
     // extracting function signature from node
     this._setFunctionSignatureData(node);
     // generate proto file
@@ -94,19 +86,19 @@ export class MassaExport implements IFunctionTransformer {
     const imports = this._generateImports();
 
     TransformUpdates.addUpdate({
-      begin: node.range.start,
-      end: node.range.end,
+      begin: node.node!.range.start,
+      end: node.node!.range.end,
       content: wrapperContent,
       data: new Map([
         ['imports', imports],
-        ['funcToPrivate', [node.name.text]],
+        ['funcToPrivate', [node.name]],
       ]),
       transformerSource: 'MassaExport',
     });
 
     this._resetFunctionSignatureData();
 
-    return node;
+    return node.node!;
   }
   /**
    * Generates the wrapper function that will be exported by the smart contract.
@@ -205,7 +197,7 @@ export class MassaExport implements IFunctionTransformer {
 
     // Dynamically fetching additional import's dependencies
     for (const update of TransformUpdates.getUpdates()) {
-      if (update.transformerSource !== 'massaExport') continue;
+      if (update.transformerSource !== 'MassaExport') continue;
       foundUpdates = true;
       const imports = update.data.get('imports');
       if (imports === undefined) {
