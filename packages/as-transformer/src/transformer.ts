@@ -9,18 +9,12 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
-import {
-  getUpdates,
-  resetUpdates,
-  transform,
-} from './transformers/massaExport.js';
-import { writeFileSync } from 'fs';
-import { getDependencies } from './helpers/typescript.js';
-import { hasDecorator, parseFile } from './helpers/node.js';
+import { MassaExport } from './transformers/massaExport.js';
 
-const callTransformers = [File2ByteArray, TestTable];
+import { TransformUpdates } from './transformers/interfaces/Update.js';
 
-const protobufTransformerDecorator = 'massaExport';
+const callTransformers = [new File2ByteArray(), new TestTable()];
+const functionTransformers = [new MassaExport()];
 
 /**
  * The `Transformer` class extends the `TransformVisitor` class from visitor-as and overrides its methods to perform
@@ -30,10 +24,9 @@ const protobufTransformerDecorator = 'massaExport';
  */
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
-    if (hasDecorator(node, protobufTransformerDecorator)) {
-      return transform(node);
+    for (let transformer of functionTransformers) {
+      if (transformer.isMatching(node)) node = transformer.transform(node);
     }
-
     return super.visitFunctionDeclaration(node);
   }
 
@@ -49,7 +42,7 @@ export class Transformer extends TransformVisitor {
     const inputText = (node.expression as IdentifierExpression)?.text;
 
     for (let transformer of callTransformers) {
-      if (inputText == transformer.strPattern) {
+      if (transformer.isMatching(inputText)) {
         return transformer.transform(node);
       }
     }
@@ -75,85 +68,28 @@ export class Transformer extends TransformVisitor {
         !source.internalPath.startsWith(`node_modules/`) &&
         !utils.isLibrary(source),
     );
-
-    let additionalImports = new Map<string, boolean>();
-
     sources.forEach((source) => {
-      resetUpdates();
+      TransformUpdates.resetUpdates();
       this.visit(source);
+      let actualSource = source;
 
-      let content = source.text;
-      let neededImports = new Map<string, boolean>();
-
-      const updates = getUpdates();
-
-      if (updates.length > 0) {
-        updates.forEach((update) => {
-          const token = 'export function ';
-          const index = content.indexOf(token, update.begin) + token.length;
-
-          assert(
-            index >= token.length,
-            `exported function not found in file ${source.internalPath}` +
-              `, but decorator ${protobufTransformerDecorator} was.`,
+      for (let transformer of functionTransformers) {
+        let content = transformer.updateSource(actualSource);
+        if (content !== undefined) {
+          let newSources = transformer.getAdditionalSources(
+            parser,
+            actualSource,
           );
-          content.replace(
-            token + update.funcToPrivate,
-            'function _' + update.funcToPrivate,
-          );
-          content += '\n' + update.content + '\n';
+          for (let newSource of newSources) {
+            this.program.sources.push(newSource);
+          }
+          let newParser = new Parser(parser.diagnostics);
+          newParser.parseFile(content, actualSource.internalPath + '.ts', true);
 
-          update.imports.forEach((i) => {
-            neededImports.set(i, true);
-            additionalImports.set(i, true);
-          });
-        });
-
-        content = '\n' + content;
-
-        Array.from(neededImports.keys()).forEach(
-          (i) => (content = i + '\n' + content),
-        );
-
-        // Creating a filter list of generated dependencies to import
-        const depsFilter = Array.from(neededImports.keys()).map((elem) =>
-          elem.substring(
-            elem.indexOf('from "./') + 'from "./'.length,
-            elem.length - 2,
-          ),
-        );
-
-        writeFileSync(`./build/${source.simplePath}.ts`, content);
-
-        const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
-
-        dependencies
-          .filter(
-            // Filtering dependencies to push for compilation
-            (dep) =>
-              dep.includes('as-proto') ||
-              depsFilter.some((filter) => dep.includes(filter)),
-          )
-          .map(
-            (
-              dep, // Parsing dependencies sources
-            ) =>
-              parseFile(
-                dep,
-                new Parser(parser.diagnostics),
-                source.internalPath.replace(source.simplePath, ''),
-              ),
-          )
-          .forEach((source) => this.program.sources.push(source));
-
-        let newParser = new Parser(parser.diagnostics);
-        newParser.parseFile(content, source.internalPath + '.ts', true);
-
-        let newSource = newParser.sources.pop()!;
-        utils.updateSource(this.program, newSource);
+          actualSource = newParser.sources.pop()!;
+          utils.updateSource(this.program, actualSource);
+        }
       }
-      // this.program.sources.forEach(source =>
-      //   console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
   }
 }

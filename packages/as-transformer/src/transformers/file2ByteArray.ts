@@ -5,6 +5,7 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { RangeTransform } from 'visitor-as/dist/transformRange.js';
 import { SimpleParser } from 'visitor-as';
+import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 import * as fs from 'fs';
 
@@ -13,8 +14,12 @@ import * as fs from 'fs';
  * {@link CallExpression} with an {@link Expression} that represents the file content as a byte array.
  *
  */
-export class File2ByteArray {
+export class File2ByteArray implements IExpressionTransformer {
   static strPattern = 'fileToByteArray';
+
+  isMatching(expression: string): boolean {
+    return expression == File2ByteArray.strPattern;
+  }
 
   /**
    * This method takes a {@link CallExpression} and transforms it by:
@@ -30,7 +35,7 @@ export class File2ByteArray {
    *
    * @returns The updated node as an {@link Expression} that represents the file content as a byte array.
    */
-  static transform(node: CallExpression): Expression {
+  transform(node: CallExpression): Expression {
     let arg0 = node.args[0] as StringLiteralExpression;
     const bytes = JSON.stringify(fs.readFileSync(arg0.value).toJSON().data);
     let res = SimpleParser.parseExpression(bytes);

@@ -6,12 +6,17 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { SimpleParser } from 'visitor-as';
 import { RangeTransform } from 'visitor-as/dist/transformRange.js';
+import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
  * Replaces calls to verifyTableExpectations with AssemblyScript code that uses unittest functions.
  */
-export class TestTable {
+export class TestTable implements IExpressionTransformer {
   static strPattern = 'verifyTableExpectations';
+
+  isMatching(expression: string): boolean {
+    return expression == TestTable.strPattern;
+  }
 
   /**
    * Transforms verifyTableExpectations function call and its arguments to proper AssemblyScript tests.
@@ -19,7 +24,7 @@ export class TestTable {
    * @param node - The CallExpression node.
    * @returns The transformed node.
    */
-  static transform(node: CallExpression): Expression {
+  transform(node: CallExpression): Expression {
     // Extract node arguments as text
     const args = node.args.map((arg) =>
       arg.range.source.text.slice(arg.range.start, arg.range.end),

@@ -45,7 +45,7 @@ export interface Argument {
 export function generateProtoFile(
   name: string,
   args: Argument[],
-  returnedType: string,
+  returnedType: string | undefined,
 ): string {
   const argumentMessages = args.map((arg, index) =>
     generateArgumentMessage(arg, index + 1),
