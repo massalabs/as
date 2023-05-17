@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   FunctionDeclaration,
-  Parser,
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
@@ -13,15 +12,15 @@ import {
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as path from 'path';
-import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
+// import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
 import { TransformUpdates, Update } from './interfaces/Update.js';
-import { MassaFunctionNode, hasDecorator, parseFile } from '../helpers/node.js';
+import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 
 const protoPath = './build';
 const asHelpersPath = './build';
 
-export class MassaExport implements IFunctionTransformer {
+export class MassaExport {
   functionName = '';
   returnType: string | undefined = undefined;
   args: Argument[] = [];
@@ -191,7 +190,7 @@ export class MassaExport implements IFunctionTransformer {
     return content;
   }
 
-  getAdditionalSources(parser: Parser, source: Source): Source[] {
+  getAdditionalSources(source: Source): string[] {
     let neededImports = new Map<string, boolean>();
     let foundUpdates = false;
 
@@ -222,23 +221,12 @@ export class MassaExport implements IFunctionTransformer {
     );
 
     // Filtering fetched dependencies to match only the newly added ones
-    return dependencies
-      .filter(
-        // Filtering dependencies to push for compilation
-        (dep) =>
-          dep.includes('as-proto') ||
-          depsFilter.some((filter) => dep.includes(filter)),
-      )
-      .map(
-        (
-          dep, // Parsing dependencies sources
-        ) =>
-          parseFile(
-            dep,
-            new Parser(parser.diagnostics),
-            source.internalPath.replace(source.simplePath, ''),
-          ),
-      );
+    return dependencies.filter(
+      // Filtering dependencies to push for compilation
+      (dep) =>
+        dep.includes('as-proto') ||
+        depsFilter.some((filter) => dep.includes(filter)),
+    );
   }
 
   updateSource(source: Source): string | undefined {

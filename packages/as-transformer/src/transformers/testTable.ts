@@ -6,12 +6,12 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { SimpleParser } from 'visitor-as';
 import { RangeTransform } from 'visitor-as/dist/transformRange.js';
-import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
+// import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
  * Replaces calls to verifyTableExpectations with AssemblyScript code that uses unittest functions.
  */
-export class TestTable implements IExpressionTransformer {
+export class TestTable {
   static strPattern = 'verifyTableExpectations';
 
   isMatching(expression: string): boolean {

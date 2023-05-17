@@ -5,7 +5,7 @@ import {
 } from 'assemblyscript/dist/assemblyscript.js';
 import { RangeTransform } from 'visitor-as/dist/transformRange.js';
 import { SimpleParser } from 'visitor-as';
-import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
+// import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 import * as fs from 'fs';
 
@@ -14,7 +14,7 @@ import * as fs from 'fs';
  * {@link CallExpression} with an {@link Expression} that represents the file content as a byte array.
  *
  */
-export class File2ByteArray implements IExpressionTransformer {
+export class File2ByteArray {
   static strPattern = 'fileToByteArray';
 
   isMatching(expression: string): boolean {

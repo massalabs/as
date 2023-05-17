@@ -13,6 +13,7 @@ import { MassaExport } from './transformers/massaExport.js';
 
 import { TransformUpdates } from './transformers/interfaces/Update.js';
 import { MassaFunctionNode } from './helpers/node.js';
+import { parseFile } from './helpers/source.js';
 
 const callTransformers = [new File2ByteArray(), new TestTable()];
 const functionTransformers = [new MassaExport()];
@@ -81,12 +82,15 @@ export class Transformer extends TransformVisitor {
       for (let transformer of functionTransformers) {
         let content = transformer.updateSource(actualSource);
         if (content !== undefined) {
-          let newSources = transformer.getAdditionalSources(
-            parser,
-            actualSource,
-          );
+          let newSources = transformer.getAdditionalSources(actualSource);
           for (let newSource of newSources) {
-            this.program.sources.push(newSource);
+            this.program.sources.push(
+              parseFile(
+                newSource,
+                new Parser(parser.diagnostics),
+                source.internalPath.replace(actualSource.simplePath, ''),
+              ),
+            );
           }
           let newParser = new Parser(parser.diagnostics);
           newParser.parseFile(content, actualSource.internalPath + '.ts', true);
