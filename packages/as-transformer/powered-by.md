@@ -5,7 +5,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 0.0.3
+**Used version:** 0.0.3-dev.20230514190928
 
 **Many thanks to:** 
 
