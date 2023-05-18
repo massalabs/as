@@ -1,6 +1,6 @@
 {
   "name": "@massalabs/as-types",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "Massa AS types lib",
   "types": "assembly/index.ts",
   "type": "module",
