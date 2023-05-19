@@ -1,13 +1,21 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
-## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-0.0.3-dev.20230514190928.tgz)
+## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-1.0.0.tgz)
 
 **License:** ISC - perpetual
 
-**Used version:** 0.0.3-dev.20230514190928
+**Used version:** 1.0.0
 
 **Many thanks to:** 
+
+## [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 29.5.1
+
+**Many thanks to:** n/a
 
 ## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
 
@@ -49,14 +57,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** Willem Wyndham
 
-## [@types/jest](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 29.5.1
-
-**Many thanks to:** n/a
-
 ## [@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
 **License:** MIT - perpetual
@@ -73,14 +73,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [rimraf](git://github.com/isaacs/rimraf.git)
-
-**License:** ISC - perpetual
-
-**Used version:** 3.0.2
-
-**Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
-
 ## [ts-jest](git+https://github.com/kulshekhar/ts-jest.git)
 
 **License:** MIT - perpetual
@@ -88,12 +80,4 @@ The following is a list of all the dependencies of this project:
 **Used version:** 29.1.0
 
 **Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
-
-## [typescript](git+https://github.com/Microsoft/TypeScript.git)
-
-**License:** Apache-2.0 - perpetual
-
-**Used version:** 4.9.3
-
-**Many thanks to:** Microsoft Corp.
 
