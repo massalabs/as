@@ -6,10 +6,10 @@ export function parseFile(
   parser: Parser,
   subDir: string,
 ): Source {
-  const nodeModulesIndex = filePath.indexOf('node_modules/');
+  const isNodeModule = filePath.includes('node_modules/');
   let newParser = new Parser(parser.diagnostics);
 
-  if (nodeModulesIndex > -1) {
+  if (isNodeModule) {
     const shortFilePath = filePath.replace(/.*node_modules/i, '~lib');
     newParser.parseFile(readFileSync(filePath, 'utf-8'), shortFilePath, false);
   } else {

@@ -12,7 +12,6 @@ import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
 import { MassaExport } from './transformers/massaExport.js';
 
-import { TransformUpdates } from './transformers/interfaces/Update.js';
 import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
 
@@ -57,14 +56,53 @@ export class Transformer extends TransformVisitor {
     return super.visitCallExpression(node);
   }
 
-  private _updateSource(oldSource: Source, newContent: string, parser: Parser) {
+  /**
+   * Updates the given source file with the given new content content.
+   *
+   * @param oldSource - The old source file to be updates
+   * @param newContent - The new file content for the source file
+   * @param parser - The parser of the {@link afterParse} hook
+   *
+   * @returns The updated source.
+   */
+  private _updateSource(
+    oldSource: Source,
+    newContent: string,
+    parser: Parser,
+  ): Source {
     let newParser = new Parser(parser.diagnostics);
     newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
 
     let newSource = newParser.sources.pop()!;
     utils.updateSource(this.program, newSource);
-    console.log('Updating source for: ' + oldSource.internalPath);
     return newSource;
+  }
+
+  /**
+   * Updates the whole program source dependencies added by the given transformer.
+   *
+   * @param transformer - The transformer that adds sources to the project.
+   * @param source - The source file that requires new dependencies.
+   * @param parser - The parser of the {@link afterParse} hook
+   */
+  private _addDependencies(
+    transformer: MassaExport,
+    source: Source,
+    parser: Parser,
+  ) {
+    // Fetching eventual additional sources
+    let newSources = transformer.getAdditionalSources(source);
+
+    // Parsing and pushing additional sources for compilation
+    for (let newSource of newSources) {
+      this.program.sources.push(
+        parseFile(
+          newSource,
+          new Parser(parser.diagnostics),
+          source.internalPath.replace(source.simplePath, ''),
+        ),
+      );
+    }
   }
 
   /**
@@ -91,37 +129,20 @@ export class Transformer extends TransformVisitor {
       this.visit(source); // visiting AST Tree nodes and calling transformers
       let actualSource = source;
 
-      // Post transform sources operations
+      // Post-transform sources updates
       for (let transformer of functionTransformers) {
-        // Fetching corresponding transformer updates
-        let updates = TransformUpdates.getUpdates().filter(
-          (update) => update.transformerSource == transformer.updateId,
-        );
+        if (!transformer.hasUpdates()) continue;
+        // Fetching eventual source update
+        let newContent = transformer.updateSource(actualSource);
 
-        if (updates.length > 0) {
-          // Fetching eventual source update
-          let newContent = transformer.updateSource(actualSource, updates);
-          // Fetching eventual additional sources
-          let newSources = transformer.getAdditionalSources(
-            actualSource,
-            updates,
-          );
-          // Parsing and pushing additional sources for compilation
-          for (let newSource of newSources) {
-            this.program.sources.push(
-              parseFile(
-                newSource,
-                new Parser(parser.diagnostics),
-                actualSource.internalPath.replace(actualSource.simplePath, ''),
-              ),
-            );
-          }
-          // Updating original file source
-          if (actualSource.text !== newContent)
-            actualSource = this._updateSource(actualSource, newContent, parser);
-        }
+        // Updating dependencies
+        this._addDependencies(transformer, actualSource, parser);
+
+        // Updating original file source
+        actualSource = this._updateSource(actualSource, newContent, parser);
+
+        transformer.resetUpdates();
       }
-      TransformUpdates.resetUpdates();
     });
   }
 }

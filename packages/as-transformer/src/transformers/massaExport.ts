@@ -13,14 +13,24 @@ import {
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as path from 'path';
 // import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
-import { TransformUpdates, Update } from './interfaces/Update.js';
+import { Update } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 
+/**
+ * The Massa Export transformer is responsible of exporting standard contract
+ * function signature with a generic AS wrapper.
+ *
+ * @remarks
+ * It allows by the usage of `@massaExport()` decorator, the writing of a simple function without having to care
+ * about argument encoding and decoding.
+ */
 export class MassaExport {
   updateId = 'MassaExport';
   protoPath = './build';
   asHelpersPath = './build';
+
+  updates: Update[] = [];
   functionName = '';
   returnType: string | undefined = undefined;
   args: Argument[] = [];
@@ -37,19 +47,25 @@ export class MassaExport {
     this.args = [];
   }
 
+  resetUpdates(): void {
+    this.updates = [];
+  }
+
+  hasUpdates(): bool {
+    return this.updates.length > 0;
+  }
+
   isMatching(node: MassaFunctionNode): boolean {
     return hasDecorator(node.node!, 'massaExport');
   }
 
   /**
-   * The Massa Export transformer is responsible to export smart contract functions to make them usable
-   * remotely using their signatures (instead of doing a massa-as-sdk 'call' manually).
+   * This function is responsible of generating the wrapper for encoding/decoding of arguments of the passed function.
    *
    * @remarks
-   * It achieves this by parsing the smart contracts and generating the protobuf files and the AS helpers.
-   * It allows specific contract interactions and automatic serialization/deserialization of the data.
-   * It doesn't change the smart contract AST, it only generates the protobuf files and the AS helpers in
-   * a build directory.
+   * The wrapper is generated using protobuf and generated AS helpers.
+   * It doesn't change the function AST, it rather stores the generated wrappers to apply them all at once in the file
+   * after it as generated all the wrappers for the current file.
    *
    * @param node - The AST {@link FunctionDeclaration} node containing the function to export.
    *
@@ -85,7 +101,7 @@ export class MassaExport {
 
     const imports = this._generateImports();
 
-    TransformUpdates.addUpdate({
+    this.updates.push({
       begin: node.node!.range.start,
       end: node.node!.range.end,
       content: wrapperContent,
@@ -93,13 +109,13 @@ export class MassaExport {
         ['imports', imports],
         ['funcToPrivate', [node.name]],
       ]),
-      transformerSource: this.updateId,
     });
 
     this._resetFunctionSignatureData();
 
     return node.node!;
   }
+
   /**
    * Generates the wrapper function that will be exported by the smart contract.
    *
@@ -166,6 +182,78 @@ export class MassaExport {
     return imports;
   }
 
+  /**
+   * Retrieves the additional sources needed for the generated wrappers.
+   *
+   * @param source - The original source file
+   *
+   * @returns A filepaths array of the additional sources.
+   */
+  getAdditionalSources(source: Source): string[] {
+    const depsFilter: string[] = [];
+
+    // Retrieving the generated functions
+    for (const update of this.updates) {
+      const scFunc = update.data.get('funcToPrivate');
+      if (scFunc === undefined) {
+        console.error(
+          'There was an error with pushing generated code imports to compilation',
+        );
+        return [];
+      }
+      // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
+      depsFilter.push('build/' + scFunc[0]!);
+      depsFilter.push('build/' + scFunc[0]! + 'Response');
+    }
+
+    // Dynamically fetching additional import's dependencies
+    const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
+
+    // Filtering fetched dependencies to avoid adding again dependencies
+    // that where already imported by the original file.
+    return dependencies.filter(
+      (dep) =>
+        dep.includes('as-proto') ||
+        depsFilter.some((filter) => dep.includes(filter)),
+    );
+  }
+
+  /**
+   * This function is used to create a new file with the generated wrappers and imports based on the original contract.
+   *
+   * @remarks
+   * It is done by applying previously generated updates to the original source.
+   *
+   * @param source - The original source of the contract file
+   * @param updates - The previously generate updates made by {@link MassaExport}
+   *
+   * @returns The new raw file content of the file source.
+   */
+  updateSource(source: Source): string {
+    let content = source.text;
+
+    this.updates.forEach((update) => {
+      content = this._updateSourceFile(update, content);
+    });
+
+    content = content.replaceAll('@massaExport()\n', '');
+    // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
+    writeFileSync(`./build/${source.simplePath}.ts`, content);
+    return content;
+  }
+
+  /**
+   * Adds the given wrapper update and imports into the file content.
+   *
+   * @remarks
+   * Since the wrapper will have the original function name
+   * the original function is changed and marked as not exported.
+   *
+   * @param update - The update containing the wrapper and the imports
+   * @param content - The file content of the contract to update.
+   *
+   * @returns The updated file content.
+   */
   private _updateSourceFile(update: Update, content: string): string {
     const funcToPrivate = update.data.get('funcToPrivate');
     const imports = update.data.get('imports');
@@ -177,11 +265,12 @@ export class MassaExport {
       return content;
     }
 
-    // content = content.replace(funcToPrivate[0]!, '_'+funcToPrivate[0]);
+    // changing the signature of the original function to allow the addition of the wrapper.
     content = content.replace(
       'export function ' + funcToPrivate[0],
       'function _' + funcToPrivate[0],
     );
+
     // appending wrapper to end of file
     content += '\n' + update.content + '\n';
 
@@ -189,44 +278,6 @@ export class MassaExport {
     imports.forEach((i) => {
       content = i + '\n' + content;
     });
-    return content;
-  }
-
-  getAdditionalSources(source: Source, updates: Update[]): string[] {
-    const depsFilter: string[] = [];
-
-    // Dynamically fetching additional import's dependencies
-    for (const update of updates) {
-      const scFunc = update.data.get('funcToPrivate');
-      if (scFunc === undefined) {
-        console.error(
-          'There was an error with pushing generated code imports to compilation',
-        );
-        return [];
-      }
-      depsFilter.push('build/' + scFunc[0]!);
-      depsFilter.push('build/' + scFunc[0]! + 'Response');
-    }
-
-    const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
-
-    // Filtering fetched dependencies to match only the newly added ones
-    return dependencies.filter(
-      // Filtering dependencies to push for compilation
-      (dep) =>
-        dep.includes('as-proto') ||
-        depsFilter.some((filter) => dep.includes(filter)),
-    );
-  }
-
-  updateSource(source: Source, updates: Update[]): string {
-    let content = source.text;
-    updates.forEach((update) => {
-      // Adding generated wrappers and new imports in file
-      content = this._updateSourceFile(update, content);
-    });
-    content = content.replaceAll('@massaExport()\n', '');
-    writeFileSync(`./build/${source.simplePath}.ts`, content);
     return content;
   }
 }

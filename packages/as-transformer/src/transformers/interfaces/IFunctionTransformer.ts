@@ -1,6 +1,5 @@
 import {
   FunctionDeclaration,
-  Parser,
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { MassaFunctionNode } from '../../helpers/node';
@@ -44,7 +43,7 @@ export interface IFunctionTransformer {
    * @param parser - The code parser used at parse time before compilation.
    * @param source - The source code of the parsed and transformed file.
    */
-  getAdditionalSources(parser: Parser, source: Source): Source[];
+  getAdditionalSources(source: Source): string[];
 
   /**
    * This function is used to further manually update the parsed source to compilation.
