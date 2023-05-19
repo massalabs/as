@@ -6,6 +6,7 @@ import {
   CallExpression,
   IdentifierExpression,
   FunctionDeclaration,
+  Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
@@ -56,6 +57,16 @@ export class Transformer extends TransformVisitor {
     return super.visitCallExpression(node);
   }
 
+  private _updateSource(oldSource: Source, newContent: string, parser: Parser) {
+    let newParser = new Parser(parser.diagnostics);
+    newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
+
+    let newSource = newParser.sources.pop()!;
+    utils.updateSource(this.program, newSource);
+    console.log('Updating source for: ' + oldSource.internalPath);
+    return newSource;
+  }
+
   /**
    * Performs transformations on the AST after the parser completes.
    * It visits each source file, checks for updates, performs transformations, and writes the transformed code
@@ -70,35 +81,47 @@ export class Transformer extends TransformVisitor {
    */
   afterParse(parser: Parser): void {
     let sources = parser.sources.filter(
+      // Fetching only project parsed sources (AST Tree for each file)
       (source) =>
         !source.internalPath.startsWith(`node_modules/`) &&
         !utils.isLibrary(source),
     );
+
     sources.forEach((source) => {
-      TransformUpdates.resetUpdates();
-      this.visit(source);
+      this.visit(source); // visiting AST Tree nodes and calling transformers
       let actualSource = source;
 
+      // Post transform sources operations
       for (let transformer of functionTransformers) {
-        let content = transformer.updateSource(actualSource);
-        if (content !== undefined) {
-          let newSources = transformer.getAdditionalSources(actualSource);
+        // Fetching corresponding transformer updates
+        let updates = TransformUpdates.getUpdates().filter(
+          (update) => update.transformerSource == transformer.updateId,
+        );
+
+        if (updates.length > 0) {
+          // Fetching eventual source update
+          let newContent = transformer.updateSource(actualSource, updates);
+          // Fetching eventual additional sources
+          let newSources = transformer.getAdditionalSources(
+            actualSource,
+            updates,
+          );
+          // Parsing and pushing additional sources for compilation
           for (let newSource of newSources) {
             this.program.sources.push(
               parseFile(
                 newSource,
                 new Parser(parser.diagnostics),
-                source.internalPath.replace(actualSource.simplePath, ''),
+                actualSource.internalPath.replace(actualSource.simplePath, ''),
               ),
             );
           }
-          let newParser = new Parser(parser.diagnostics);
-          newParser.parseFile(content, actualSource.internalPath + '.ts', true);
-
-          actualSource = newParser.sources.pop()!;
-          utils.updateSource(this.program, actualSource);
+          // Updating original file source
+          if (actualSource.text !== newContent)
+            actualSource = this._updateSource(actualSource, newContent, parser);
         }
       }
+      TransformUpdates.resetUpdates();
     });
   }
 }

@@ -17,10 +17,10 @@ import { TransformUpdates, Update } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 
-const protoPath = './build';
-const asHelpersPath = './build';
-
 export class MassaExport {
+  updateId = 'MassaExport';
+  protoPath = './build';
+  asHelpersPath = './build';
   functionName = '';
   returnType: string | undefined = undefined;
   args: Argument[] = [];
@@ -58,27 +58,28 @@ export class MassaExport {
   transform(node: MassaFunctionNode): FunctionDeclaration {
     // extracting function signature from node
     this._setFunctionSignatureData(node);
-    // generate proto file
-    if (!existsSync(protoPath)) {
-      mkdirSync(protoPath, { recursive: true });
+
+    // generate proto build directory
+    if (!existsSync(this.protoPath)) {
+      mkdirSync(this.protoPath, { recursive: true });
+    }
+    // generate AS helpers directory
+    if (!existsSync(this.asHelpersPath)) {
+      mkdirSync(this.asHelpersPath, { recursive: true });
     }
 
+    // generate proto content
     const protoContent = generateProtoFile(
       this.functionName,
       this.args,
       this.returnType,
     );
 
-    const protoFile = path.join(protoPath, `${this.functionName}.proto`);
+    const protoFile = path.join(this.protoPath, `${this.functionName}.proto`);
 
-    writeFileSync(protoFile, protoContent);
+    writeFileSync(protoFile, protoContent); // writing proto file content in filepath
 
-    // generate AS helpers
-    if (!existsSync(protoPath)) {
-      mkdirSync(protoPath, { recursive: true });
-    }
-
-    generateASHelpers(protoFile, asHelpersPath);
+    generateASHelpers(protoFile, this.asHelpersPath);
 
     const wrapperContent = this._generateWrapper();
 
@@ -92,7 +93,7 @@ export class MassaExport {
         ['imports', imports],
         ['funcToPrivate', [node.name]],
       ]),
-      transformerSource: 'MassaExport',
+      transformerSource: this.updateId,
     });
 
     this._resetFunctionSignatureData();
@@ -176,49 +177,38 @@ export class MassaExport {
       return content;
     }
 
-    const token = 'export function ';
-    console.error('function to privatise: ' + funcToPrivate[0]);
+    // content = content.replace(funcToPrivate[0]!, '_'+funcToPrivate[0]);
     content = content.replace(
-      token + funcToPrivate[0],
+      'export function ' + funcToPrivate[0],
       'function _' + funcToPrivate[0],
     );
+    // appending wrapper to end of file
     content += '\n' + update.content + '\n';
 
+    // adding corresponding asHelper imports for each added wrapper
     imports.forEach((i) => {
-      content = '\n' + i + content;
+      content = i + '\n' + content;
     });
     return content;
   }
 
-  getAdditionalSources(source: Source): string[] {
-    let neededImports = new Map<string, boolean>();
-    let foundUpdates = false;
+  getAdditionalSources(source: Source, updates: Update[]): string[] {
+    const depsFilter: string[] = [];
 
     // Dynamically fetching additional import's dependencies
-    for (const update of TransformUpdates.getUpdates()) {
-      if (update.transformerSource !== 'MassaExport') continue;
-      foundUpdates = true;
-      const imports = update.data.get('imports');
-      if (imports === undefined) {
+    for (const update of updates) {
+      const scFunc = update.data.get('funcToPrivate');
+      if (scFunc === undefined) {
         console.error(
           'There was an error with pushing generated code imports to compilation',
         );
         return [];
       }
-      imports.forEach((i: string) => {
-        neededImports.set(i, true);
-      });
+      depsFilter.push('build/' + scFunc[0]!);
+      depsFilter.push('build/' + scFunc[0]! + 'Response');
     }
-    if (foundUpdates == false) return [];
-    const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
 
-    // Creating a filter list of generated dependencies to import
-    const depsFilter = Array.from(neededImports.keys()).map((elem) =>
-      elem.substring(
-        elem.indexOf('from "./') + 'from "./'.length,
-        elem.length - 2,
-      ),
-    );
+    const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
 
     // Filtering fetched dependencies to match only the newly added ones
     return dependencies.filter(
@@ -229,24 +219,14 @@ export class MassaExport {
     );
   }
 
-  updateSource(source: Source): string | undefined {
+  updateSource(source: Source, updates: Update[]): string {
     let content = source.text;
-    let foundUpdates = false;
-    const updates = TransformUpdates.getUpdates();
-
     updates.forEach((update) => {
-      if (update.transformerSource === 'MassaExport') {
-        // Adding generated wrappers and new imports in file
-        content = this._updateSourceFile(update, content);
-        foundUpdates = true;
-      }
+      // Adding generated wrappers and new imports in file
+      content = this._updateSourceFile(update, content);
     });
-
-    if (foundUpdates) {
-      content = content.replaceAll('@massaExport()', '');
-      writeFileSync(`./build/${source.simplePath}.ts`, content);
-      return content;
-    }
+    content = content.replaceAll('@massaExport()\n', '');
+    writeFileSync(`./build/${source.simplePath}.ts`, content);
     return content;
   }
 }
