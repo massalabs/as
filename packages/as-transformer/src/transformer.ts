@@ -84,7 +84,10 @@ export class Transformer extends TransformVisitor {
   }
 
   /**
-   * Updates the whole program source dependencies added by the given transformer.
+   * Adds to this.program the sources of the needed dependencies.
+   *
+   * @privateRemarks
+   * The needed dependencies are retrieved by calling getAdditionalSources of the transformer.
    *
    * @param transformer - The transformer that adds sources to the project.
    * @param source - The source file that requires new dependencies.
