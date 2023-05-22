@@ -7,21 +7,23 @@ export function parseFile(
   subDir: string,
 ): Source {
   const isNodeModule = filePath.includes('node_modules/');
-  let newParser = new Parser(parser.diagnostics);
 
   if (isNodeModule) {
     const shortFilePath = filePath.replace(/.*node_modules/i, '~lib');
-    newParser.parseFile(readFileSync(filePath, 'utf-8'), shortFilePath, false);
+    parser.parseFile(readFileSync(filePath, 'utf-8'), shortFilePath, false);
   } else {
     const shortFilePath = filePath.replace(process.cwd() + '/', '');
-    newParser.parseFile(
+    parser.parseFile(
       readFileSync(shortFilePath, 'utf-8'),
       shortFilePath.replace('build/', subDir),
       false,
     );
   }
+  for (let diag of parser.diagnostics) {
+    console.warn('Massa Transform error: ' + diag.message);
+  }
 
-  const src = newParser.sources.pop();
+  const src = parser.sources.pop();
 
   assert(
     src !== undefined,

@@ -57,13 +57,8 @@ export class Transformer extends TransformVisitor {
   }
 
   /**
-   * Updates this.program containing the given source file with the given new content.
+   * Updates the given source file with the given new content content.
    *
-   *  @privateRemarks
-   * The new source is created with:
-   * - the old source path
-   * - the given content
-   * - isEntry with true, which means that the file is an entry file (export a function to be exported at the WebModule level)
    * @param oldSource - The old source file to be updates
    * @param newContent - The new file content for the source file
    * @param parser - The parser of the {@link afterParse} hook
@@ -76,6 +71,9 @@ export class Transformer extends TransformVisitor {
     parser: Parser,
   ): Source {
     let newParser = new Parser(parser.diagnostics);
+    for (let diag of newParser.diagnostics) {
+      console.warn('Massa Transform error: ' + diag.message);
+    }
     newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
 
     let newSource = newParser.sources.pop()!;
@@ -84,10 +82,7 @@ export class Transformer extends TransformVisitor {
   }
 
   /**
-   * Adds to this.program the sources of the needed dependencies.
-   *
-   * @privateRemarks
-   * The needed dependencies are retrieved by calling getAdditionalSources of the transformer.
+   * Updates the whole program source dependencies added by the given transformer.
    *
    * @param transformer - The transformer that adds sources to the project.
    * @param source - The source file that requires new dependencies.
@@ -143,7 +138,7 @@ export class Transformer extends TransformVisitor {
         // Fetching eventual source update
         let newContent = transformer.updateSource(actualSource);
 
-        // Add dependencies
+        // Updating dependencies
         this._addDependencies(transformer, actualSource, parser);
 
         // Updating original file source
