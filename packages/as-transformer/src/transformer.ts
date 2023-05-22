@@ -143,7 +143,7 @@ export class Transformer extends TransformVisitor {
         // Fetching eventual source update
         let newContent = transformer.updateSource(actualSource);
 
-        // Updating dependencies
+        // Add dependencies
         this._addDependencies(transformer, actualSource, parser);
 
         // Updating original file source
