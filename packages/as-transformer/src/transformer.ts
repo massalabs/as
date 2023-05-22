@@ -57,7 +57,7 @@ export class Transformer extends TransformVisitor {
   }
 
   /**
-   * Updates the given source file with the given new content content.
+   * Updates this.program containing the given source file with the given new content.
    *
    *  @privateRemarks
    * The new source is created with:
