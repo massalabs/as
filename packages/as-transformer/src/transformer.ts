@@ -59,6 +59,11 @@ export class Transformer extends TransformVisitor {
   /**
    * Updates the given source file with the given new content content.
    *
+   *  @privateRemarks
+   * The new source is created with:
+   * - the old source path
+   * - the given content
+   * - isEntry with true, which means that the file is an entry file (export a function to be exported at the WebModule level)
    * @param oldSource - The old source file to be updates
    * @param newContent - The new file content for the source file
    * @param parser - The parser of the {@link afterParse} hook
