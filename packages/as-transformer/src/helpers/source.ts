@@ -22,6 +22,10 @@ export function parseFile(
   for (let diag of parser.diagnostics) {
     console.warn('Massa Transform error: ' + diag.message);
   }
+  assert(
+    parser.diagnostics.length <= 0,
+    'There were some errors with the parsing of new sources in as-transformer (see above).',
+  );
 
   const src = parser.sources.pop();
 

@@ -74,6 +74,11 @@ export class Transformer extends TransformVisitor {
     for (let diag of newParser.diagnostics) {
       console.warn('Massa Transform error: ' + diag.message);
     }
+    assert(
+      parser.diagnostics.length <= 0,
+      'There were some errors with the parsing of new sources in as-transformer (see above).',
+    );
+
     newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
 
     let newSource = newParser.sources.pop()!;
