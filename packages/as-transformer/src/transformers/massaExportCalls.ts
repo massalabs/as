@@ -43,17 +43,19 @@ export class MassaExportCalls {
    */
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
-    const args = node.args.map(
-      (arg) =>
-        undefined !== (arg as IdentifierExpression).text
-          ? (arg as IdentifierExpression).text // if argument is a variable
-          : (arg as StringLiteralExpression).value, // if argument is a value
-    );
+    const args = node.args.map((arg) => {
+      if (undefined !== (arg as IdentifierExpression).text) {
+        return (arg as IdentifierExpression).text; // if argument is a variable
+      }
+      let value = arg as StringLiteralExpression; // if argument is a value
+      if (value.isNumericLiteral) return value.value;
+      return '"' + value.value + '"';
+    });
 
     let expr = '_' + functionName + '(';
     expr += args.length > 0 ? args.join(', ') : '';
     expr += ');\n';
-
+    console.log('Expression replaced: ' + expr);
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
     return RangeTransform.visit(res, node); // replace node
