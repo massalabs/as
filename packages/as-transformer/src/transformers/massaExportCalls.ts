@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CallExpression,
   Expression,
@@ -8,6 +9,7 @@ import {
   IdentifierExpression,
   StringLiteralExpression,
 } from 'types:assemblyscript/src/ast';
+import { Update, GlobalUpdates } from './interfaces/Update.js';
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
@@ -15,10 +17,15 @@ import {
  * by their transformed version.
  */
 export class MassaExportCalls {
-  static calls: string[] = [];
-
   isMatching(expression: string): boolean {
-    return MassaExportCalls.calls.includes(expression);
+    const calls = GlobalUpdates.get()
+      .filter((update: Update) => update.from === 'MassaExport')
+      .map((update: Update) =>
+        update.data.get('funcToPrivate')
+          ? update.data.get('funcToPrivate')![0]
+          : '',
+      );
+    return calls.includes(expression);
   }
 
   /**
