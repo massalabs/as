@@ -6,21 +6,17 @@ import {
   CallExpression,
   IdentifierExpression,
   FunctionDeclaration,
+  Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { File2ByteArray } from './transformers/file2ByteArray.js';
 import { TestTable } from './transformers/testTable.js';
-import {
-  getUpdates,
-  resetUpdates,
-  transform,
-} from './transformers/massaExport.js';
-import { writeFileSync } from 'fs';
-import { getDependencies } from './helpers/typescript.js';
-import { hasDecorator, parseFile } from './helpers/node.js';
+import { MassaExport } from './transformers/massaExport.js';
 
-const callTransformers = [File2ByteArray, TestTable];
+import { MassaFunctionNode } from './helpers/node.js';
+import { parseFile } from './helpers/source.js';
 
-const protobufTransformerDecorator = 'massaExport';
+const callTransformers = [new File2ByteArray(), new TestTable()];
+const functionTransformers = [new MassaExport()];
 
 /**
  * The `Transformer` class extends the `TransformVisitor` class from visitor-as and overrides its methods to perform
@@ -30,11 +26,14 @@ const protobufTransformerDecorator = 'massaExport';
  */
 export class Transformer extends TransformVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
-    if (hasDecorator(node, protobufTransformerDecorator)) {
-      return transform(node);
-    }
+    let massaNode = MassaFunctionNode.createFromASTNode(node);
 
-    return super.visitFunctionDeclaration(node);
+    for (let transformer of functionTransformers) {
+      if (transformer.isMatching(massaNode))
+        node = transformer.transform(massaNode);
+      massaNode = MassaFunctionNode.createFromASTNode(node);
+    }
+    return super.visitFunctionDeclaration(massaNode.node!);
   }
 
   /**
@@ -49,12 +48,69 @@ export class Transformer extends TransformVisitor {
     const inputText = (node.expression as IdentifierExpression)?.text;
 
     for (let transformer of callTransformers) {
-      if (inputText == transformer.strPattern) {
+      if (transformer.isMatching(inputText)) {
         return transformer.transform(node);
       }
     }
 
     return super.visitCallExpression(node);
+  }
+
+  /**
+   * Updates the given source file with the given new content content.
+   *
+   * @param oldSource - The old source file to be updates
+   * @param newContent - The new file content for the source file
+   * @param parser - The parser of the {@link afterParse} hook
+   *
+   * @returns The updated source.
+   */
+  private _updateSource(
+    oldSource: Source,
+    newContent: string,
+    parser: Parser,
+  ): Source {
+    let newParser = new Parser(parser.diagnostics);
+    for (let diag of newParser.diagnostics) {
+      console.warn('Massa Transform error: ' + diag.message);
+    }
+    assert(
+      parser.diagnostics.length <= 0,
+      'There were some errors with the parsing of new sources in as-transformer (see above).',
+    );
+
+    newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
+
+    let newSource = newParser.sources.pop()!;
+    utils.updateSource(this.program, newSource);
+    return newSource;
+  }
+
+  /**
+   * Updates the whole program source dependencies added by the given transformer.
+   *
+   * @param transformer - The transformer that adds sources to the project.
+   * @param source - The source file that requires new dependencies.
+   * @param parser - The parser of the {@link afterParse} hook
+   */
+  private _addDependencies(
+    transformer: MassaExport,
+    source: Source,
+    parser: Parser,
+  ) {
+    // Fetching eventual additional sources
+    let newSources = transformer.getAdditionalSources(source);
+
+    // Parsing and pushing additional sources for compilation
+    for (let newSource of newSources) {
+      this.program.sources.push(
+        parseFile(
+          newSource,
+          new Parser(parser.diagnostics),
+          source.internalPath.replace(source.simplePath, ''),
+        ),
+      );
+    }
   }
 
   /**
@@ -71,89 +127,30 @@ export class Transformer extends TransformVisitor {
    */
   afterParse(parser: Parser): void {
     let sources = parser.sources.filter(
+      // Fetching only project parsed sources (AST Tree for each file)
       (source) =>
         !source.internalPath.startsWith(`node_modules/`) &&
         !utils.isLibrary(source),
     );
 
-    let additionalImports = new Map<string, boolean>();
-
     sources.forEach((source) => {
-      resetUpdates();
-      this.visit(source);
+      this.visit(source); // visiting AST Tree nodes and calling transformers
+      let actualSource = source;
 
-      let content = source.text;
-      let neededImports = new Map<string, boolean>();
+      // Post-transform sources updates
+      for (let transformer of functionTransformers) {
+        if (!transformer.hasUpdates()) continue;
+        // Fetching eventual source update
+        let newContent = transformer.updateSource(actualSource);
 
-      const updates = getUpdates();
+        // Updating dependencies
+        this._addDependencies(transformer, actualSource, parser);
 
-      if (updates.length > 0) {
-        updates.forEach((update) => {
-          const token = 'export function ';
-          const index = content.indexOf(token, update.begin) + token.length;
+        // Updating original file source
+        actualSource = this._updateSource(actualSource, newContent, parser);
 
-          assert(
-            index >= token.length,
-            `exported function not found in file ${source.internalPath}` +
-              `, but decorator ${protobufTransformerDecorator} was.`,
-          );
-          content.replace(
-            token + update.funcToPrivate,
-            'function _' + update.funcToPrivate,
-          );
-          content += '\n' + update.content + '\n';
-
-          update.imports.forEach((i) => {
-            neededImports.set(i, true);
-            additionalImports.set(i, true);
-          });
-        });
-
-        content = '\n' + content;
-
-        Array.from(neededImports.keys()).forEach(
-          (i) => (content = i + '\n' + content),
-        );
-
-        // Creating a filter list of generated dependencies to import
-        const depsFilter = Array.from(neededImports.keys()).map((elem) =>
-          elem.substring(
-            elem.indexOf('from "./') + 'from "./'.length,
-            elem.length - 2,
-          ),
-        );
-
-        writeFileSync(`./build/${source.simplePath}.ts`, content);
-
-        const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
-
-        dependencies
-          .filter(
-            // Filtering dependencies to push for compilation
-            (dep) =>
-              dep.includes('as-proto') ||
-              depsFilter.some((filter) => dep.includes(filter)),
-          )
-          .map(
-            (
-              dep, // Parsing dependencies sources
-            ) =>
-              parseFile(
-                dep,
-                new Parser(parser.diagnostics),
-                source.internalPath.replace(source.simplePath, ''),
-              ),
-          )
-          .forEach((source) => this.program.sources.push(source));
-
-        let newParser = new Parser(parser.diagnostics);
-        newParser.parseFile(content, source.internalPath + '.ts', true);
-
-        let newSource = newParser.sources.pop()!;
-        utils.updateSource(this.program, newSource);
+        transformer.resetUpdates();
       }
-      // this.program.sources.forEach(source =>
-      //   console.log(source.internalPath, source.simplePath, source.normalizedPath))
     });
   }
 }

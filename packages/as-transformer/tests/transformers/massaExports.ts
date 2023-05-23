@@ -1,64 +1,52 @@
-import { Argument } from '../../src/helpers/protobuf';
-import {
-  generateWrapper,
-  generateImports,
-} from '../../src/transformers/massaExport';
+import { MassaExport } from '../../src/transformers/massaExport';
+import { MassaFunctionNode } from '../../src/helpers/node';
+
+let massaExportTransformer = new MassaExport();
 
 describe('generateWrapper', () => {
   it('should generate a void wrapper function', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [];
-    const returnedType = '';
-    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    const node = new MassaFunctionNode('SayHello', '', []);
 
-    let wrapper = `export function ${name}(_args: StaticArray<u8>): void {\n`;
+    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): void {\n`;
     wrapper += `}`;
-    const actualWrapper = generateWrapper(name, args, returnedType);
+
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualWrapper = massaExportTransformer['_generateWrapper']();
 
     expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function with args', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [
+    const node = new MassaFunctionNode('SayHello', 'string', [
       { name: 'language', type: 'string' },
       { name: 'name', type: 'string' },
-    ];
-    const returnedType = 'string';
+    ]);
 
-    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    wrapper += `  const args = decode${node.name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+    wrapper += `  const response = encode${node.name}Response`;
+    wrapper += `(new ${node.name}Response(_${node.name}(args.language, args.name)));\n\n`;
 
-    let wrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
-    wrapper += `  const args = decode${name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
-    wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}(args.language, args.name)));\n\n`;
-
-    // wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
-    const actualWrapper = generateWrapper(name, args, returnedType);
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualWrapper = massaExportTransformer['_generateWrapper']();
 
     expect(actualWrapper).toStrictEqual(wrapper);
   });
 
   it('should generate a non-void wrapper function without args', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [];
-    const returnedType = 'string';
+    const node = new MassaFunctionNode('SayHello', 'string', []);
 
-    // let wrapper = `@external("massa", "assembly_script_generate_event")\n`;
-    // wrapper += `declare function generateEvent(event: string): void;\n\n`;
+    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
+    wrapper += `  const response = encode${node.name}Response(new ${node.name}Response(_${node.name}()));\n\n`;
 
-    let wrapper = `export function ${name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
-    wrapper += `  const response = encode${name}Response(new ${name}Response(_${name}()));\n\n`;
-
-    // wrapper += `  generateEvent(\`${name}Response: \${response}\`)\n`;
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
-    const actualWrapper = generateWrapper(name, args, returnedType);
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualWrapper = massaExportTransformer['_generateWrapper']();
 
     expect(actualWrapper).toStrictEqual(wrapper);
   });
@@ -66,56 +54,55 @@ describe('generateWrapper', () => {
 
 describe('generateImports', () => {
   it('should return an empty array when args and returnedType are empty', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [];
-    const returnedType = '';
+    const node = new MassaFunctionNode('SayHello', '', []);
 
     const expectedImports: string[] = [];
-    const actualImports = generateImports(name, args, returnedType);
+    massaExportTransformer['_setFunctionSignatureData'](node);
+
+    const actualImports = massaExportTransformer['_generateImports']();
 
     expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return only deserializing helper when args is not an empty and returnedType is', () => {
-    const name = 'SayHello';
-    const args = [
+    const node = new MassaFunctionNode('SayHello', '', [
       { name: 'language', type: 'string' },
       { name: 'name', type: 'string' },
-    ];
-    const returnedType = '';
+    ]);
 
-    const expectedImports = [`import { decode${name} } from "./${name}";`];
-    const actualImports = generateImports(name, args, returnedType);
+    const expectedImports = [
+      `import { decode${node.name} } from "./${node.name}";`,
+    ];
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualImports = massaExportTransformer['_generateImports']();
 
     expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return (de)serializing helpers and generatedEvent when args is empty and returnedType is not', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [];
-    const returnedType = 'string';
+    const node = new MassaFunctionNode('SayHello', 'string', []);
 
     const expectedImports = [
-      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
+      `import { ${node.name}Response, encode${node.name}Response } from "./${node.name}Response";`,
     ];
-    const actualImports = generateImports(name, args, returnedType);
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualImports = massaExportTransformer['_generateImports']();
 
     expect(actualImports).toStrictEqual(expectedImports);
   });
 
   it('should return everything when args and returnedType are not empty', () => {
-    const name = 'SayHello';
-    const args: Argument[] = [
+    const node = new MassaFunctionNode('SayHello', 'string', [
       { name: 'language', type: 'string' },
       { name: 'name', type: 'string' },
-    ];
-    const returnedType = 'string';
+    ]);
 
     const expectedImports = [
-      `import { decode${name} } from "./${name}";`,
-      `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
+      `import { decode${node.name} } from "./${node.name}";`,
+      `import { ${node.name}Response, encode${node.name}Response } from "./${node.name}Response";`,
     ];
-    const actualImports = generateImports(name, args, returnedType);
+    massaExportTransformer['_setFunctionSignatureData'](node);
+    const actualImports = massaExportTransformer['_generateImports']();
 
     expect(actualImports).toStrictEqual(expectedImports);
   });
