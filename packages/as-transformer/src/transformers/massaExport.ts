@@ -16,6 +16,7 @@ import * as path from 'path';
 import { Update } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
+import { MassaExportCalls } from './massaExportCalls.js';
 
 /**
  * The Massa Export transformer is responsible of exporting standard contract
@@ -110,6 +111,7 @@ export class MassaExport {
         ['funcToPrivate', [node.name]],
       ]),
     });
+    MassaExportCalls.calls.push(node.name);
 
     this._resetFunctionSignatureData();
 
