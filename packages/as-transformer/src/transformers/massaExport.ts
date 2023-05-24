@@ -13,7 +13,7 @@ import {
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import * as path from 'path';
 // import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
-import { Update } from './interfaces/Update.js';
+import { Update, GlobalUpdates } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 
@@ -100,8 +100,7 @@ export class MassaExport {
     const wrapperContent = this._generateWrapper();
 
     const imports = this._generateImports();
-
-    this.updates.push({
+    const update = {
       begin: node.node!.range.start,
       end: node.node!.range.end,
       content: wrapperContent,
@@ -109,7 +108,11 @@ export class MassaExport {
         ['imports', imports],
         ['funcToPrivate', [node.name]],
       ]),
-    });
+      from: 'MassaExport',
+    };
+
+    this.updates.push(update);
+    GlobalUpdates.add(update);
 
     this._resetFunctionSignatureData();
 

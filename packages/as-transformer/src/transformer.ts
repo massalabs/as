@@ -14,8 +14,14 @@ import { MassaExport } from './transformers/massaExport.js';
 
 import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
+import { MassaExportCalls } from './transformers/massaExportCalls.js';
+import { GlobalUpdates } from './transformers/interfaces/Update.js';
 
-const callTransformers = [new File2ByteArray(), new TestTable()];
+const callTransformers = [
+  new File2ByteArray(),
+  new TestTable(),
+  new MassaExportCalls(),
+];
 const functionTransformers = [new MassaExport()];
 
 /**
@@ -151,6 +157,8 @@ export class Transformer extends TransformVisitor {
 
         transformer.resetUpdates();
       }
+      this.visit(actualSource);
+      GlobalUpdates.reset();
     });
   }
 }
