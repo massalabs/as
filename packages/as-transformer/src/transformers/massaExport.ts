@@ -56,7 +56,7 @@ export class MassaExport {
   }
 
   isMatching(node: MassaFunctionNode): boolean {
-    return hasDecorator(node.node!, 'massaExport');
+    return this.updates.length <= 0 && hasDecorator(node.node!, 'massaExport');
   }
 
   /**
@@ -74,14 +74,21 @@ export class MassaExport {
   transform(node: MassaFunctionNode): FunctionDeclaration {
     // extracting function signature from node
     this._setFunctionSignatureData(node);
+    console.log("AS-TRM: MassaExport: transforming '" + node.name + "'");
 
     // generate proto build directory
-    if (!existsSync(this.protoPath)) {
-      mkdirSync(this.protoPath, { recursive: true });
+    if (!existsSync(this.protoPath + '/' + this.functionName + 'Wrapper/')) {
+      mkdirSync(this.protoPath + '/' + this.functionName + 'Wrapper/', {
+        recursive: true,
+      });
     }
     // generate AS helpers directory
-    if (!existsSync(this.asHelpersPath)) {
-      mkdirSync(this.asHelpersPath, { recursive: true });
+    if (
+      !existsSync(this.asHelpersPath + '/' + this.functionName + 'Wrapper/')
+    ) {
+      mkdirSync(this.asHelpersPath + '/' + this.functionName + 'Wrapper/', {
+        recursive: true,
+      });
     }
 
     // generate proto content
@@ -91,11 +98,17 @@ export class MassaExport {
       this.returnType,
     );
 
-    const protoFile = path.join(this.protoPath, `${this.functionName}.proto`);
+    const protoFile = path.join(
+      this.protoPath + '/' + this.functionName + 'Wrapper/',
+      `${this.functionName}.proto`,
+    );
 
     writeFileSync(protoFile, protoContent); // writing proto file content in filepath
 
-    generateASHelpers(protoFile, this.asHelpersPath);
+    generateASHelpers(
+      protoFile,
+      this.asHelpersPath + '/' + this.functionName + 'Wrapper/',
+    );
 
     const wrapperContent = this._generateWrapper();
 
@@ -116,6 +129,9 @@ export class MassaExport {
 
     this._resetFunctionSignatureData();
 
+    console.log(
+      "AS-TRM: MassaExport: generated '" + node.name + "' function's wrapper",
+    );
     return node.node!;
   }
 
@@ -173,12 +189,14 @@ export class MassaExport {
     let name = this.functionName;
 
     if (this.args.length > 0) {
-      imports.push(`import { decode${name} } from "./${name}";`);
+      imports.push(
+        `import { decode${name} } from "$RPATH${name}Wrapper/${name}";`,
+      );
     }
 
     if (this.returnType) {
       imports.push(
-        `import { ${name}Response, encode${name}Response } from "./${name}Response";`,
+        `import { ${name}Response, encode${name}Response } from "$RPATH${name}Wrapper/${name}Response";`,
       );
     }
 
@@ -205,12 +223,13 @@ export class MassaExport {
         return [];
       }
       // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
-      depsFilter.push('build/' + scFunc[0]!);
-      depsFilter.push('build/' + scFunc[0]! + 'Response');
+      depsFilter.push('build/' + scFunc[0]! + 'Wrapper/');
     }
 
     // Dynamically fetching additional import's dependencies
-    const dependencies = getDependencies(`./build/${source.simplePath}.ts`);
+    const dependencies = getDependencies(
+      `./build/${source.internalPath.replace('assembly/contracts/', '')}.ts`,
+    );
 
     // Filtering fetched dependencies to avoid adding again dependencies
     // that where already imported by the original file.
@@ -236,12 +255,22 @@ export class MassaExport {
     let content = source.text;
 
     this.updates.forEach((update) => {
-      content = this._updateSourceFile(update, content);
+      content = this._updateSourceFile(
+        update,
+        content,
+        source.internalPath.replace('assembly/contracts/', ''),
+      );
     });
 
     content = content.replaceAll('@massaExport()\n', '');
     // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
-    writeFileSync(`./build/${source.simplePath}.ts`, content);
+    const newPath = `./build/${source.internalPath.replace(
+      'assembly/contracts/',
+      '',
+    )}`;
+    const dir = newPath.replace(source.simplePath, '');
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    writeFileSync(`${newPath}.ts`, content);
     return content;
   }
 
@@ -257,7 +286,11 @@ export class MassaExport {
    *
    * @returns The updated file content.
    */
-  private _updateSourceFile(update: Update, content: string): string {
+  private _updateSourceFile(
+    update: Update,
+    content: string,
+    subPath: string,
+  ): string {
     const funcToPrivate = update.data.get('funcToPrivate');
     const imports = update.data.get('imports');
 
@@ -277,8 +310,15 @@ export class MassaExport {
     // appending wrapper to end of file
     content += '\n' + update.content + '\n';
 
+    const subdirs = subPath.split('/');
     // adding corresponding asHelper imports for each added wrapper
     imports.forEach((i) => {
+      let importPath = '';
+      subdirs.forEach((_) => {
+        importPath += '../';
+      });
+      importPath = subdirs.length <= 1 ? './' : importPath.replace('../', '');
+      i = i.replace('$RPATH', importPath);
       content = i + '\n' + content;
     });
     return content;

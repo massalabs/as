@@ -15,7 +15,7 @@ import { MassaExport } from './transformers/massaExport.js';
 import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
 import { MassaExportCalls } from './transformers/massaExportCalls.js';
-import { GlobalUpdates } from './transformers/interfaces/Update.js';
+import { GlobalUpdates, Update } from './transformers/interfaces/Update.js';
 
 const callTransformers = [
   new File2ByteArray(),
@@ -89,6 +89,7 @@ export class Transformer extends TransformVisitor {
 
     let newSource = newParser.sources.pop()!;
     utils.updateSource(this.program, newSource);
+    console.log("AS-TRM: updated source: '" + newSource.internalPath + "'");
     return newSource;
   }
 
@@ -136,7 +137,17 @@ export class Transformer extends TransformVisitor {
       // Fetching only project parsed sources (AST Tree for each file)
       (source) =>
         !source.internalPath.startsWith(`node_modules/`) &&
-        !utils.isLibrary(source),
+        !utils.isLibrary(source) &&
+        GlobalUpdates.get().filter(
+          (update) =>
+            (update.from === 'MassaExport' &&
+              source.internalPath.includes(
+                update.data.get('funcToPrivate')![0] + 'Wrapper',
+              )) ||
+            (update.from === 'as-transformer' &&
+              source.internalPath.includes(update.content)),
+        ).length <= 0 &&
+        !source.internalPath.includes('build/'),
     );
 
     sources.forEach((source) => {
@@ -154,11 +165,18 @@ export class Transformer extends TransformVisitor {
 
         // Updating original file source
         actualSource = this._updateSource(actualSource, newContent, parser);
-
-        transformer.resetUpdates();
       }
       this.visit(actualSource);
-      GlobalUpdates.reset();
+      for (let transformer of functionTransformers) transformer.resetUpdates();
+      const update: Update = {
+        begin: 0,
+        end: 0,
+        content: actualSource.simplePath,
+        data: new Map(),
+        from: 'as-transformer',
+      };
+
+      GlobalUpdates.add(update);
     });
   }
 }

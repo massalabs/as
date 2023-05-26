@@ -20,7 +20,9 @@ export function parseFile(
     );
   }
   for (let diag of parser.diagnostics) {
-    console.warn('Massa Transform error: ' + diag.message);
+    console.warn(
+      `Massa Transform error:\n msg:'${diag.message}'\nfrom: ${diag.range?.source.internalPath}:${diag.range?.start}`,
+    );
   }
   assert(
     parser.diagnostics.length <= 0,
@@ -33,7 +35,10 @@ export function parseFile(
     src !== undefined,
     `Source is undefined after parsing file ${filePath}`,
   );
-
+  console.log(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    "AS-TRM: successfully parsed new source: '" + src!.internalPath + "'",
+  );
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return src!;
 }
