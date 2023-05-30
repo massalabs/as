@@ -57,10 +57,12 @@ export class MassaExportCalls {
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
     const args = this._getArgs(node);
-    const expr = `_${functionName}(${args})\n`;
+    const expr = `_ms_${functionName}_(${args})\n`;
 
+    console.log("AS-TRM: New call expression => '" + expr + "'");
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
     return RangeTransform.visit(res, node); // replace node
   }
 }
+// CAQ Demande: 1245563

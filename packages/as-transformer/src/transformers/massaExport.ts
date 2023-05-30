@@ -56,7 +56,12 @@ export class MassaExport {
   }
 
   isMatching(node: MassaFunctionNode): boolean {
-    return this.updates.length <= 0 && hasDecorator(node.node!, 'massaExport');
+    const toMatch =
+      this.updates.filter(
+        (update) => update.data.get('funcToPrivate')![0] === node.name,
+      ).length <= 0 && hasDecorator(node.node!, 'massaExport');
+
+    return toMatch;
   }
 
   /**
@@ -74,7 +79,6 @@ export class MassaExport {
   transform(node: MassaFunctionNode): FunctionDeclaration {
     // extracting function signature from node
     this._setFunctionSignatureData(node);
-    console.log("AS-TRM: MassaExport: transforming '" + node.name + "'");
 
     // generate proto build directory
     if (!existsSync(this.protoPath + '/' + this.functionName + 'Wrapper/')) {
@@ -164,7 +168,7 @@ export class MassaExport {
     if (this.returnType) {
       wrapper += `  const response = encode${this.functionName}Response(new ${
         this.functionName
-      }Response(_${this.functionName}(${
+      }Response(_ms_${this.functionName}_(${
         this.args.length > 0 ? argDecodings : ''
       })));\n\n`;
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
@@ -304,7 +308,7 @@ export class MassaExport {
     // changing the signature of the original function to allow the addition of the wrapper.
     content = content.replace(
       'export function ' + funcToPrivate[0],
-      'function _' + funcToPrivate[0],
+      'function _ms_' + funcToPrivate[0] + '_',
     );
 
     // appending wrapper to end of file

@@ -110,6 +110,13 @@ export class Transformer extends TransformVisitor {
 
     // Parsing and pushing additional sources for compilation
     for (let newSource of newSources) {
+      if (
+        GlobalUpdates.get().filter(
+          (update) =>
+            update.from === 'as-trm-deps' && update.content === newSource,
+        )
+      )
+        continue;
       this.program.sources.push(
         parseFile(
           newSource,
@@ -117,6 +124,13 @@ export class Transformer extends TransformVisitor {
           source.internalPath.replace(source.simplePath, ''),
         ),
       );
+      GlobalUpdates.add({
+        begin: 0,
+        end: 0,
+        content: newSource,
+        data: new Map(),
+        from: 'as-',
+      });
     }
   }
 
@@ -165,9 +179,9 @@ export class Transformer extends TransformVisitor {
 
         // Updating original file source
         actualSource = this._updateSource(actualSource, newContent, parser);
+        transformer.resetUpdates();
       }
       this.visit(actualSource);
-      for (let transformer of functionTransformers) transformer.resetUpdates();
       const update: Update = {
         begin: 0,
         end: 0,
