@@ -11,7 +11,6 @@ import {
 } from '../helpers/protobuf.js';
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import * as path from 'path';
 // import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
@@ -80,21 +79,6 @@ export class MassaExport {
     // extracting function signature from node
     this._setFunctionSignatureData(node);
 
-    // generate proto build directory
-    if (!existsSync(this.protoPath + '/' + this.functionName + 'Wrapper/')) {
-      mkdirSync(this.protoPath + '/' + this.functionName + 'Wrapper/', {
-        recursive: true,
-      });
-    }
-    // generate AS helpers directory
-    if (
-      !existsSync(this.asHelpersPath + '/' + this.functionName + 'Wrapper/')
-    ) {
-      mkdirSync(this.asHelpersPath + '/' + this.functionName + 'Wrapper/', {
-        recursive: true,
-      });
-    }
-
     // generate proto content
     const protoContent = generateProtoFile(
       this.functionName,
@@ -102,21 +86,12 @@ export class MassaExport {
       this.returnType,
     );
 
-    const protoFile = path.join(
-      this.protoPath + '/' + this.functionName + 'Wrapper/',
-      `${this.functionName}.proto`,
-    );
-
-    writeFileSync(protoFile, protoContent); // writing proto file content in filepath
-
-    generateASHelpers(
-      protoFile,
-      this.asHelpersPath + '/' + this.functionName + 'Wrapper/',
-    );
+    // writeFileSync(protoFile, protoContent); // writing proto file content in filepath
 
     const wrapperContent = this._generateWrapper();
 
     const imports = this._generateImports();
+
     const update = {
       begin: node.node!.range.start,
       end: node.node!.range.end,
@@ -124,6 +99,7 @@ export class MassaExport {
       data: new Map([
         ['imports', imports],
         ['funcToPrivate', [node.name]],
+        ['protoContent', protoContent.split('\n')],
       ]),
       from: 'MassaExport',
     };
@@ -158,14 +134,14 @@ export class MassaExport {
     let wrapper = `export function ${
       this.functionName
     }(_args: StaticArray<u8>): ${
-      this.returnType ? 'StaticArray<u8>' : 'void'
+      this.returnType && this.returnType !== 'void' ? 'StaticArray<u8>' : 'void'
     } {\n`;
 
     if (this.args.length > 0) {
       wrapper += `  const args = decode${this.functionName}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     }
 
-    if (this.returnType) {
+    if (this.returnType && this.returnType !== 'void') {
       wrapper += `  const response = encode${this.functionName}Response(new ${
         this.functionName
       }Response(_ms_${this.functionName}_(${
@@ -193,14 +169,12 @@ export class MassaExport {
     let name = this.functionName;
 
     if (this.args.length > 0) {
-      imports.push(
-        `import { decode${name} } from "$RPATH${name}Wrapper/${name}";`,
-      );
+      imports.push(`import { decode${name} } from "./${name}Wrapper/${name}";`);
     }
 
-    if (this.returnType) {
+    if (this.returnType && this.returnType !== 'void') {
       imports.push(
-        `import { ${name}Response, encode${name}Response } from "$RPATH${name}Wrapper/${name}Response";`,
+        `import { ${name}Response, encode${name}Response } from "./${name}Wrapper/${name}Response";`,
       );
     }
 
@@ -214,7 +188,7 @@ export class MassaExport {
    *
    * @returns A filepaths array of the additional sources.
    */
-  getAdditionalSources(source: Source): string[] {
+  getAdditionalSources(source: Source, dir: string): string[] {
     const depsFilter: string[] = [];
 
     // Retrieving the generated functions
@@ -227,13 +201,13 @@ export class MassaExport {
         return [];
       }
       // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
-      depsFilter.push('build/' + scFunc[0]! + 'Wrapper/');
+      depsFilter.push(
+        'build/' + dir.replace(source.simplePath, '') + scFunc[0]! + 'Wrapper/',
+      );
     }
 
     // Dynamically fetching additional import's dependencies
-    const dependencies = getDependencies(
-      `./build/${source.internalPath.replace('assembly/contracts/', '')}.ts`,
-    );
+    const dependencies = getDependencies(`./build/${dir}.ts`);
 
     // Filtering fetched dependencies to avoid adding again dependencies
     // that where already imported by the original file.
@@ -255,25 +229,23 @@ export class MassaExport {
    *
    * @returns The new raw file content of the file source.
    */
-  updateSource(source: Source): string {
+  updateSource(source: Source, dir: string): string {
     let content = source.text;
+    const newPath = './build/' + dir;
 
     this.updates.forEach((update) => {
       content = this._updateSourceFile(
         update,
         content,
-        source.internalPath.replace('assembly/contracts/', ''),
+        newPath.replace(source.simplePath, ''),
       );
     });
 
     content = content.replaceAll('@massaExport()\n', '');
     // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
-    const newPath = `./build/${source.internalPath.replace(
-      'assembly/contracts/',
-      '',
-    )}`;
-    const dir = newPath.replace(source.simplePath, '');
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+
+    if (!existsSync(newPath.replace(source.simplePath, '')))
+      mkdirSync(newPath.replace(source.simplePath, ''), { recursive: true });
     writeFileSync(`${newPath}.ts`, content);
     return content;
   }
@@ -293,7 +265,7 @@ export class MassaExport {
   private _updateSourceFile(
     update: Update,
     content: string,
-    subPath: string,
+    dir: string,
   ): string {
     const funcToPrivate = update.data.get('funcToPrivate');
     const imports = update.data.get('imports');
@@ -305,6 +277,8 @@ export class MassaExport {
       return content;
     }
 
+    this._generateHelpers(dir, funcToPrivate[0]!, update);
+
     // changing the signature of the original function to allow the addition of the wrapper.
     content = content.replace(
       'export function ' + funcToPrivate[0],
@@ -314,17 +288,25 @@ export class MassaExport {
     // appending wrapper to end of file
     content += '\n' + update.content + '\n';
 
-    const subdirs = subPath.split('/');
     // adding corresponding asHelper imports for each added wrapper
     imports.forEach((i) => {
-      let importPath = '';
-      subdirs.forEach((_) => {
-        importPath += '../';
-      });
-      importPath = subdirs.length <= 1 ? './' : importPath.replace('../', '');
-      i = i.replace('$RPATH', importPath);
       content = i + '\n' + content;
     });
     return content;
+  }
+
+  private _generateHelpers(dir: string, func: string, update: Update) {
+    const wrapperPath = dir + func + 'Wrapper/';
+    const protoFile = wrapperPath + func + '.proto';
+
+    if (!existsSync(wrapperPath)) {
+      mkdirSync(wrapperPath, {
+        recursive: true,
+      });
+    }
+
+    writeFileSync(protoFile, update.data.get('protoContent')!.join('\n'));
+
+    generateASHelpers(protoFile, wrapperPath);
   }
 }

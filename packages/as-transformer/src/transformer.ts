@@ -16,6 +16,7 @@ import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
 import { MassaExportCalls } from './transformers/massaExportCalls.js';
 import { GlobalUpdates, Update } from './transformers/interfaces/Update.js';
+// import { ImportStatement, ImportDeclaration } from 'types:assemblyscript/src/ast';
 
 const callTransformers = [
   new File2ByteArray(),
@@ -104,9 +105,10 @@ export class Transformer extends TransformVisitor {
     transformer: MassaExport,
     source: Source,
     parser: Parser,
+    dir: string,
   ) {
     // Fetching eventual additional sources
-    let newSources = transformer.getAdditionalSources(source);
+    let newSources = transformer.getAdditionalSources(source, dir);
 
     // Parsing and pushing additional sources for compilation
     for (let newSource of newSources) {
@@ -167,21 +169,24 @@ export class Transformer extends TransformVisitor {
     sources.forEach((source) => {
       this.visit(source); // visiting AST Tree nodes and calling transformers
       let actualSource = source;
+      let dir = source.internalPath.replace('assembly/contracts/', '');
 
       // Post-transform sources updates
       for (let transformer of functionTransformers) {
         if (!transformer.hasUpdates()) continue;
         // Fetching eventual source update
-        let newContent = transformer.updateSource(actualSource);
+        let newContent = transformer.updateSource(actualSource, dir);
 
         // Updating dependencies
-        this._addDependencies(transformer, actualSource, parser);
+        this._addDependencies(transformer, actualSource, parser, dir);
 
         // Updating original file source
         actualSource = this._updateSource(actualSource, newContent, parser);
         transformer.resetUpdates();
       }
-      this.visit(actualSource);
+      sources.forEach((subsource) => {
+        this.visit(subsource);
+      });
       const update: Update = {
         begin: 0,
         end: 0,
