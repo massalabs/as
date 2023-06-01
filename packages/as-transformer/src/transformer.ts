@@ -56,10 +56,10 @@ export class Transformer extends TransformVisitor {
 
   /**
    * Visits function declarations and calls transformers if their matching patterns are passing on the node.
-   * 
+   *
    * @param node - A {@link FunctionDeclaration} node to visit.
-   * 
-   * @returns The transformer node. 
+   *
+   * @returns The transformer node.
    */
   visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
     let massaNode = MassaFunctionNode.createFromASTNode(node);
@@ -77,7 +77,7 @@ export class Transformer extends TransformVisitor {
    * from {@link callTransformers}, and if so, transforms it.
    *
    * @param node - A {@link CallExpression} to visit.
-   * 
+   *
    * @returns The transformed node if its call expression matches a transformer pattern, otherwise
    * the original node.
    */
@@ -226,8 +226,7 @@ export class Transformer extends TransformVisitor {
     );
     let updatedSources: Source[] = [];
 
-    if (sources.length <= 0)
-      return;
+    if (sources.length <= 0) return;
     sources.forEach((source) => {
       /*
       console.log(
@@ -263,7 +262,7 @@ export class Transformer extends TransformVisitor {
       };
       GlobalUpdates.add(update);
 
-      //this.postVisiting(sources, updatedSources);
+      // this.postVisiting(sources, updatedSources);
       /*
       console.log(
         '\nFinished transforming source: ' + actualSource.internalPath,
