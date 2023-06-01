@@ -114,9 +114,11 @@ export class MassaExport {
 
     this._resetFunctionSignatureData();
 
+    /*
     console.log(
       "MassaExport Function: generated '" + node.name + "' function's wrapper",
     );
+    */
     return node.node!;
   }
 

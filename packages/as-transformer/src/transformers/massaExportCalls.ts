@@ -57,19 +57,16 @@ export class MassaExportCalls {
    */
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
-    console.log(
-      "MassaExport Function Call: updating exported function call '" +
-        functionName +
-        "'",
-    );
     const args = this._getArgs(node);
     const expr = `_ms_${functionName}_(${args})\n`;
 
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
+    /*
     console.log(
       "MassaExport Function Call: New call expression => '" + expr + "'",
     );
+    */
     return RangeTransform.visit(res, node); // replace node
   }
 }
