@@ -31,12 +31,18 @@ export class MassaExportCalls {
   private _getArgs(node: CallExpression): string {
     return node.args
       .map((arg) => {
-        if ((arg as IdentifierExpression).text !== undefined) {
-          return (arg as IdentifierExpression).text; // if argument is a variable
-        }
-        let value = arg as StringLiteralExpression; // if argument is a value
-        if (value.isNumericLiteral) return value.value; // if argument is a number
-        return '"' + value.value + '"'; // if argument is a string
+        // if argument is a variable
+        if ((arg as IdentifierExpression).text !== undefined)
+          return (arg as IdentifierExpression).text;
+
+        // if argument is a value
+        let value = arg as StringLiteralExpression;
+
+        // if argument value is a number
+        if (value.isNumericLiteral) return value.value;
+
+        // if argument value is a string
+        return '"' + value.value + '"';
       })
       .join(', ');
   }
@@ -57,10 +63,15 @@ export class MassaExportCalls {
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
     const args = this._getArgs(node);
-    const expr = `_${functionName}(${args})\n`;
+    const expr = `_ms_${functionName}_(${args})\n`;
 
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
+    /*
+    console.log(
+      "MassaExport Function Call: New call expression => '" + expr + "'",
+    );
+    */
     return RangeTransform.visit(res, node); // replace node
   }
 }
