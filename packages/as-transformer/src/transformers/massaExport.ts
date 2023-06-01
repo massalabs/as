@@ -98,8 +98,6 @@ export class MassaExport {
     const imports = this._generateImports();
 
     const update = {
-      begin: node.node!.range.start,
-      end: node.node!.range.end,
       content: wrapperContent,
       data: new Map([
         ['imports', imports],
@@ -284,7 +282,11 @@ export class MassaExport {
       return content;
     }
 
-    this._generateHelpers(dir, funcToPrivate[0]!, update);
+    this._generateHelpers(
+      dir,
+      funcToPrivate[0]!,
+      update.data.get('protoContent')!.join('\n'),
+    );
 
     // changing the signature of the original function to allow the addition of the wrapper.
     content = content.replace(
@@ -302,7 +304,18 @@ export class MassaExport {
     return content;
   }
 
-  private _generateHelpers(dir: string, func: string, update: Update) {
+  /**
+   * This function writes the protobuf content and generates the AS helpers in a folder for the given update.
+   *
+   * @param dir - The build directory path of the file containing the function to generate the wrapper for.
+   * @param func - The function name to generate wrapper for.
+   * @param protoContent - The protobuf content.
+   */
+  private _generateHelpers(
+    dir: string,
+    func: string,
+    protoContent: string,
+  ): void {
     const wrapperPath = dir + func + 'Wrapper/';
     const protoFile = wrapperPath + func + '.proto';
 
@@ -311,9 +324,7 @@ export class MassaExport {
         recursive: true,
       });
     }
-
-    writeFileSync(protoFile, update.data.get('protoContent')!.join('\n'));
-
+    writeFileSync(protoFile, protoContent);
     generateASHelpers(protoFile, wrapperPath);
   }
 }

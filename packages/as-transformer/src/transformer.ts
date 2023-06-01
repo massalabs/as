@@ -157,8 +157,6 @@ export class Transformer extends TransformVisitor {
         ),
       );
       GlobalUpdates.add({
-        begin: 0,
-        end: 0,
         content: newSource,
         data: new Map(),
         from: 'as-trm-deps',
@@ -254,8 +252,6 @@ export class Transformer extends TransformVisitor {
         this.visit(actualSource);
       }
       const update: Update = {
-        begin: 0,
-        end: 0,
         content: actualSource.simplePath,
         data: new Map(),
         from: 'as-transformer',

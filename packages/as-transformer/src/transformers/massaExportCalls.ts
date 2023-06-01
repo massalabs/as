@@ -31,13 +31,18 @@ export class MassaExportCalls {
   private _getArgs(node: CallExpression): string {
     return node.args
       .map((arg) => {
-        if ((arg as IdentifierExpression).text !== undefined) {
-          return (arg as IdentifierExpression).text; // if argument is a variable
-        }
-        let value = arg as StringLiteralExpression; // if argument is a value
-        console.log(`Arg is: ${value.kind.toString()}, ${value.value}`);
-        if (value.isNumericLiteral) return value.value; // if argument is a number
-        return '"' + value.value + '"'; // if argument is a string
+        // if argument is a variable
+        if ((arg as IdentifierExpression).text !== undefined)
+          return (arg as IdentifierExpression).text;
+
+        // if argument is a value
+        let value = arg as StringLiteralExpression;
+
+        // if argument value is a number
+        if (value.isNumericLiteral) return value.value;
+
+        // if argument value is a string
+        return '"' + value.value + '"';
       })
       .join(', ');
   }
