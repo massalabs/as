@@ -35,6 +35,7 @@ export class MassaExportCalls {
           return (arg as IdentifierExpression).text; // if argument is a variable
         }
         let value = arg as StringLiteralExpression; // if argument is a value
+        console.log(`Arg is: ${value.kind.toString()}, ${value.value}`);
         if (value.isNumericLiteral) return value.value; // if argument is a number
         return '"' + value.value + '"'; // if argument is a string
       })
@@ -56,13 +57,19 @@ export class MassaExportCalls {
    */
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
+    console.log(
+      "MassaExport Function Call: updating exported function call '" +
+        functionName +
+        "'",
+    );
     const args = this._getArgs(node);
     const expr = `_ms_${functionName}_(${args})\n`;
 
-    console.log("AS-TRM: New call expression => '" + expr + "'");
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
+    console.log(
+      "MassaExport Function Call: New call expression => '" + expr + "'",
+    );
     return RangeTransform.visit(res, node); // replace node
   }
 }
-// CAQ Demande: 1245563

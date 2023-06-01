@@ -59,8 +59,13 @@ export class MassaExport {
       this.updates.filter(
         (update) => update.data.get('funcToPrivate')![0] === node.name,
       ).length <= 0 && hasDecorator(node.node!, 'massaExport');
-
-    return toMatch;
+    const alreadyDone =
+      GlobalUpdates.get().filter(
+        (update) =>
+          update.from === 'MassaExport' &&
+          update.data.get('funcToPrivate')![0] === node.name,
+      ).length > 0;
+    return toMatch && !alreadyDone;
   }
 
   /**
@@ -110,7 +115,7 @@ export class MassaExport {
     this._resetFunctionSignatureData();
 
     console.log(
-      "AS-TRM: MassaExport: generated '" + node.name + "' function's wrapper",
+      "MassaExport Function: generated '" + node.name + "' function's wrapper",
     );
     return node.node!;
   }
@@ -282,7 +287,7 @@ export class MassaExport {
     // changing the signature of the original function to allow the addition of the wrapper.
     content = content.replace(
       'export function ' + funcToPrivate[0],
-      'function _ms_' + funcToPrivate[0] + '_',
+      'export function _ms_' + funcToPrivate[0] + '_',
     );
 
     // appending wrapper to end of file
