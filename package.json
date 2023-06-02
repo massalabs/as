@@ -23,6 +23,7 @@
     "build": "npm run build --ws --if-present",
     "test": "asp && npm run test:ts",
     "test:ci": "asp --summary --config as-pect-ci.config.js",
+    "test:proba": "asp --summary --config as-pect-proba.config.js",
     "test:ts": "cd packages/as-transformer && jest",
     "prettier": "as-prettier \"packages/**/*.ts\" --check",
     "prettier:fix": "as-prettier \"packages/**/*.ts\" --write",
