@@ -8,7 +8,7 @@ import { Update, GlobalUpdates } from './interfaces/Update.js';
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
- * The MassaExportCalls is a specific transformer that works by replacing a any massa exported function calls
+ * The MassaExportImports is a specific transformer that works by replacing a any massa exported function imports
  * by their transformed version.
  */
 export class MassaExportImports {
@@ -24,21 +24,19 @@ export class MassaExportImports {
   }
 
   /**
-   * This method takes a {@link ImportDeclaration} and transforms it by
-   * replacing the node containing a call to the massa exported function found
-   * with an underscored version.
+   * This method takes a {@link ImportStatement} and replaces imports of massaExported functions with their
+   * transformed version ('func' to '_ms_func_')
    *
    * @privateRemarks
    * The transformation process involves updating the AST. The new node retains the attributes of the
    * original node, with only the content being updated.
    *
-   * @param node - A {@link ImportDeclaration}
+   * @param node - A {@link ImportStatement}
    *
-   * @returns The updated node as an {@link ImportDeclaration} that represents the updated call.
+   * @returns The updated node as an {@link ImportStatement} that represents the updated imports.
    */
   transform(node: ImportStatement): ImportStatement {
     console.log('MassaExport Imports: updating exported imports ...');
-    console.log('MassaExport Imports: Import from: ' + node.internalPath);
     let declarations: ImportDeclaration[] = [];
 
     for (let decl of node.declarations!) {
@@ -52,10 +50,6 @@ export class MassaExportImports {
       }
     }
     node.declarations = declarations;
-    node.internalPath = node.internalPath.replace(
-      'assembly/contracts',
-      'build/',
-    );
     return node;
   }
 
