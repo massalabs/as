@@ -11,7 +11,7 @@ export default {
   /**
    * A set of regexp that will disclude source files from testing.
    */
-  disclude: [/node_modules/],
+  disclude: [/node_modules/, /as-proba/],
   /**
    * Add your required AssemblyScript imports here.
    *
