@@ -12,10 +12,15 @@ export function parseFile(
     const shortFilePath = filePath.replace(/.*node_modules/i, '~lib');
     parser.parseFile(readFileSync(filePath, 'utf-8'), shortFilePath, false);
   } else {
+    subDir;
     const shortFilePath = filePath.replace(process.cwd() + '/', '');
+    console.log(
+      'Parsing generated build file at: ' +
+        shortFilePath.replace('build/', 'assembly/contracts/'),
+    );
     parser.parseFile(
       readFileSync(shortFilePath, 'utf-8'),
-      shortFilePath.replace('build/', subDir),
+      shortFilePath.replace('build/', 'assembly/contracts/'),
       false,
     );
   }

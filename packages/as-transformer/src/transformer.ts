@@ -115,10 +115,11 @@ export class Transformer extends TransformVisitor {
       parser.diagnostics.length <= 0,
       'There were some errors with the parsing of new sources in as-transformer (see above).',
     );
-
+    console.log('Updating source: ' + oldSource.internalPath);
     newParser.parseFile(newContent!, oldSource.internalPath + '.ts', true);
 
     let newSource = newParser.sources.pop()!;
+    console.log('New source: ' + newSource.internalPath);
     utils.updateSource(this.program, newSource);
     // console.log("AS-TRM: updated source: '" + newSource.internalPath + "'");
     return newSource;
@@ -149,6 +150,7 @@ export class Transformer extends TransformVisitor {
         ).length > 0
       )
         continue;
+      console.log("Adding source: '" + newSource + "'");
       this.program.sources.push(
         parseFile(
           newSource,
@@ -208,19 +210,25 @@ export class Transformer extends TransformVisitor {
   afterParse(parser: Parser): void {
     let sources = parser.sources.filter(
       // Fetching only project parsed sources (AST Tree for each file)
-      (source) =>
-        !source.internalPath.startsWith(`node_modules/`) &&
-        !utils.isLibrary(source) &&
-        GlobalUpdates.get().filter(
-          (update) =>
-            (update.from === 'MassaExport' &&
-              source.internalPath.includes(
-                update.data.get('funcToPrivate')![0] + 'Wrapper',
-              )) ||
-            (update.from === 'as-transformer' &&
-              source.internalPath.includes(update.content)),
-        ).length <= 0 &&
-        !source.internalPath.includes('build/'),
+      (source) => {
+        return (
+          !source.internalPath.startsWith(`node_modules/`) &&
+          !utils.isLibrary(source) &&
+          GlobalUpdates.get().filter(
+            (update) =>
+              (update.from === 'MassaExport' &&
+                (source.internalPath.includes(
+                  update.data.get('funcToPrivate')![0] + 'Helper',
+                ) ||
+                  source.internalPath.includes(
+                    update.data.get('funcToPrivate')![0] + 'RHelper',
+                  ))) ||
+              (update.from === 'as-transformer' &&
+                source.internalPath.includes(update.content)),
+          ).length <= 0 &&
+          !source.internalPath.includes('build/')
+        );
+      },
     );
     let updatedSources: Source[] = [];
 

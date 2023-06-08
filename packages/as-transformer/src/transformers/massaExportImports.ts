@@ -50,6 +50,7 @@ export class MassaExportImports {
       }
     }
     node.declarations = declarations;
+    // node.internalPath = node.internalPath.replace('assembly/contracts/', 'build/');
     return node;
   }
 

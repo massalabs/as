@@ -21,7 +21,7 @@ export class MassaExportCalls {
     const calls = GlobalUpdates.get()
       .filter((update: Update) => update.from === 'MassaExport')
       .map((update: Update) =>
-        update.data.get('funcToPrivate')
+        update.data.get('funcToPrivate') !== undefined
           ? update.data.get('funcToPrivate')![0]
           : '',
       );
@@ -67,11 +67,9 @@ export class MassaExportCalls {
 
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
-    /*
     console.log(
       "MassaExport Function Call: New call expression => '" + expr + "'",
     );
-    */
     return RangeTransform.visit(res, node); // replace node
   }
 }
