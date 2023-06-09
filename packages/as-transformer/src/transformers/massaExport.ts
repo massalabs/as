@@ -4,6 +4,8 @@ import {
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
+import * as Debug from 'debug';
+
 import {
   Argument,
   generateASHelpers,
@@ -90,13 +92,8 @@ export class MassaExport {
       this.args,
       this.returnType,
     );
-
-    // writeFileSync(protoFile, protoContent); // writing proto file content in filepath
-
     const wrapperContent = this._generateWrapper();
-
     const imports = this._generateImports();
-
     const update = {
       content: wrapperContent,
       data: new Map([
@@ -106,17 +103,12 @@ export class MassaExport {
       ]),
       from: 'MassaExport',
     };
-
     this.updates.push(update);
     GlobalUpdates.add(update);
-
     this._resetFunctionSignatureData();
-
-    /*
-    console.log(
+    Debug.log(
       "MassaExport Function: generated '" + node.name + "' function's wrapper",
     );
-    */
     return node.node!;
   }
 
@@ -326,8 +318,6 @@ export class MassaExport {
       });
     }
     writeFileSync(protoFile, protoContent);
-    //  const index = `export * from './${func}Helper';\nexport * from './${func}RHelper';`;
-    // writeFileSync(wrapperPath + "index.ts", index);
     generateASHelpers(protoFile, wrapperPath);
   }
 }

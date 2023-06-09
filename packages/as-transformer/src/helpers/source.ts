@@ -14,10 +14,6 @@ export function parseFile(
   } else {
     subDir;
     const shortFilePath = filePath.replace(process.cwd() + '/', '');
-    console.log(
-      'Parsing generated build file at: ' +
-        shortFilePath.replace('build/', 'assembly/contracts/'),
-    );
     parser.parseFile(
       readFileSync(shortFilePath, 'utf-8'),
       shortFilePath.replace('build/', 'assembly/contracts/'),
@@ -41,7 +37,7 @@ export function parseFile(
     `Source is undefined after parsing file ${filePath}`,
   );
   /*
-  console.log(
+  Debug.log(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     "AS-TRM: successfully parsed new source: '" + src!.internalPath + "'",
   );

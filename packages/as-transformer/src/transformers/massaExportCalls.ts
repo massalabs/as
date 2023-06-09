@@ -10,6 +10,7 @@ import {
   StringLiteralExpression,
 } from 'types:assemblyscript/src/ast';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
+import * as Debug from 'debug';
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
@@ -67,7 +68,7 @@ export class MassaExportCalls {
 
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
-    console.log(
+    Debug.log(
       "MassaExport Function Call: New call expression => '" + expr + "'",
     );
     return RangeTransform.visit(res, node); // replace node
