@@ -34,11 +34,7 @@ For instance, to compile `assembly/my_sc.ts` with this transformer you will exec
 npx asc --transform @massalabs/as-transformer assembly/my_sc.ts --target release --exportRuntime -o build/my_sc.wasm
 ```
 
-### Transform ts files
-
-#### file2ByteArray
-
-##### Transformations
+### file2ByteArray
 
 This transformer loads the given file, encodes it to `StaticArray<u8>` and then replace the call to `file2ByteArray` by the encoded content.
 
@@ -53,6 +49,36 @@ export function main(_args: string): i32 {
     return 0;
 }
 ```
+
+### @massaExport
+
+This transformer allows the creation of function without having to worry about the serialization/deserialization of the arguments or the return value.
+
+By adding the decorator `@massaExport` the transformer will generate a wrapper that takes care of it.
+
+Exemple:
+```typescript
+@massaExport()
+export function sayHello(accountName: string) : string {
+    return "Hello, " + accountName + "!";
+}
+```
+Instead of:
+```typescript
+export function sayHello(args: StaticArray<u8>) : StaticArray<u8> {
+    let deserArgs = new Args(args);
+    const accountName = deserArgs.nextString();
+    const message = "Hello, " + accountName + "!";
+
+    return stringToBytes(message);
+}
+```
+
+#### Known limitation(s)
+
+At the moment only the smart contract main file can use this transformer.
+Any functions outside this file, that are imported and re-exported can not use this decorator.
+
 
 ## Contributing
 We welcome contributions from the community!
