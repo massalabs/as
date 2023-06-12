@@ -85,7 +85,7 @@ describe('Serialization tests', () => {
     const val: u128 = u128.Max;
     expect(bytesToU128(u128ToBytes(val))).toBe(val);
   });
-  it('ser/deser u128', () => {
+  it('ser/deser u128.Zero', () => {
     const val: u128 = u128.Zero;
     expect(bytesToU128(u128ToBytes(val))).toBe(val);
   });
