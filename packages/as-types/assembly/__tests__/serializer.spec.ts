@@ -89,7 +89,7 @@ describe('Serialization tests', () => {
     const val: u128 = u128.Zero;
     expect(bytesToU128(u128ToBytes(val))).toBe(val);
   });
-  it('ser/deser u128', () => {
+  it('ser/deser random u128 value', () => {
     const val: u128 = u128.fromString('123456789012345678901234567890');
     expect(bytesToU128(u128ToBytes(val))).toBe(val);
   });
