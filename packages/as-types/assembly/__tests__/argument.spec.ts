@@ -2,6 +2,7 @@ import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
 import { Divinity, Hero, Person } from './dto-tests/Person';
+import { u128, u256 } from 'as-bignum/assembly';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -97,6 +98,32 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(97);
     expect(args2.nextSerializable<Amount>().unwrap()).toBe(amt);
     expect(args2.nextU64().unwrap()).toBe(113);
+  });
+
+  it('With u128', () => {
+    const val1 = u128.Max;
+    const val2 = u128.add(u128.fromU64(U64.MAX_VALUE), u128.fromU64(1));
+    const val3 = u128.Zero;
+
+    const serialized = new Args().add(val1).add(val2).add(val3).serialize();
+
+    const args = new Args(serialized);
+    expect(args.nextU128().unwrap()).toBe(val1);
+    expect(args.nextU128().unwrap()).toBe(val2);
+    expect(args.nextU128().unwrap()).toBe(val3);
+  });
+
+  it('With u256', () => {
+    const val1 = u256.Zero;
+    const val2 = u256.add(u256.fromU128(u128.Max), u256.fromU64(1));
+    const val3 = u256.Max;
+
+    const serialized = new Args().add(val1).add(val2).add(val3).serialize();
+
+    const args = new Args(serialized);
+    expect(args.nextU256().unwrap()).toBe(val1);
+    expect(args.nextU256().unwrap()).toBe(val2);
+    expect(args.nextU256().unwrap()).toBe(val3);
   });
 
   it('With string and i64', () => {

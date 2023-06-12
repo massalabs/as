@@ -1,3 +1,4 @@
+import { u128, u256 } from 'as-bignum/assembly';
 import { Result } from './result';
 import { Serializable } from './serializable';
 import {
@@ -22,6 +23,12 @@ import {
   bytesToNativeTypeArray,
   bytesToSerializableObjectArray,
 } from './serialization';
+import {
+  bytesToU128,
+  bytesToU256,
+  u128ToBytes,
+  u256ToBytes,
+} from './serialization/bignum';
 
 /**
  * Args for remote function call.
@@ -235,6 +242,56 @@ export class Args {
 
     const value = wrapStaticArray(this.getNextData(length.unwrap()));
     this._offset += length.unwrap();
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an u256 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u256 from given argument: out of range".
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized u256 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
+   */
+  nextU256(): Result<u256> {
+    const size: i32 = 32;
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        u256.Zero,
+        "can't deserialize u128 from given argument: out of range",
+      );
+    }
+    const value = bytesToU256(this.getNextData(size));
+    this._offset += size;
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an U128 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u64 from given argument: out of range".
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized U128 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
+   */
+  nextU128(): Result<u128> {
+    const size: i32 = 16;
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        u128.Zero,
+        "can't deserialize u128 from given argument: out of range",
+      );
+    }
+    const value = bytesToU128(this.getNextData(size));
+    this._offset += size;
     return new Result(value);
   }
 
@@ -491,7 +548,7 @@ export class Args {
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
-      this.serialized = this.serialized.concat(boolToByte(arg as bool));
+      this.serialized = this.serialized.concat(boolToByte(arg));
     } else if (arg instanceof String) {
       const serialized = stringToBytes(arg as string);
       this.add<u32>(serialized.length);
@@ -503,15 +560,19 @@ export class Args {
       this.add<u32>(arg.length);
       this.serialized = this.serialized.concat(arg);
     } else if (arg instanceof u8) {
-      this.serialized = this.serialized.concat(u8toByte(arg as u8));
+      this.serialized = this.serialized.concat(u8toByte(arg));
     } else if (arg instanceof u32 || arg instanceof i32) {
-      this.serialized = this.serialized.concat(u32ToBytes(arg as u32));
+      this.serialized = this.serialized.concat(u32ToBytes(arg));
     } else if (arg instanceof u64 || arg instanceof i64) {
-      this.serialized = this.serialized.concat(u64ToBytes(arg as u64));
+      this.serialized = this.serialized.concat(u64ToBytes(arg));
     } else if (arg instanceof f32) {
-      this.serialized = this.serialized.concat(f32ToBytes(arg as f32));
+      this.serialized = this.serialized.concat(f32ToBytes(arg));
     } else if (arg instanceof f64) {
-      this.serialized = this.serialized.concat(f64ToBytes(arg as f64));
+      this.serialized = this.serialized.concat(f64ToBytes(arg));
+    } else if (arg instanceof u128) {
+      this.serialized = this.serialized.concat(u128ToBytes(arg));
+    } else if (arg instanceof u256) {
+      this.serialized = this.serialized.concat(u256ToBytes(arg));
       // @ts-ignore
     } else if (arg instanceof Serializable) {
       this.serialized = this.serialized.concat(
