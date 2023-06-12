@@ -275,7 +275,7 @@ export class Args {
    *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
-   * "can't deserialize u64 from given argument: out of range".
+   * "can't deserialize u128 from given argument: out of range".
    *
    * @returns a Result object:
    * - Containing the next deserialized U128 starting from the current offset
