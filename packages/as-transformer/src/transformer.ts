@@ -164,7 +164,7 @@ export class Transformer extends TransformVisitor {
    * @param parser - A {@link Parser} object.
    */
   afterParse(parser: Parser): void {
-    Debug.log('Starting after parse.');
+    Debug.log('Starting after parse hook.');
     let sources = parser.sources.filter(
       // Fetching only project parsed sources (AST Tree for each file)
       (source) => {
