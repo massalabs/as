@@ -1,18 +1,13 @@
 import { Parser, Source } from 'assemblyscript/dist/assemblyscript.js';
 import { readFileSync } from 'fs';
 
-export function parseFile(
-  filePath: string,
-  parser: Parser,
-  subDir: string,
-): Source {
+export function parseFile(filePath: string, parser: Parser): Source {
   const isNodeModule = filePath.includes('node_modules/');
 
   if (isNodeModule) {
     const shortFilePath = filePath.replace(/.*node_modules/i, '~lib');
     parser.parseFile(readFileSync(filePath, 'utf-8'), shortFilePath, false);
   } else {
-    subDir;
     const shortFilePath = filePath.replace(process.cwd() + '/', '');
     parser.parseFile(
       readFileSync(shortFilePath, 'utf-8'),
@@ -36,12 +31,6 @@ export function parseFile(
     src !== undefined,
     `Source is undefined after parsing file ${filePath}`,
   );
-  /*
-  Debug.log(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    "AS-TRM: successfully parsed new source: '" + src!.internalPath + "'",
-  );
-  */
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return src!;
 }

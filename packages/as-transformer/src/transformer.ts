@@ -32,7 +32,6 @@ const functionTransformers = [new MassaExport()];
  * or functions as needed.
  */
 export class Transformer extends TransformVisitor {
-  originalVisiting = true;
   /**
    * Visits function declarations and calls transformers if their matching patterns are passing on the node.
    *
@@ -44,8 +43,10 @@ export class Transformer extends TransformVisitor {
     let massaNode = MassaFunctionNode.createFromASTNode(node);
 
     for (let transformer of functionTransformers) {
-      if (transformer.isMatching(massaNode))
+      if (transformer.isMatching(massaNode)) {
+        Debug.log('Found function declaration to transform: ' + massaNode.name);
         node = transformer.transform(massaNode);
+      }
       massaNode = MassaFunctionNode.createFromASTNode(node);
     }
     return super.visitFunctionDeclaration(massaNode.node!);
@@ -64,11 +65,6 @@ export class Transformer extends TransformVisitor {
     const inputText = (node.expression as IdentifierExpression)?.text;
 
     for (let transformer of callTransformers) {
-      if (
-        (transformer as MassaExportCalls) !== undefined &&
-        this.originalVisiting
-      )
-        continue;
       if (transformer.isMatching(inputText)) {
         Debug.log('Found call to transform: ' + inputText);
         return transformer.transform(node);
@@ -135,13 +131,8 @@ export class Transformer extends TransformVisitor {
         ).length > 0
       )
         continue;
-      Debug.log("Adding source: '" + newSource + "'");
       this.program.sources.push(
-        parseFile(
-          newSource,
-          new Parser(parser.diagnostics),
-          source.internalPath.replace(source.simplePath, ''),
-        ),
+        parseFile(newSource, new Parser(parser.diagnostics)),
       );
       GlobalUpdates.add({
         content: newSource,
@@ -171,18 +162,6 @@ export class Transformer extends TransformVisitor {
         return (
           !source.internalPath.startsWith(`node_modules/`) &&
           !utils.isLibrary(source) &&
-          /* GlobalUpdates.get().filter(
-            (update) =>
-              (update.from === 'MassaExport' &&
-                (source.internalPath.includes(
-                  update.data.get('funcToPrivate')![0] + 'Helper',
-                ) ||
-                  source.internalPath.includes(
-                    update.data.get('funcToPrivate')![0] + 'RHelper',
-                  ))) ||
-              (update.from === 'as-transformer' &&
-                source.internalPath.includes(update.content)),
-          ).length <= 0 && */
           !source.internalPath.includes('build/')
         );
       },
@@ -194,13 +173,8 @@ export class Transformer extends TransformVisitor {
       return;
     }
     sources.forEach((source) => {
-      Debug.log(
-        '---------------------------------------------------------------------------------',
-      );
       Debug.log('Transforming source: ' + source.internalPath + '\n');
-      this.originalVisiting = true;
       this.visit(source); // visiting AST Tree nodes and calling transformers
-      this.originalVisiting = false;
       let actualSource = source;
       let dir = source.internalPath.replace('assembly/contracts/', '');
 
@@ -219,17 +193,7 @@ export class Transformer extends TransformVisitor {
       }
       updatedSources.push(actualSource);
       updatedSources.forEach((s) => this.visit(s));
-      /* const update: Update = {
-        content: actualSource.simplePath,
-        data: new Map(),
-        from: 'as-transformer',
-      };
-      GlobalUpdates.add(update); */
-
       Debug.log('\nFinished transforming source: ' + actualSource.internalPath);
-      Debug.log(
-        '---------------------------------------------------------------------------------\n\n',
-      );
     });
     Debug.log('finished after parse hook');
   }
