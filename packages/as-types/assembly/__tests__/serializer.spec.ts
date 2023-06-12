@@ -97,7 +97,7 @@ describe('Serialization tests', () => {
     const val: u256 = u256.Max;
     expect(bytesToU256(u256ToBytes(val))).toBe(val);
   });
-  it('ser/deser u256', () => {
+  it('ser/deser u256.Zero', () => {
     const val: u256 = u256.Zero;
     expect(bytesToU256(u256ToBytes(val))).toBe(val);
   });
