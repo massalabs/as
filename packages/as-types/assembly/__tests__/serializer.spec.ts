@@ -101,7 +101,7 @@ describe('Serialization tests', () => {
     const val: u256 = u256.Zero;
     expect(bytesToU256(u256ToBytes(val))).toBe(val);
   });
-  it('ser/deser u256', () => {
+  it('ser/deser random u256 value', () => {
     // u256.fromString is not implemented
     const val: u256 = u256.add(u256.fromU128(u128.Max), u256.fromU32(1));
     expect(bytesToU256(u256ToBytes(val))).toBe(val);
