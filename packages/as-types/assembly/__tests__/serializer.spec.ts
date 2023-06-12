@@ -21,6 +21,13 @@ import {
   u64ToBytes,
   u8toByte,
 } from '../serialization';
+import { u128, u256 } from 'as-bignum/assembly';
+import {
+  bytesToU128,
+  bytesToU256,
+  u128ToBytes,
+  u256ToBytes,
+} from '../serialization/bignum';
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -73,6 +80,31 @@ describe('Serialization tests', () => {
   it('ser/deser f64 max val', () => {
     const val: f64 = F64.MAX_VALUE;
     expect(bytesToF64(f64ToBytes(val))).toBe(val);
+  });
+  it('ser/deser u128.Max', () => {
+    const val: u128 = u128.Max;
+    expect(bytesToU128(u128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser u128.Zero', () => {
+    const val: u128 = u128.Zero;
+    expect(bytesToU128(u128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser random u128 value', () => {
+    const val: u128 = u128.fromString('123456789012345678901234567890');
+    expect(bytesToU128(u128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser u256.Max', () => {
+    const val: u256 = u256.Max;
+    expect(bytesToU256(u256ToBytes(val))).toBe(val);
+  });
+  it('ser/deser u256.Zero', () => {
+    const val: u256 = u256.Zero;
+    expect(bytesToU256(u256ToBytes(val))).toBe(val);
+  });
+  it('ser/deser random u256 value', () => {
+    // u256.fromString is not implemented
+    const val: u256 = u256.add(u256.fromU128(u128.Max), u256.fromU32(1));
+    expect(bytesToU256(u256ToBytes(val))).toBe(val);
   });
 
   // ARRAYS
