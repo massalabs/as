@@ -190,7 +190,7 @@ export class Transformer extends TransformVisitor {
     let updatedSources: Source[] = [];
 
     if (sources.length <= 0) {
-      Debug.log('No sources to transform, exit');
+      Debug.log('No sources to transform, exit after parse hook');
       return;
     }
     sources.forEach((source) => {
