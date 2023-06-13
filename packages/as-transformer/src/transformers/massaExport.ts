@@ -137,14 +137,14 @@ export class MassaExport {
     if (this.args.length > 0) {
       wrapper += `  const args = decode${this.functionName}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     }
-
+    const call = `_ms_${this.functionName}_(${
+      this.args.length > 0 ? argDecodings : ''
+    })`;
     if (this.returnType && this.returnType !== 'void') {
-      wrapper += `  const response = encode${this.functionName}RHelper(new ${
-        this.functionName
-      }RHelper(_ms_${this.functionName}_(${
-        this.args.length > 0 ? argDecodings : ''
-      })));\n\n`;
+      wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
+    } else {
+      wrapper += call + ';\n';
     }
 
     wrapper += '}';
