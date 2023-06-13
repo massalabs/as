@@ -4,6 +4,8 @@ import {
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
+import * as Debug from 'debug';
+
 import {
   Argument,
   generateASHelpers,
@@ -90,13 +92,8 @@ export class MassaExport {
       this.args,
       this.returnType,
     );
-
-    // writeFileSync(protoFile, protoContent); // writing proto file content in filepath
-
     const wrapperContent = this._generateWrapper();
-
     const imports = this._generateImports();
-
     const update = {
       content: wrapperContent,
       data: new Map([
@@ -106,17 +103,12 @@ export class MassaExport {
       ]),
       from: 'MassaExport',
     };
-
     this.updates.push(update);
     GlobalUpdates.add(update);
-
     this._resetFunctionSignatureData();
-
-    /*
-    console.log(
+    Debug.log(
       "MassaExport Function: generated '" + node.name + "' function's wrapper",
     );
-    */
     return node.node!;
   }
 
@@ -143,13 +135,13 @@ export class MassaExport {
     } {\n`;
 
     if (this.args.length > 0) {
-      wrapper += `  const args = decode${this.functionName}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+      wrapper += `  const args = decode${this.functionName}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     }
 
     if (this.returnType && this.returnType !== 'void') {
-      wrapper += `  const response = encode${this.functionName}Response(new ${
+      wrapper += `  const response = encode${this.functionName}RHelper(new ${
         this.functionName
-      }Response(_ms_${this.functionName}_(${
+      }RHelper(_ms_${this.functionName}_(${
         this.args.length > 0 ? argDecodings : ''
       })));\n\n`;
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
@@ -174,12 +166,12 @@ export class MassaExport {
     let name = this.functionName;
 
     if (this.args.length > 0) {
-      imports.push(`import { decode${name} } from "./${name}Wrapper/${name}";`);
+      imports.push(`import { decode${name}Helper } from "./${name}Helper";`);
     }
 
     if (this.returnType && this.returnType !== 'void') {
       imports.push(
-        `import { ${name}Response, encode${name}Response } from "./${name}Wrapper/${name}Response";`,
+        `import { ${name}RHelper, encode${name}RHelper } from "./${name}RHelper";`,
       );
     }
 
@@ -195,7 +187,7 @@ export class MassaExport {
    */
   getAdditionalSources(source: Source, dir: string): string[] {
     const depsFilter: string[] = [];
-
+    let dependencies: string[] = [];
     // Retrieving the generated functions
     for (const update of this.updates) {
       const scFunc = update.data.get('funcToPrivate');
@@ -206,21 +198,22 @@ export class MassaExport {
         return [];
       }
       // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
-      depsFilter.push(
-        'build/' + dir.replace(source.simplePath, '') + scFunc[0]! + 'Wrapper/',
-      );
+      let path = 'build/' + dir.replace(source.simplePath, '') + scFunc[0]!;
+      depsFilter.push(path);
     }
 
     // Dynamically fetching additional import's dependencies
-    const dependencies = getDependencies(`./build/${dir}.ts`);
-
     // Filtering fetched dependencies to avoid adding again dependencies
     // that where already imported by the original file.
-    return dependencies.filter(
-      (dep) =>
-        dep.includes('as-proto') ||
-        depsFilter.some((filter) => dep.includes(filter)),
-    );
+    getDependencies(`./build/${dir}.ts`)
+      .filter(
+        (dep) =>
+          dep.includes('as-proto') ||
+          depsFilter.some((filter) => dep.includes(filter)),
+      )
+      .forEach((dep) => dependencies.push(dep));
+
+    return dependencies;
   }
 
   /**
@@ -246,7 +239,7 @@ export class MassaExport {
       );
     });
 
-    content = content.replaceAll('@massaExport()\n', '');
+    content = content.replaceAll('@massaExport()', '');
     // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
 
     if (!existsSync(newPath.replace(source.simplePath, '')))
@@ -316,8 +309,8 @@ export class MassaExport {
     func: string,
     protoContent: string,
   ): void {
-    const wrapperPath = dir + func + 'Wrapper/';
-    const protoFile = wrapperPath + func + '.proto';
+    const wrapperPath = dir;
+    const protoFile = wrapperPath + func + 'Helper' + '.proto';
 
     if (!existsSync(wrapperPath)) {
       mkdirSync(wrapperPath, {

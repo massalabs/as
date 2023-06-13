@@ -8,7 +8,7 @@ describe('generateProtoFile', () => {
 
     const expectedOutput = `syntax = "proto3";
 
-message MyFunction {
+message MyFunctionHelper {
 
 }`;
 
@@ -28,7 +28,7 @@ message MyFunction {
 
     const expectedOutput = `syntax = "proto3";
 
-message MyFunction {
+message MyFunctionHelper {
   int32 arg1 = 1;
   string arg2 = 2;
   bool arg3 = 3;
@@ -49,12 +49,12 @@ message MyFunction {
 
     const expectedOutput = `syntax = "proto3";
 
-message MyFunction {
+message MyFunctionHelper {
   int32 arg1 = 1;
   string arg2 = 2;
 }
 
-message MyFunctionResponse {
+message MyFunctionRHelper {
   bool value = 1;
 }`;
 
@@ -73,12 +73,12 @@ message MyFunctionResponse {
 
     const expectedOutput = `syntax = "proto3";
 
-message MyFunction {
+message MyFunctionHelper {
   repeated int32 arg1 = 1;
   repeated string arg2 = 2;
 }
 
-message MyFunctionResponse {
+message MyFunctionRHelper {
   bool value = 1;
 }`;
 
@@ -104,7 +104,7 @@ message MyFunctionResponse {
 
     const expectedOutput = `syntax = "proto3";
 
-message  {
+message Helper {
 
 }`;
 

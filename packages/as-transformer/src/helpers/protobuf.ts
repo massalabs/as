@@ -54,7 +54,7 @@ export function generateProtoFile(
 
   let protoFile = `syntax = "proto3";
 
-message ${name} {
+message ${name}Helper {
 ${fields}
 }`;
 
@@ -68,7 +68,7 @@ ${fields}
 
     protoFile += `
 
-message ${name}Response {
+message ${name}RHelper {
 ${response}
 }`;
   }

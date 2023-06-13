@@ -23,9 +23,9 @@ describe('generateWrapper', () => {
     ]);
 
     let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
-    wrapper += `  const args = decode${node.name}(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
-    wrapper += `  const response = encode${node.name}Response`;
-    wrapper += `(new ${node.name}Response(_ms_${node.name}_(args.language, args.name)));\n\n`;
+    wrapper += `  const args = decode${node.name}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+    wrapper += `  const response = encode${node.name}RHelper`;
+    wrapper += `(new ${node.name}RHelper(_ms_${node.name}_(args.language, args.name)));\n\n`;
 
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
@@ -40,7 +40,7 @@ describe('generateWrapper', () => {
     const node = new MassaFunctionNode('SayHello', 'string', []);
 
     let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
-    wrapper += `  const response = encode${node.name}Response(new ${node.name}Response(_ms_${node.name}_()));\n\n`;
+    wrapper += `  const response = encode${node.name}RHelper(new ${node.name}RHelper(_ms_${node.name}_()));\n\n`;
 
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
@@ -71,7 +71,7 @@ describe('generateImports', () => {
     ]);
 
     const expectedImports = [
-      `import { decode${node.name} } from "./${node.name}Wrapper/${node.name}";`,
+      `import { decode${node.name}Helper } from "./${node.name}Helper";`,
     ];
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualImports = massaExportTransformer['_generateImports']();
@@ -83,7 +83,7 @@ describe('generateImports', () => {
     const node = new MassaFunctionNode('SayHello', 'string', []);
 
     const expectedImports = [
-      `import { ${node.name}Response, encode${node.name}Response } from "./${node.name}Wrapper/${node.name}Response";`,
+      `import { ${node.name}RHelper, encode${node.name}RHelper } from "./${node.name}RHelper";`,
     ];
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualImports = massaExportTransformer['_generateImports']();
@@ -98,8 +98,8 @@ describe('generateImports', () => {
     ]);
 
     const expectedImports = [
-      `import { decode${node.name} } from "./${node.name}Wrapper/${node.name}";`,
-      `import { ${node.name}Response, encode${node.name}Response } from "./${node.name}Wrapper/${node.name}Response";`,
+      `import { decode${node.name}Helper } from "./${node.name}Helper";`,
+      `import { ${node.name}RHelper, encode${node.name}RHelper } from "./${node.name}RHelper";`,
     ];
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualImports = massaExportTransformer['_generateImports']();
