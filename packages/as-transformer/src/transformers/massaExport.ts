@@ -144,7 +144,7 @@ export class MassaExport {
       wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
-      wrapper += call + ';\n';
+      wrapper += '  ' + call + ';\n';
     }
 
     wrapper += '}';

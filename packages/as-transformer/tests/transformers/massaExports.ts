@@ -7,7 +7,7 @@ describe('generateWrapper', () => {
   it('should generate a void wrapper function', () => {
     const node = new MassaFunctionNode('SayHello', '', []);
 
-    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): void {\n`;
+    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): void {\n  _ms_${node.name}_();\n`;
     wrapper += `}`;
 
     massaExportTransformer['_setFunctionSignatureData'](node);
