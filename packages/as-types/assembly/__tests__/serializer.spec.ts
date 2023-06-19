@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import { Divinity, Hero, Person } from './dto-tests/Person';
 import {
   boolToByte,
@@ -21,7 +22,7 @@ import {
   u64ToBytes,
   u8toByte,
 } from '../serialization';
-import { u128, u256 } from 'as-bignum/assembly';
+import { i128, u128, u256 } from 'as-bignum/assembly';
 import {
   bytesToU128,
   bytesToU256,
@@ -225,6 +226,45 @@ describe('Serialization tests', () => {
     const array = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
     expect<u64[]>(
       bytesToNativeTypeArray<u64>(nativeTypeArrayToBytes<u64>(array)),
+    ).toStrictEqual(array);
+  });
+
+  it('ser/deser array of u128', () => {
+    const array = [
+      u128.from(22),
+      u128.from(3),
+      new u128(444, 666),
+      u128.from(8888),
+      u128.from(555),
+    ];
+    expect<u128[]>(
+      bytesToNativeTypeArray<u128>(nativeTypeArrayToBytes<u128>(array)),
+    ).toStrictEqual(array);
+  });
+
+  it('ser/deser array of i128', () => {
+    const array = [
+      i128.from(22),
+      i128.from(3),
+      i128.from(-1234),
+      new i128(-444, 666),
+      i128.from(555),
+    ];
+    expect<i128[]>(
+      bytesToNativeTypeArray<i128>(nativeTypeArrayToBytes<i128>(array)),
+    ).toStrictEqual(array);
+  });
+
+  it('ser/deser array of u256', () => {
+    const array = [
+      u256.fromU64(22),
+      new u256(444, 666, 555, 2222),
+      u256.fromU64(44),
+      u256.fromU64(8888),
+      u256.fromU64(555),
+    ];
+    expect<u256[]>(
+      bytesToNativeTypeArray<u256>(nativeTypeArrayToBytes<u256>(array)),
     ).toStrictEqual(array);
   });
 });

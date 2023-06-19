@@ -1,8 +1,9 @@
+/* eslint-disable new-cap */
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
 import { Divinity, Hero, Person } from './dto-tests/Person';
-import { u128, u256 } from 'as-bignum/assembly';
+import { i128, u128, u256 } from 'as-bignum/assembly';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -344,12 +345,54 @@ describe('Args tests', () => {
 
   // Array
 
-  it('With array of numbers', () => {
+  it('With array of u64', () => {
     const arrayU64 = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
     const serialized = new Args().addNativeTypeArray(arrayU64).serialize();
     const args = new Args(serialized);
     const unserialized = args.nextNativeTypeArray<u64>().unwrap();
     expect<u64[]>(unserialized).toStrictEqual(arrayU64);
+  });
+
+  it('With array of u128', () => {
+    const array = [
+      u128.from(22),
+      u128.from(3),
+      new u128(444, 666),
+      u128.from(8888),
+      u128.from(555),
+    ];
+    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextNativeTypeArray<u128>().unwrap();
+    expect<u128[]>(unserialized).toStrictEqual(array);
+  });
+
+  it('With array of i128', () => {
+    const array = [
+      i128.from(22),
+      i128.from(3),
+      i128.from(-1234),
+      new i128(-444, 666),
+      i128.from(555),
+    ];
+    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextNativeTypeArray<i128>().unwrap();
+    expect<i128[]>(unserialized).toStrictEqual(array);
+  });
+
+  it('With array of u256', () => {
+    const array = [
+      u256.fromU64(22),
+      new u256(444, 666, 555, 2222),
+      u256.fromU64(44),
+      u256.fromU64(8888),
+      u256.fromU64(555),
+    ];
+    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextNativeTypeArray<u256>().unwrap();
+    expect<u256[]>(unserialized).toStrictEqual(array);
   });
 
   it('With array of one u8', () => {
