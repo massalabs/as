@@ -1,32 +1,7 @@
 import { i128, u128, u256 } from 'as-bignum/assembly';
 import { Result } from './result';
 import { Serializable } from './serializable';
-import {
-  bytesToString,
-  stringToBytes,
-  unwrapStaticArray,
-  wrapStaticArray,
-  bytesToF32,
-  bytesToU32,
-  bytesToU64,
-  f32ToBytes,
-  f64ToBytes,
-  u32ToBytes,
-  u64ToBytes,
-  u8toByte,
-  bytesToF64,
-  bytesToI32,
-  bytesToI64,
-  boolToByte,
-  serializableObjectsArrayToBytes,
-  fixedSizeArrayToBytes,
-  bytesToFixedSizeArray,
-  bytesToSerializableObjectArray,
-  bytesToU128,
-  bytesToU256,
-  u128ToBytes,
-  u256ToBytes,
-} from './serialization';
+import * as ser from './serialization';
 import { i256 } from 'as-bignum/assembly/integer/i256';
 
 /**
@@ -105,8 +80,7 @@ export class Args {
       );
     }
 
-    const value = bytesToString(this.getNextData(length.unwrap()));
-    this._offset += length.unwrap();
+    const value = ser.bytesToString(this.getNextData(length.unwrap()));
     return new Result(value);
   }
 
@@ -141,7 +115,6 @@ export class Args {
     }
 
     const value = this.getNextData(bufferSize);
-    this._offset += bufferSize;
     return new Result(value);
   }
 
@@ -177,9 +150,8 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = bytesToFixedSizeArray<T>(buffer);
+    const value = ser.bytesToFixedSizeArray<T>(buffer);
 
-    this._offset += bufferSize;
     return new Result(value);
   }
 
@@ -216,10 +188,8 @@ export class Args {
     const startOffset = this._offset;
     while (this._offset < startOffset + bufferSize) {
       const u32Size = sizeof<u32>();
-      const strLen = bytesToU32(this.getNextData(<i32>u32Size));
-      this._offset += <i32>u32Size;
-      value.push(bytesToString(this.getNextData(strLen)));
-      this._offset += strLen;
+      const strLen = ser.bytesToU32(this.getNextData(<i32>u32Size));
+      value.push(ser.bytesToString(this.getNextData(strLen)));
     }
 
     this._offset += bufferSize;
@@ -259,8 +229,7 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = bytesToSerializableObjectArray<T>(buffer);
-    this._offset += bufferSize;
+    const value = ser.bytesToSerializableObjectArray<T>(buffer);
     return value;
   }
 
@@ -288,8 +257,7 @@ export class Args {
       );
     }
 
-    const value = wrapStaticArray(this.getNextData(length.unwrap()));
-    this._offset += length.unwrap();
+    const value = ser.wrapStaticArray(this.getNextData(length.unwrap()));
     return new Result(value);
   }
 
@@ -313,8 +281,7 @@ export class Args {
         "can't deserialize u128 from given argument: out of range",
       );
     }
-    const value = bytesToU256(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToU256(this.getNextData(size));
     return new Result(value);
   }
 
@@ -338,8 +305,7 @@ export class Args {
         "can't deserialize u128 from given argument: out of range",
       );
     }
-    const value = bytesToU128(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToU128(this.getNextData(size));
     return new Result(value);
   }
 
@@ -363,8 +329,7 @@ export class Args {
         "can't deserialize u64 from given argument: out of range",
       );
     }
-    const value = bytesToU64(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToU64(this.getNextData(size));
     return new Result(value);
   }
 
@@ -389,8 +354,7 @@ export class Args {
       );
     }
 
-    const value = bytesToI64(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToI64(this.getNextData(size));
     return new Result(value);
   }
 
@@ -413,8 +377,7 @@ export class Args {
         "can't deserialize f64 from given argument: out of range",
       );
     }
-    const value = bytesToF64(this.getNextData(size));
-    this._offset += sizeof<f64>();
+    const value = ser.bytesToF64(this.getNextData(size));
     return new Result(value);
   }
 
@@ -439,8 +402,7 @@ export class Args {
       );
     }
 
-    const value = bytesToF32(this.getNextData(size));
-    this._offset += sizeof<f32>();
+    const value = ser.bytesToF32(this.getNextData(size));
     return new Result(value);
   }
 
@@ -465,8 +427,7 @@ export class Args {
       );
     }
 
-    const value = bytesToU32(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToU32(this.getNextData(size));
     return new Result(value);
   }
 
@@ -490,8 +451,7 @@ export class Args {
         "can't deserialize i32 from given argument: out of range",
       );
     }
-    const value = bytesToI32(this.getNextData(size));
-    this._offset += size;
+    const value = ser.bytesToI32(this.getNextData(size));
     return new Result(value);
   }
 
@@ -567,17 +527,17 @@ export class Args {
    * This function retrieves the next chunk of data from the serialized data array based on the specified size
    * and returns it as a static array of unsigned 8-bit integers.
    *
-   * @remarks
-   * Unlike other 'next' methods, 'getNextData' doesn't increment the offset.
    *
    * @param size - The data size
    *
    * @returns the data of requested size for current offset
    */
   private getNextData(size: i32): StaticArray<u8> {
-    return changetype<StaticArray<u8>>(
+    const data = changetype<StaticArray<u8>>(
       this.serialized.slice(this._offset, this._offset + size).dataStart,
     );
+    this._offset += size;
+    return data;
   }
 
   // Setter
@@ -596,31 +556,31 @@ export class Args {
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
-      this.serialized = this.serialized.concat(boolToByte(<bool>arg));
+      this.serialized = this.serialized.concat(ser.boolToByte(<bool>arg));
     } else if (arg instanceof String) {
-      const serialized = stringToBytes(<string>arg);
+      const serialized = ser.stringToBytes(<string>arg);
       this.add<u32>(serialized.length);
       this.serialized = this.serialized.concat(serialized);
     } else if (arg instanceof Uint8Array) {
       this.add<u32>(arg.length);
-      this.serialized = this.serialized.concat(unwrapStaticArray(arg));
+      this.serialized = this.serialized.concat(ser.unwrapStaticArray(arg));
     } else if (arg instanceof StaticArray<u8>) {
       this.add<u32>(arg.length);
       this.serialized = this.serialized.concat(arg);
     } else if (arg instanceof u8) {
-      this.serialized = this.serialized.concat(u8toByte(<u8>arg));
+      this.serialized = this.serialized.concat(ser.u8toByte(<u8>arg));
     } else if (arg instanceof u32 || arg instanceof i32) {
-      this.serialized = this.serialized.concat(u32ToBytes(<u32>arg));
+      this.serialized = this.serialized.concat(ser.u32ToBytes(<u32>arg));
     } else if (arg instanceof u64 || arg instanceof i64) {
-      this.serialized = this.serialized.concat(u64ToBytes(<u64>arg));
+      this.serialized = this.serialized.concat(ser.u64ToBytes(<u64>arg));
     } else if (arg instanceof f32) {
-      this.serialized = this.serialized.concat(f32ToBytes(<f32>arg));
+      this.serialized = this.serialized.concat(ser.f32ToBytes(<f32>arg));
     } else if (arg instanceof f64) {
-      this.serialized = this.serialized.concat(f64ToBytes(<f64>arg));
+      this.serialized = this.serialized.concat(ser.f64ToBytes(<f64>arg));
     } else if (arg instanceof u128 || arg instanceof i128) {
-      this.serialized = this.serialized.concat(u128ToBytes(<u128>arg));
+      this.serialized = this.serialized.concat(ser.u128ToBytes(<u128>arg));
     } else if (arg instanceof u256 || arg instanceof i256) {
-      this.serialized = this.serialized.concat(u256ToBytes(<u256>arg));
+      this.serialized = this.serialized.concat(ser.u256ToBytes(<u256>arg));
       // @ts-ignore
     } else if (arg instanceof Serializable) {
       this.serialized = this.serialized.concat(
@@ -635,7 +595,7 @@ export class Args {
       || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
       || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
     ) {
-      const content = fixedSizeArrayToBytes(arg);
+      const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);
       this.serialized = this.serialized.concat(content);
     } else if (arg instanceof Array<string>) {
@@ -643,9 +603,9 @@ export class Args {
       let serialized = new StaticArray<u8>(0);
       // serialize each string element with its length followed by its content
       for (let i = 0; i < arg.length; i++) {
-        const strBytes = stringToBytes(arg[i]);
+        const strBytes = ser.stringToBytes(arg[i]);
         serialized = serialized
-          .concat(u32ToBytes(strBytes.length))
+          .concat(ser.u32ToBytes(strBytes.length))
           .concat(strBytes);
         totalLength += <u32>sizeof<u32>() + strBytes.length;
       }
@@ -670,7 +630,7 @@ export class Args {
    */
   addSerializableObjectArray<T extends ArrayLike<Serializable>>(arg: T): Args {
     // @ts-ignore
-    const content = serializableObjectsArrayToBytes(arg);
+    const content = ser.serializableObjectsArrayToBytes(arg);
     this.add<u32>(content.length);
     this.serialized = this.serialized.concat(content);
     return this;
