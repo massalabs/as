@@ -6,7 +6,7 @@ import {
   bytesToF64,
   bytesToI32,
   bytesToI64,
-  bytesToNativeTypeArray,
+  bytesToFixedSizeArray,
   bytesToString,
   bytesToU32,
   bytesToU64,
@@ -16,7 +16,7 @@ import {
   f64ToBytes,
   i32ToBytes,
   i64ToBytes,
-  nativeTypeArrayToBytes,
+  fixedSizeArrayToBytes,
   stringToBytes,
   u32ToBytes,
   u64ToBytes,
@@ -116,8 +116,8 @@ describe('Serialization tests', () => {
     const name1 = 'Hercules';
     const name2 = 'Zeus';
     const array = [new Person(age1, name1), new Person(age2, name2)];
-    const bytes = nativeTypeArrayToBytes(array);
-    const arrayDeser = bytesToNativeTypeArray<Person>(bytes);
+    const bytes = fixedSizeArrayToBytes(array);
+    const arrayDeser = bytesToFixedSizeArray<Person>(bytes);
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
     expect(arrayDeser[0].name).toBe(name1);
@@ -131,8 +131,8 @@ describe('Serialization tests', () => {
     const name1 = 'Hercules';
     const name2 = 'Zeus';
     const array = [new Hero(age1, name1), new Divinity(age2, name2)];
-    const bytes = nativeTypeArrayToBytes(array);
-    const arrayDeser = bytesToNativeTypeArray<Divinity>(bytes);
+    const bytes = fixedSizeArrayToBytes(array);
+    const arrayDeser = bytesToFixedSizeArray<Divinity>(bytes);
     expect(arrayDeser.length).toBe(2);
     expect(arrayDeser[0].age).toBe(age1);
     expect(arrayDeser[0].name).toBe(name1);
@@ -144,18 +144,18 @@ describe('Serialization tests', () => {
   it('ser/deser empty array u8', () => {
     const array: u8[] = [];
     expect<u8[]>(
-      bytesToNativeTypeArray<u8>(nativeTypeArrayToBytes<u8>(array)),
+      bytesToFixedSizeArray<u8>(fixedSizeArrayToBytes<u8>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser array of one u8', () => {
     const array = [1 as u8];
-    const ser = nativeTypeArrayToBytes<u8>(array);
-    expect<u8[]>(bytesToNativeTypeArray<u8>(ser)).toStrictEqual(array);
+    const ser = fixedSizeArrayToBytes<u8>(array);
+    expect<u8[]>(bytesToFixedSizeArray<u8>(ser)).toStrictEqual(array);
   });
   it('ser/deser array of two u8', () => {
     const array = [1 as u8, 2 as u8];
-    const ser = nativeTypeArrayToBytes<u8>(array);
-    expect<u8[]>(bytesToNativeTypeArray<u8>(ser)).toStrictEqual(array);
+    const ser = fixedSizeArrayToBytes<u8>(array);
+    expect<u8[]>(bytesToFixedSizeArray<u8>(ser)).toStrictEqual(array);
   });
   it('ser/deser array of 8 u8', () => {
     const array = [
@@ -168,27 +168,27 @@ describe('Serialization tests', () => {
       21 as u8,
       34 as u8,
     ];
-    const ser = nativeTypeArrayToBytes<u8>(array);
-    expect<u8[]>(bytesToNativeTypeArray<u8>(ser)).toStrictEqual(array);
+    const ser = fixedSizeArrayToBytes<u8>(array);
+    expect<u8[]>(bytesToFixedSizeArray<u8>(ser)).toStrictEqual(array);
   });
 
   // ARRAY I16
   it('ser/deser empty array i16', () => {
     const array: i16[] = [];
     expect<i16[]>(
-      bytesToNativeTypeArray<i16>(nativeTypeArrayToBytes<i16>(array)),
+      bytesToFixedSizeArray<i16>(fixedSizeArrayToBytes<i16>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser array of one i16', () => {
     const array = [1 as i16];
     expect<i16[]>(
-      bytesToNativeTypeArray<i16>(nativeTypeArrayToBytes<i16>(array)),
+      bytesToFixedSizeArray<i16>(fixedSizeArrayToBytes<i16>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser array of i16', () => {
     const array = [1 as i16, 2 as i16, 3 as i16, 5 as i16, 8 as i16];
     expect<i16[]>(
-      bytesToNativeTypeArray<i16>(nativeTypeArrayToBytes<i16>(array)),
+      bytesToFixedSizeArray<i16>(fixedSizeArrayToBytes<i16>(array)),
     ).toStrictEqual(array);
   });
 
@@ -196,19 +196,19 @@ describe('Serialization tests', () => {
   it('ser/deser empty array i32', () => {
     const array: i32[] = [];
     expect<i32[]>(
-      bytesToNativeTypeArray<i32>(nativeTypeArrayToBytes<i32>(array)),
+      bytesToFixedSizeArray<i32>(fixedSizeArrayToBytes<i32>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser array of one i32', () => {
     const array = [1 as i32];
     expect<i32[]>(
-      bytesToNativeTypeArray<i32>(nativeTypeArrayToBytes<i32>(array)),
+      bytesToFixedSizeArray<i32>(fixedSizeArrayToBytes<i32>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser array of i32', () => {
     const array = [1, 2, 3, 5, 8];
     expect<i32[]>(
-      bytesToNativeTypeArray<i32>(nativeTypeArrayToBytes<i32>(array)),
+      bytesToFixedSizeArray<i32>(fixedSizeArrayToBytes<i32>(array)),
     ).toStrictEqual(array);
   });
   it('ser/deser big array i32', () => {
@@ -217,7 +217,7 @@ describe('Serialization tests', () => {
       array.push(index);
     }
     expect<i32[]>(
-      bytesToNativeTypeArray<i32>(nativeTypeArrayToBytes<i32>(array)),
+      bytesToFixedSizeArray<i32>(fixedSizeArrayToBytes<i32>(array)),
     ).toStrictEqual(array);
   });
 
@@ -225,7 +225,7 @@ describe('Serialization tests', () => {
   it('ser/deser array of u64', () => {
     const array = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
     expect<u64[]>(
-      bytesToNativeTypeArray<u64>(nativeTypeArrayToBytes<u64>(array)),
+      bytesToFixedSizeArray<u64>(fixedSizeArrayToBytes<u64>(array)),
     ).toStrictEqual(array);
   });
 
@@ -238,7 +238,7 @@ describe('Serialization tests', () => {
       u128.from(555),
     ];
     expect<u128[]>(
-      bytesToNativeTypeArray<u128>(nativeTypeArrayToBytes<u128>(array)),
+      bytesToFixedSizeArray<u128>(fixedSizeArrayToBytes<u128>(array)),
     ).toStrictEqual(array);
   });
 
@@ -251,7 +251,7 @@ describe('Serialization tests', () => {
       i128.from(555),
     ];
     expect<i128[]>(
-      bytesToNativeTypeArray<i128>(nativeTypeArrayToBytes<i128>(array)),
+      bytesToFixedSizeArray<i128>(fixedSizeArrayToBytes<i128>(array)),
     ).toStrictEqual(array);
   });
 
@@ -264,7 +264,7 @@ describe('Serialization tests', () => {
       u256.fromU64(555),
     ];
     expect<u256[]>(
-      bytesToNativeTypeArray<u256>(nativeTypeArrayToBytes<u256>(array)),
+      bytesToFixedSizeArray<u256>(fixedSizeArrayToBytes<u256>(array)),
     ).toStrictEqual(array);
   });
 });

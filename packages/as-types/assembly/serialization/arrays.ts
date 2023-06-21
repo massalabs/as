@@ -31,7 +31,7 @@ import { Serializable } from '../serializable';
  *
  * @returns The converted StaticArray<u8> (byte array) representation of the native type array.
  */
-export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
+export function fixedSizeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
 
   let targetLength = (<usize>sourceLength) << alignof<T>();
@@ -103,7 +103,7 @@ export function serializableObjectsArrayToBytes<T extends Serializable>(
  *
  * @returns The converted native type array representation of the byte array.
  */
-export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
+export function bytesToFixedSizeArray<T>(source: StaticArray<u8>): T[] {
   let bufferSize = source.length;
   const array = instantiate<T[]>(bufferSize >> alignof<T>());
   memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
