@@ -1,4 +1,4 @@
-import { u128, u256 } from 'as-bignum/assembly';
+import { i128, u128, u256 } from 'as-bignum/assembly';
 import { Result } from './result';
 import { Serializable } from './serializable';
 import {
@@ -19,16 +19,15 @@ import {
   bytesToI64,
   boolToByte,
   serializableObjectsArrayToBytes,
-  nativeTypeArrayToBytes,
-  bytesToNativeTypeArray,
+  fixedSizeArrayToBytes,
+  bytesToFixedSizeArray,
   bytesToSerializableObjectArray,
-} from './serialization';
-import {
   bytesToU128,
   bytesToU256,
   u128ToBytes,
   u256ToBytes,
-} from './serialization/bignum';
+} from './serialization';
+import { i256 } from 'as-bignum/assembly/integer/i256';
 
 /**
  * Args for remote function call.
@@ -135,13 +134,19 @@ export class Args {
         "can't deserialize bytes from given argument: out of range",
       );
     }
-    const value = this.getNextData(length.unwrap());
-    this._offset += length.unwrap();
+
+    const bufferSize = length.unwrap();
+    if (!bufferSize) {
+      return new Result([]);
+    }
+
+    const value = this.getNextData(bufferSize);
+    this._offset += bufferSize;
     return new Result(value);
   }
 
   /**
-   * Deserializes an array of objects that are native type from a serialized array
+   * Deserializes an array of fixed size elements
    * starting from the current offset.
    *
    * @remarks
@@ -150,10 +155,10 @@ export class Args {
    * In this case, the offset will not be changed.
    *
    * @returns a Result object:
-   * - Containing the next deserialized array of objects that are native type starting from the current offset
+   * - Containing the next deserialized array of fixed size elements
    * - Containing an empty array and an error message if the deserialization failed
    */
-  nextNativeTypeArray<T>(): Result<T[]> {
+  nextFixedSizeArray<T>(): Result<T[]> {
     const length = this.nextU32();
     if (
       length.isErr() ||
@@ -166,14 +171,57 @@ export class Args {
     }
 
     const bufferSize = length.unwrap();
-
-    if (bufferSize === 0) {
+    if (!bufferSize) {
       return new Result([]);
     }
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = bytesToNativeTypeArray<T>(buffer);
+    const value = bytesToFixedSizeArray<T>(buffer);
+
+    this._offset += bufferSize;
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an array of strings starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result object containing an empty array and an error message:
+   * "can't deserialize length of array from given argument".
+   * In this case, the offset will not be changed.
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized array of strings
+   * - Containing an empty array and an error message if the deserialization failed
+   */
+  nextStringArray(): Result<string[]> {
+    const length = this.nextU32();
+    if (
+      length.isErr() ||
+      this._offset + length.unwrap() > this.serialized.length
+    ) {
+      return new Result(
+        [],
+        "can't deserialize length of array from given argument",
+      );
+    }
+
+    const bufferSize = length.unwrap();
+    if (!bufferSize) {
+      return new Result([]);
+    }
+
+    const value: string[] = [];
+    const startOffset = this._offset;
+    while (this._offset < startOffset + bufferSize) {
+      const u32Size = sizeof<u32>();
+      const strLen = bytesToU32(this.getNextData(<i32>u32Size));
+      this._offset += <i32>u32Size;
+      value.push(bytesToString(this.getNextData(strLen)));
+      this._offset += strLen;
+    }
+
     this._offset += bufferSize;
     return new Result(value);
   }
@@ -548,9 +596,9 @@ export class Args {
    */
   add<T>(arg: T): Args {
     if (arg instanceof bool) {
-      this.serialized = this.serialized.concat(boolToByte(arg));
+      this.serialized = this.serialized.concat(boolToByte(<bool>arg));
     } else if (arg instanceof String) {
-      const serialized = stringToBytes(arg as string);
+      const serialized = stringToBytes(<string>arg);
       this.add<u32>(serialized.length);
       this.serialized = this.serialized.concat(serialized);
     } else if (arg instanceof Uint8Array) {
@@ -560,47 +608,52 @@ export class Args {
       this.add<u32>(arg.length);
       this.serialized = this.serialized.concat(arg);
     } else if (arg instanceof u8) {
-      this.serialized = this.serialized.concat(u8toByte(arg));
+      this.serialized = this.serialized.concat(u8toByte(<u8>arg));
     } else if (arg instanceof u32 || arg instanceof i32) {
-      this.serialized = this.serialized.concat(u32ToBytes(arg));
+      this.serialized = this.serialized.concat(u32ToBytes(<u32>arg));
     } else if (arg instanceof u64 || arg instanceof i64) {
-      this.serialized = this.serialized.concat(u64ToBytes(arg));
+      this.serialized = this.serialized.concat(u64ToBytes(<u64>arg));
     } else if (arg instanceof f32) {
-      this.serialized = this.serialized.concat(f32ToBytes(arg));
+      this.serialized = this.serialized.concat(f32ToBytes(<f32>arg));
     } else if (arg instanceof f64) {
-      this.serialized = this.serialized.concat(f64ToBytes(arg));
-    } else if (arg instanceof u128) {
-      this.serialized = this.serialized.concat(u128ToBytes(arg));
-    } else if (arg instanceof u256) {
-      this.serialized = this.serialized.concat(u256ToBytes(arg));
+      this.serialized = this.serialized.concat(f64ToBytes(<f64>arg));
+    } else if (arg instanceof u128 || arg instanceof i128) {
+      this.serialized = this.serialized.concat(u128ToBytes(<u128>arg));
+    } else if (arg instanceof u256 || arg instanceof i256) {
+      this.serialized = this.serialized.concat(u256ToBytes(<u256>arg));
       // @ts-ignore
     } else if (arg instanceof Serializable) {
       this.serialized = this.serialized.concat(
         (arg as Serializable).serialize(),
       );
+    } else if (
+      // prettier-ignore
+      (arg instanceof Array<bool>) || (arg instanceof Array<u8>)
+      || (arg instanceof Array<u32>) || (arg instanceof Array<i32>)
+      || (arg instanceof Array<u64>) || (arg instanceof Array<i64>)
+      || (arg instanceof Array<f32>) || (arg instanceof Array<f64>)
+      || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
+      || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
+    ) {
+      const content = fixedSizeArrayToBytes(arg);
+      this.add<u32>(content.length);
+      this.serialized = this.serialized.concat(content);
+    } else if (arg instanceof Array<string>) {
+      let totalLength: u32 = 0;
+      let serialized = new StaticArray<u8>(0);
+      // serialize each string element with its length followed by its content
+      for (let i = 0; i < arg.length; i++) {
+        const strBytes = stringToBytes(arg[i]);
+        serialized = serialized
+          .concat(u32ToBytes(strBytes.length))
+          .concat(strBytes);
+        totalLength += <u32>sizeof<u32>() + strBytes.length;
+      }
+      this.add<u32>(totalLength);
+      this.serialized = this.serialized.concat(serialized);
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
-    return this;
-  }
-
-  /**
-   * This method adds an array in the Args object.
-   *
-   * @remarks
-   * If the type of the values of the array is not native type, this will serialize the pointers, which is certainly not
-   * what you want. You can only serialize properly array of native types or array of `Serializable` object.
-   *
-   * @see {@link addSerializableObjectArray}
-   *
-   * @param arg - the argument to add
-   * @returns the modified Arg instance
-   */
-  addNativeTypeArray<T extends ArrayLike<unknown>>(arg: T): Args {
-    // @ts-ignore
-    const content = nativeTypeArrayToBytes(arg);
-    this.add<u32>(content.length);
-    this.serialized = this.serialized.concat(content);
     return this;
   }
 

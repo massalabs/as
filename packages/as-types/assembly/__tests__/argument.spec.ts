@@ -2,8 +2,9 @@
 import { Args, NoArg } from '../argument';
 import { Amount } from '../amount';
 import { Currency } from '../currency';
-import { Divinity, Hero, Person } from './dto-tests/Person';
+import { Divinity, Hero } from './dto-tests/Person';
 import { i128, u128, u256 } from 'as-bignum/assembly';
+import { i256 } from 'as-bignum/assembly/integer/i256';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -347,9 +348,9 @@ describe('Args tests', () => {
 
   it('With array of u64', () => {
     const arrayU64 = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
-    const serialized = new Args().addNativeTypeArray(arrayU64).serialize();
+    const serialized = new Args().add(arrayU64).serialize();
     const args = new Args(serialized);
-    const unserialized = args.nextNativeTypeArray<u64>().unwrap();
+    const unserialized = args.nextFixedSizeArray<u64>().unwrap();
     expect<u64[]>(unserialized).toStrictEqual(arrayU64);
   });
 
@@ -361,9 +362,9 @@ describe('Args tests', () => {
       u128.from(8888),
       u128.from(555),
     ];
-    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const serialized = new Args().add(array).serialize();
     const args = new Args(serialized);
-    const unserialized = args.nextNativeTypeArray<u128>().unwrap();
+    const unserialized = args.nextFixedSizeArray<u128>().unwrap();
     expect<u128[]>(unserialized).toStrictEqual(array);
   });
 
@@ -375,9 +376,9 @@ describe('Args tests', () => {
       new i128(-444, 666),
       i128.from(555),
     ];
-    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const serialized = new Args().add(array).serialize();
     const args = new Args(serialized);
-    const unserialized = args.nextNativeTypeArray<i128>().unwrap();
+    const unserialized = args.nextFixedSizeArray<i128>().unwrap();
     expect<i128[]>(unserialized).toStrictEqual(array);
   });
 
@@ -389,49 +390,51 @@ describe('Args tests', () => {
       u256.fromU64(8888),
       u256.fromU64(555),
     ];
-    const serialized = new Args().addNativeTypeArray(array).serialize();
+    const serialized = new Args().add(array).serialize();
     const args = new Args(serialized);
-    const unserialized = args.nextNativeTypeArray<u256>().unwrap();
+    const unserialized = args.nextFixedSizeArray<u256>().unwrap();
     expect<u256[]>(unserialized).toStrictEqual(array);
+  });
+
+  it('With array of i256', () => {
+    const array = [
+      new i256(1, -666, 555, 3),
+      new i256(444, 2, 555, 2222),
+      new i256(-4, 666, 3, 7890),
+      new i256(5, 666, -555, 4),
+      new i256(309343, 666, 555, -2222),
+    ];
+    const serialized = new Args().add(array).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextFixedSizeArray<i256>().unwrap();
+    expect<i256[]>(unserialized).toStrictEqual(array);
   });
 
   it('With array of one u8', () => {
     const arrayU8 = [<u8>54];
-    const args = new Args(new Args().addNativeTypeArray(arrayU8).serialize());
-    expect<u8[]>(args.nextNativeTypeArray<u8>().unwrap()).toStrictEqual(
-      arrayU8,
-    );
+    const args = new Args(new Args().add(arrayU8).serialize());
+    expect<u8[]>(args.nextFixedSizeArray<u8>().unwrap()).toStrictEqual(arrayU8);
   });
+
   it('With empty array of boolean', () => {
     const emptyArray: boolean[] = [];
-    const args = new Args(
-      new Args().addNativeTypeArray(emptyArray).serialize(),
-    );
+    const args = new Args(new Args().add(emptyArray).serialize());
     expect<boolean[]>(
-      args.nextNativeTypeArray<boolean>().unwrap(),
+      args.nextFixedSizeArray<boolean>().unwrap(),
     ).toStrictEqual(emptyArray);
   });
 
-  it('With array of object (no deep copy)', () => {
-    const arrayOfPerson = [
-      new Person(14, 'Poseidon'),
-      new Person(45, 'Superman'),
-    ];
-    const args = new Args(
-      new Args().addNativeTypeArray(arrayOfPerson).serialize(),
-    );
-    const deser = args.nextNativeTypeArray<Person>().unwrap();
-    const first = deser[0];
-    expect(deser).toHaveLength(2);
-    expect(first.age).toBe(14);
-    expect(first.name).toBe('Poseidon');
-    expect(deser[1].age).toBe(45);
-    expect(deser[1].name).toBe('Superman');
+  it('With array of string', () => {
+    const array = ["I'm", 'a', 'string', 'array', 'of', 'strings'];
+    const serialized = new Args().add(array).serialize();
+    const args = new Args(serialized);
+    const unserialized = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized).toStrictEqual(array);
   });
 
   it('With array of Serializable', () => {
     const arrayOfSerializable = [
-      new Divinity(14, 'Poseidon'),
+      new Divinity(14, 'Poseidon?!#'),
       new Divinity(45, 'Superman'),
     ];
     const args = new Args(
@@ -441,7 +444,7 @@ describe('Args tests', () => {
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);
-    expect(first.name).toBe('Poseidon');
+    expect(first.name).toBe('Poseidon?!#');
     expect(deser[1].age).toBe(45);
     expect(deser[1].name).toBe('Superman');
   });
