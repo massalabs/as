@@ -5,35 +5,7 @@ on:
     types: [ published ]
 
 jobs:
-  test:
-    uses: ./.github/workflows/unit-test.yml
-
-  publish-npm:
-    needs: test
-
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-
-      - name: Publish on npm
-        run: |
-          npm pkg delete scripts.prepare
-          npm ci
-          npm run build
-          npm publish --ws --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
-
   deploy-typedoc:
-    needs: test
 
     strategy:
       matrix:

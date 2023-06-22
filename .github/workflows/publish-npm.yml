@@ -1,8 +1,8 @@
-name: Publish NPM dev packages
+name: Publish NPM Packages & Deploy Docs
 
 on:
-  push:
-    branches: [main, buildnet, testnet]
+  release:
+    types: [ published ]
 
 jobs:
   test:
@@ -24,6 +24,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Publish on npm
-        run: ./scripts/publish-npm-dev.sh
+        run: .scripts/publish-npm.sh
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
