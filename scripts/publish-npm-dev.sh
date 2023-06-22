@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-# disable husky
-npm pkg delete scripts.prepare
-
 npm ci
 npm run build
 npm version --ws --preid dev --no-git-tag-version --no-commit-hooks prepatch
