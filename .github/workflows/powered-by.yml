@@ -35,13 +35,13 @@ jobs:
         npm ci
 
     - name: Generate Powered-By for 'as-types'
-      run: cd packages/as-types && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-types && npm i && ./../.././scripts/generate_powered-by.sh && cd ../../
 
     - name: Generate Powered-By for 'as-proba'
-      run: cd packages/as-proba && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-proba && npm i && ./../../scripts/generate_powered-by.sh && cd ../../
 
     - name: Generate Powered-By for 'as-transformer'
-      run: cd packages/as-transformer && npm i && ./../../generate_powered-by.sh && cd ../../
+      run: cd packages/as-transformer && npm i && ./../../scripts/generate_powered-by.sh && cd ../../
 
     - name: Commit Changes
       uses: stefanzweifel/git-auto-commit-action@v4

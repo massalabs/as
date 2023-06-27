@@ -21,6 +21,8 @@ BRANCH=${GITHUB_REF##*/}
 TAG=""
 if [[ "$BRANCH" == "buildnet" ]]; then
   TAG="buildnet-"
+elif [[ "$BRANCH" == "testnet" ]]; then
+  TAG="testnet-"
 fi
 
 npm publish --ws --access public --tag ${TAG}dev 
