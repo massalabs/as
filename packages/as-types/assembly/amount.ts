@@ -133,7 +133,7 @@ export class Amount implements Serializable {
 
     if (other.value > this.value) {
       // tests underflow
-      throw new Error('the sum is impossible: overflow');
+      throw new Error('the difference is impossible: overflow');
     }
 
     return new Amount(this.value - other.value, this.currency);
