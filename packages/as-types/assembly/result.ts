@@ -1,3 +1,6 @@
+import { Args } from './argument';
+import { Serializable } from './serializable';
+
 /**
  * This module contains the 'Result' class, which represents wrapper for a value that can be either
  * a success or an error.
@@ -7,7 +10,7 @@
  *
  */
 
-export class Result<T> {
+export class Result<T extends Serializable> implements Serializable {
   /**
    * Initializes a Result object.
    *
@@ -16,6 +19,59 @@ export class Result<T> {
    *
    */
   constructor(private value: T, public error: string | null = null) {}
+
+  /**
+   * Serializes a Result into an 'array of bytes'.
+   *
+   * @see {@link Serializable}
+   *
+   * @returns the serialized data as a 'StaticArray<u8>'.
+   *
+   */
+  serialize(): StaticArray<u8> {
+    let errorString: string = this.error !== null ? this.error : '';
+    return new Args()
+      .add<bool>(this.isOk())
+      .add<T>(this.value)
+      .add<string>(errorString)
+      .serialize();
+  }
+
+  /**
+   * Deserializes a Result from an 'array of bytes'.
+   *
+   * @see {@link Serializable}
+   *
+   * @param data - The 'array of bytes' to deserialize.
+   * @param offset - The position in the 'array of bytes' to start reading from.
+   *
+   * @returns Result containing either an the new offset of the byte array or an Error.
+   */
+  deserialize(data: StaticArray<u8>, offset: i32): Result<i32> {
+    let args = new Args(data, offset);
+    const resultOk = args.nextBool();
+
+    if (resultOk.isErr()) {
+      return new Result(0, "Can't deserialize Result.");
+    }
+
+    const resultValue = args.nextSerializable<T>();
+
+    if (resultValue.isErr()) {
+      return new Result(0, "Can't deserialize Value.");
+    }
+
+    const resultError = args.nextString();
+
+    if (resultError.isErr()) {
+      return new Result(0, "Can't deserialize Error.");
+    }
+
+    this.value = resultValue.unwrap();
+    this.error = resultError.unwrap();
+
+    return new Result(args.offset);
+  }
 
   /**
    * Determines if the `Result` represents a successful outcome.
