@@ -94,20 +94,19 @@ export class Amount implements Serializable {
    *
    */
   @operator('+')
-  add(other: Amount): Result<Amount> {
+  add(other: Amount): Amount {
     if (this.currency != other.currency) {
-      return new Result(
-        new Amount(),
+      throw new Error(
         'the sum is impossible: the amounts have different currencies',
       );
     }
 
     if (other.value > u64.MAX_VALUE - this.value) {
       // tests overflow
-      return new Result(new Amount(), 'the sum is impossible: overflow');
+      throw new Error('the sum is impossible: overflow');
     }
 
-    return new Result(new Amount(this.value + other.value, this.currency));
+    return new Amount(this.value + other.value, this.currency);
   }
 
   /**
@@ -125,23 +124,19 @@ export class Amount implements Serializable {
    *    - the subtraction would underflow .
    */
   @operator('-')
-  subtract(other: Amount): Result<Amount> {
+  subtract(other: Amount): Amount {
     if (this.currency != other.currency) {
-      return new Result(
-        new Amount(),
+      throw new Error(
         'the difference is impossible: the amounts have different currencies',
       );
     }
 
     if (other.value > this.value) {
       // tests underflow
-      return new Result(
-        new Amount(),
-        'the difference is impossible: underflow',
-      );
+      throw new Error('the sum is impossible: overflow');
     }
 
-    return new Result(new Amount(this.value - other.value, this.currency));
+    return new Amount(this.value - other.value, this.currency);
   }
 
   /**
