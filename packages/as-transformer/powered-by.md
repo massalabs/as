@@ -1,7 +1,7 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
-## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-1.0.0.tgz)
+## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-1.0.1.tgz)
 
 **License:** ISC - perpetual
 
@@ -56,6 +56,14 @@ The following is a list of all the dependencies of this project:
 **Used version:** 0.11.4
 
 **Many thanks to:** Willem Wyndham
+
+## [yaml](git+https://github.com/eemeli/yaml.git)
+
+**License:** ISC - perpetual
+
+**Used version:** 2.3.1
+
+**Many thanks to:** [Eemeli Aro](eemeli@gmail.com)
 
 ## [@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
