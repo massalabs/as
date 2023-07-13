@@ -31,7 +31,7 @@ export class MassaExport {
   protoPath = './build';
   asHelpersPath = './build';
 
-  updates: Update[] = [];
+  public updates: Update[] = [];
   functionName = '';
   returnType: string | undefined = undefined;
   args: Argument[] = [];
@@ -91,6 +91,7 @@ export class MassaExport {
       this.functionName,
       this.args,
       this.returnType,
+      this,
     );
     const wrapperContent = this._generateWrapper();
     const imports = this._generateImports();
@@ -126,7 +127,24 @@ export class MassaExport {
    * @returns - The wrapper function as a string.
    */
   private _generateWrapper(): string {
-    const argDecodings = this.args.map((arg) => `args.${arg.name}`).join(', ');
+    const customArgs = this.updates.filter((update) =>
+      update.from.includes('custom-proto'),
+    );
+
+    const argDecodings = this.args
+      .map((arg) => {
+        let argument = `args.${arg.name}`;
+
+        // checking if the argument is a custom type to use proper deserializer
+        let carg = customArgs.find((carg) => carg.content === arg.name);
+        if (carg !== undefined) {
+          const deser = carg.data.get('deser');
+          argument = deser![0]!.toString().replace('\\1', argument);
+        }
+
+        return argument;
+      })
+      .join(', ');
 
     let wrapper = `export function ${
       this.functionName
@@ -137,10 +155,16 @@ export class MassaExport {
     if (this.args.length > 0) {
       wrapper += `  const args = decode${this.functionName}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     }
-    const call = `_ms_${this.functionName}_(${
+    let call = `_ms_${this.functionName}_(${
       this.args.length > 0 ? argDecodings : ''
     })`;
     if (this.returnType && this.returnType !== 'void') {
+      // checking if the return type is a custom type to use proper serializer
+      let carg = customArgs.find((carg) => carg.content === 'value');
+      if (carg !== undefined) {
+        const ser = carg.data.get('ser');
+        call = ser![0]!.toString().replace('\\1', call);
+      }
       /* eslint-disable max-len */
       wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
 
