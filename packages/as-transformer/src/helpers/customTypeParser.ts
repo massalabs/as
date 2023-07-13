@@ -4,7 +4,7 @@ import * as path from 'path';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
-interface MassaCustomType {
+export interface MassaCustomType {
   name: string;
   proto: string;
   import: string;
@@ -43,7 +43,7 @@ function extractTypes(fileContent: string): MassaCustomType[] {
  *
  * @returns an array of filepaths leading ot each config file.
  */
-function scanForTypes(dir = 'node_modules'): string[] {
+function scanForTypes(dir = './node_modules/'): string[] {
   const results = [];
 
   const files = fs.readdirSync(dir);
@@ -54,7 +54,7 @@ function scanForTypes(dir = 'node_modules'): string[] {
 
     if (stat.isDirectory()) {
       results.push(...scanForTypes(filePath));
-    } else if (path.extname(file) === MASSA_TYPE_EXTENSION) {
+    } else if (file.includes(MASSA_TYPE_EXTENSION)) {
       results.push(filePath);
     }
   }
