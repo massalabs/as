@@ -79,6 +79,9 @@ export function sayHello(args: StaticArray<u8>) : StaticArray<u8> {
 At the moment only the smart contract main file can use this transformer.
 Any functions outside this file, that are imported and re-exported can not use this decorator.
 
+⚠️ @massaExport cannot be used with the constructor function.
+This is because the deployer uses "Args" to interact with functions during deployment. This problem should be solved soon.
+
 
 ## Contributing
 We welcome contributions from the community!
