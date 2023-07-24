@@ -222,6 +222,15 @@ describe('Serialization tests', () => {
   });
 
   // ARRAY I64
+  it('ser/deser array of i64', () => {
+    const array = [<i64>-3, <i64>-2, <i64>-1, <i64>0, <i64>1, <i64>2, <i64>3];
+    log(fixedSizeArrayToBytes<i64>(array));
+    expect<i64[]>(
+      bytesToFixedSizeArray<i64>(fixedSizeArrayToBytes<i64>(array)),
+    ).toStrictEqual(array);
+  });
+
+  // ARRAY U64
   it('ser/deser array of u64', () => {
     const array = [<u64>1765456765, <u64>7654690, <u64>3, <u64>5, <u64>8];
     expect<u64[]>(
