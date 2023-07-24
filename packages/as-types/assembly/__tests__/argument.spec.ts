@@ -290,6 +290,21 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(300);
   });
 
+  it('With empty string', () => {
+    const args1 = new Args();
+    args1.add('my string');
+    args1.add('');
+    args1.add('another string');
+    expect(args1.nextString().unwrap()).toBe('my string');
+    expect(args1.nextString().unwrap()).toBe('');
+    expect(args1.nextString().unwrap()).toBe('another string');
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextString().unwrap()).toBe('my string');
+    expect(args2.nextString().unwrap()).toBe('');
+    expect(args2.nextString().unwrap()).toBe('another string');
+  });
+
   it('With u8', () => {
     const args1 = new Args();
     args1.add(u8(1));
