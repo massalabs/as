@@ -143,7 +143,10 @@ export class MassaExport {
     if (this.returnType && this.returnType !== 'void') {
       wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
 
-      wrapper += "  generateEvent(`Result:'${response.buffer.toString()}'`);\n";
+      wrapper +=
+        '  generateEvent(' +
+        `\`Result${this.functionName}:` +
+        "'${response.buffer.toString()}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
@@ -294,12 +297,22 @@ export class MassaExport {
     return this.addImports(content, imports);
   }
 
+  /**
+   * This functions adds the needed import in the new contract file content.
+   *
+   * @remarks It also adds the declaration of the generateEvent function if not imported.
+   *
+   * @param content - The file content of the contract to update.
+   * @param imports - The imports to add.
+   *
+   * @returns The new file content.
+   */
   private addImports(content: string, imports: string[]): string {
-    const regex =
+    const generateEventImportRegex =
       /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
 
     // checking if adding declare of generateEvent is needed or if its already imported by the contract
-    if (regex.exec(content) === null) {
+    if (generateEventImportRegex.exec(content) === null) {
       imports.push('@external("massa", "assembly_script_generate_event")');
       imports.push(
         'export declare function generateEvent(event: string): void;',
