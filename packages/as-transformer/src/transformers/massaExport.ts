@@ -142,6 +142,11 @@ export class MassaExport {
     })`;
     if (this.returnType && this.returnType !== 'void') {
       wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
+
+      wrapper +=
+        '  generateEvent(' +
+        `\`Result${this.functionName}:` +
+        "'${response.buffer.toString()}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
@@ -164,7 +169,6 @@ export class MassaExport {
   private _generateImports(): string[] {
     let imports: string[] = [];
     let name = this.functionName;
-
     if (this.args.length > 0) {
       imports.push(`import { decode${name}Helper } from "./${name}Helper";`);
     }
@@ -290,10 +294,34 @@ export class MassaExport {
     // appending wrapper to end of file
     content += '\n' + update.content + '\n';
 
+    return this.addImports(content, imports);
+  }
+
+  /**
+   * This functions adds the needed import in the new contract file content.
+   *
+   * @remarks It also adds the declaration of the generateEvent function if not imported.
+   *
+   * @param content - The file content of the contract to update.
+   * @param imports - The imports to add.
+   *
+   * @returns The new file content.
+   */
+  private addImports(content: string, imports: string[]): string {
+    const generateEventImportRegex =
+      /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
+
+    // checking if adding declare of generateEvent is needed or if its already imported by the contract
+    if (generateEventImportRegex.exec(content) === null) {
+      imports.push('@external("massa", "assembly_script_generate_event")');
+      imports.push(
+        'export declare function generateEvent(event: string): void;',
+      );
+    }
+
     // adding corresponding asHelper imports for each added wrapper
-    imports.forEach((i) => {
-      content = i + '\n' + content;
-    });
+    content = imports.join('\n') + '\n' + content;
+
     return content;
   }
 
