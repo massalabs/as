@@ -58,6 +58,12 @@ export function generateProtoFile(
 
   let protoFile = `syntax = "proto3";
 
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
 message ${name}Helper {
 ${fields}
 }`;
@@ -106,7 +112,7 @@ function generateArgumentMessage(
   const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + typeName;
   const templateType =
     fieldSpec.cType !== null && fieldSpec.cType !== undefined
-      ? ` [(T) = "${fieldSpec.cType?.name}"];`
+      ? ` [(custom_type) = "${fieldSpec.cType?.name}"];`
       : ';';
   if (fieldSpec.cType !== null && fieldSpec.cType !== undefined) {
     transformer.updates.push({
