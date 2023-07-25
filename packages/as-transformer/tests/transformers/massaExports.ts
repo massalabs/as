@@ -7,12 +7,11 @@ describe('generateWrapper', () => {
   it('should generate a void wrapper function', () => {
     const node = new MassaFunctionNode('SayHello', '', []);
 
-    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): void {\n  _ms_${node.name}_();\n`;
-    wrapper += `}`;
-
+    let wrapper = `export function SayHello(_args: StaticArray<u8>): void {
+  _ms_SayHello_();
+}`;
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualWrapper = massaExportTransformer['_generateWrapper']();
-
     expect(actualWrapper).toStrictEqual(wrapper);
   });
 
@@ -26,13 +25,13 @@ describe('generateWrapper', () => {
     wrapper += `  const args = decode${node.name}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     wrapper += `  const response = encode${node.name}RHelper`;
     wrapper += `(new ${node.name}RHelper(_ms_${node.name}_(args.language, args.name)));\n\n`;
-
+    wrapper +=
+      "  generateEvent(`ResultSayHello:'${response.buffer.toString()}'`);\n";
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualWrapper = massaExportTransformer['_generateWrapper']();
-
     expect(actualWrapper).toStrictEqual(wrapper);
   });
 
@@ -41,13 +40,13 @@ describe('generateWrapper', () => {
 
     let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
     wrapper += `  const response = encode${node.name}RHelper(new ${node.name}RHelper(_ms_${node.name}_()));\n\n`;
-
+    wrapper +=
+      "  generateEvent(`ResultSayHello:'${response.buffer.toString()}'`);\n";
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualWrapper = massaExportTransformer['_generateWrapper']();
-
     expect(actualWrapper).toStrictEqual(wrapper);
   });
 });
