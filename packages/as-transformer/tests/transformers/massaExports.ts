@@ -24,6 +24,7 @@ describe('generateWrapper', () => {
 
     let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
     wrapper += `  const args = decode${node.name}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
+    //  const response = encodeSayHelloRHelper(new SayHelloRHelper(_ms_SayHello_(args.language, args.name)));
     wrapper += `  const response = encode${node.name}RHelper`;
     wrapper += `(new ${node.name}RHelper(_ms_${node.name}_(args.language, args.name)));\n\n`;
     wrapper +=

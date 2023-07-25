@@ -1,15 +1,32 @@
 import * as yaml from 'yaml';
 import * as fs from 'fs';
 import * as path from 'path';
+import Debug from 'debug';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
 export interface MassaCustomType {
   name: string;
+  meta_data?: TypeMetaData;
+}
+
+class TypeMetaData {
   proto: string;
   import: string;
   serialize: string;
   deserialize: string;
+
+  constructor(
+    proto: string,
+    importPath: string,
+    serialize: string,
+    deserialize: string,
+  ) {
+    this.proto = proto;
+    this.import = importPath;
+    this.serialize = serialize;
+    this.deserialize = deserialize;
+  }
 }
 
 /**
@@ -27,10 +44,12 @@ function extractTypes(fileContent: string): MassaCustomType[] {
   for (const type of data) {
     types.push({
       name: type.name,
-      proto: type.proto,
-      import: type.import,
-      serialize: type.serialize,
-      deserialize: type.deserialize,
+      meta_data: new TypeMetaData(
+        type.proto,
+        type.import,
+        type.serialize,
+        type.deserialize,
+      ),
     });
   }
   return types;
@@ -55,6 +74,7 @@ function scanForTypes(dir = './node_modules/'): string[] {
     if (stat.isDirectory()) {
       results.push(...scanForTypes(filePath));
     } else if (file.includes(MASSA_TYPE_EXTENSION)) {
+      Debug.log('Found custom type file', filePath);
       results.push(filePath);
     }
   }

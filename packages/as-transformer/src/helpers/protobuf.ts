@@ -4,28 +4,50 @@ import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
 import Debug from 'debug';
 
-enum ProtoType {
-  Double = 'double',
-  Float = 'float',
-  Int32 = 'int32',
-  Int64 = 'int64',
-  UInt32 = 'uint32',
-  UInt64 = 'uint64',
-  SInt32 = 'sint32',
-  SInt64 = 'sint64',
-  Fixed32 = 'fixed32',
-  Fixed64 = 'fixed64',
-  SFixed32 = 'sfixed32',
-  SFixed64 = 'sfixed64',
-  Bool = 'bool',
-  String = 'string',
-  Bytes = 'bytes',
-}
+type ASType = string;
+type protoType = string;
 
-interface FieldSpec {
-  type?: ProtoType;
+// global mapping of types, first is AS type, second is protobuf type
+const ProtoType: Map<ASType, protoType> = new Map([
+  ['Double', 'double'],
+  ['Float', 'float'],
+  ['Int32', 'int32'],
+  ['Int64', 'int64'],
+  ['UInt32', 'uint32'],
+  ['UInt64', 'uint64'],
+  ['SInt32', 'sint32'],
+  ['SInt64', 'sint64'],
+  ['Fixed32', 'fixed32'],
+  ['Fixed64', 'fixed64'],
+  ['SFixed32', 'sfixed32'],
+  ['SFixed64', 'sfixed64'],
+  ['Bool', 'bool'],
+  ['String', 'string'],
+  ['Bytes', 'bytes'],
+]);
+
+class FieldSpec {
+  private type?: ASType;
   repeated: boolean;
   cType?: MassaCustomType;
+
+  constructor(repeated = false) {
+    this.repeated = repeated;
+  }
+
+  setType(type: ASType): void {
+    const newType = ProtoType.get(type);
+    if (newType === undefined) {
+      throw new Error('Unknown type: ' + type);
+    }
+    this.type = newType;
+  }
+
+  getTypeName(): string | undefined {
+    return this.type !== null && this.type !== undefined
+      ? this.type
+      : this.cType?.meta_data?.proto;
+  }
 }
 
 export class Argument {
@@ -120,7 +142,6 @@ extend google.protobuf.FieldOptions {
 }
 
 /**
- * Generates the function argument protobuf text.
  *
  * @remarks
  * The protobuf argument is written with the proto3 syntax.
@@ -137,8 +158,8 @@ function generateArgumentMessage(
   transformer: MassaExport,
 ): string {
   const fieldName = arg.getName();
-  const fieldSpec = getTypeName(arg.getType());
-  const typeName = fieldSpec.type ?? fieldSpec.cType?.proto;
+  const fieldSpec = getProtobufTypeName(arg.getType());
+  const typeName = fieldSpec.getTypeName();
   const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + typeName;
   const templateType =
     fieldSpec.cType !== null && fieldSpec.cType !== undefined
@@ -152,8 +173,8 @@ function generateArgumentMessage(
         fieldName,
         new Map([
           ['type', [fieldSpec.cType.name]],
-          ['ser', [fieldSpec.cType.serialize]],
-          ['deser', [fieldSpec.cType.deserialize]],
+          ['ser', [fieldSpec.cType.meta_data!.serialize]],
+          ['deser', [fieldSpec.cType.meta_data!.deserialize]],
           ['fnName', [arg.getFnName()]],
         ]),
         'custom-proto',
@@ -164,15 +185,13 @@ function generateArgumentMessage(
   return `  ${fieldType} ${fieldName} = ${index}` + templateType;
 }
 
-function getTypeName(type: string): FieldSpec {
-  let spec: FieldSpec = {
-    repeated: false,
-  };
+function getProtobufTypeName(type: ASType): FieldSpec {
+  let spec: FieldSpec = new FieldSpec();
   let cType: MassaCustomType | null = null;
 
   switch (type) {
     case 'bool':
-      spec.type = ProtoType.Bool;
+      spec.setType('Bool');
       break;
     case 'i8':
     case 'Int8Array':
@@ -180,12 +199,12 @@ function getTypeName(type: string): FieldSpec {
     case 'Int16Array':
     case 'i32':
     case 'Int32Array':
-      spec.type = ProtoType.Int32;
+      spec.setType('Int32');
       break;
     case 'i64':
     case 'Int64Array':
     case 'isize':
-      spec.type = ProtoType.Int64;
+      spec.setType('Int64');
       break;
     case 'u8':
     case 'Uint8Array':
@@ -193,30 +212,31 @@ function getTypeName(type: string): FieldSpec {
     case 'Uint16Array':
     case 'u32':
     case 'Uint32Array':
-      spec.type = ProtoType.UInt32;
+      spec.setType('UInt32');
       break;
     case 'u64':
     case 'Uint64Array':
     case 'usize':
-      spec.type = ProtoType.UInt64;
+      spec.setType('UInt64');
       break;
     case 'f32':
     case 'Float32Array':
-      spec.type = ProtoType.Float;
+      spec.setType('Float');
       break;
     case 'f64':
     case 'Float64Array':
-      spec.type = ProtoType.Double;
+      spec.setType('Double');
       break;
     case 'string':
     case 'Array<string>':
-      spec.type = ProtoType.String;
+      spec.setType('String');
       break;
     default:
       cType = getCustomType(type);
       if (cType === null) {
         throw new Error(`Unsupported type: ${type}`);
       }
+      Debug.log('Mapping type: ', type, ' to ', cType.meta_data?.proto);
       spec.cType = cType;
   }
 
@@ -226,6 +246,7 @@ function getTypeName(type: string): FieldSpec {
 }
 
 function getCustomType(type: string): MassaCustomType | null {
+  Debug.log('Getting custom type', type);
   let types: MassaCustomType[] = fetchCustomTypes();
 
   for (const customType of types) {
@@ -257,7 +278,7 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
 
   if (protocProcess.status !== 0) {
     console.error(
-      `Failed to generate AS helpers code for ${protoFile} with error: ${protocProcess.stderr}`,
+      `Failed to generate AS helpers code for: \n${protoFile} \nwith error: ${protocProcess.stderr}`,
     );
   }
 }

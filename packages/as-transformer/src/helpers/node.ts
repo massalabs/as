@@ -4,6 +4,7 @@ import {
   NamedTypeNode,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { Argument } from './protobuf.js';
+import Debug from 'debug';
 
 export class MassaFunctionNode {
   name: string;
@@ -12,6 +13,7 @@ export class MassaFunctionNode {
   node: FunctionDeclaration | undefined;
 
   static createFromASTNode(node: FunctionDeclaration) {
+    Debug.log('Creating MassaFunctionNode from AST node: ' + node.name.text);
     const name = node.name.text;
     const returnType = (node.signature.returnType as NamedTypeNode).name
       .identifier.text;

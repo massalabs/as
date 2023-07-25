@@ -10,7 +10,7 @@ import {
   StringLiteralExpression,
 } from 'types:assemblyscript/src/ast';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 

@@ -247,6 +247,8 @@ export class MassaExport {
       }
       // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
       let path = 'build/' + dir.replace(source.simplePath, '') + scFunc[0]!;
+      Debug.log('path', path);
+
       depsFilter.push(path);
     }
 
