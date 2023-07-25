@@ -31,7 +31,7 @@ export class MassaExport {
   protoPath = './build';
   asHelpersPath = './build';
 
-  public updates: Update[] = [];
+  updates: Update[] = [];
   functionName = '';
   returnType: string | undefined = undefined;
   args: Argument[] = [];
@@ -104,6 +104,8 @@ export class MassaExport {
       ]),
       from: 'MassaExport',
     };
+
+    // why push in 2 different places?
     this.updates.push(update);
     GlobalUpdates.add(update);
     this._resetFunctionSignatureData();
@@ -261,7 +263,7 @@ export class MassaExport {
     const newPath = './build/' + dir;
 
     this.updates.forEach((update) => {
-      content = this._updateSourceFile(
+      content = updateSourceFile(
         update,
         content,
         newPath.replace(source.simplePath, ''),
@@ -276,49 +278,52 @@ export class MassaExport {
     writeFileSync(`${newPath}.ts`, content);
     return content;
   }
+}
 
-  /**
-   * Adds the given wrapper update and imports into the file content.
-   *
-   * @remarks
-   * Since the wrapper will have the original function name
-   * the original function is changed and marked as not exported.
-   *
-   * @param update - The update containing the wrapper and the imports
-   * @param content - The file content of the contract to update.
-   *
-   * @returns The updated file content.
-   */
-  private _updateSourceFile(
-    update: Update,
-    content: string,
-    dir: string,
-  ): string {
-    const funcToPrivate = update.data.get('funcToPrivate');
-    const imports = update.data.get('imports');
+/**
+ * Adds the given wrapper update and imports into the file content.
+ *
+ * @remarks
+ * Since the wrapper will have the original function name
+ * the original function is changed and marked as not exported.
+ *
+ * @param update - The update containing the wrapper and the imports
+ * @param content - The file content of the contract to update.
+ *
+ * @returns The updated file content.
+ */
+function updateSourceFile(
+  update: Update,
+  content: string,
+  dir: string,
+): string {
+  const funcToPrivate = update.data.get('funcToPrivate');
+  const imports = update.data.get('imports');
 
-    if (funcToPrivate === undefined || imports === undefined) {
-      console.error(
-        'Failed to process a MassaExport decorated function: missing imports or function name',
-      );
-      return content;
-    }
-
-    this._generateHelpers(
-      dir,
-      funcToPrivate[0]!,
-      update.data.get('protoContent')!.join('\n'),
+  if (funcToPrivate === undefined || imports === undefined) {
+    console.error(
+      'Failed to process a MassaExport decorated function: missing imports or function name',
+      funcToPrivate?.toString(),
+      imports?.toString(),
+      content,
     );
+    return content;
+  }
 
-    // changing the signature of the original function to allow the addition of the wrapper.
-    content = content.replace(
-      'export function ' + funcToPrivate[0],
-      'export function _ms_' + funcToPrivate[0] + '_',
-    );
+  generateHelpers(
+    dir,
+    funcToPrivate[0]!,
+    update.data.get('protoContent')!.join('\n'),
+  );
 
-    // appending wrapper to end of file
-    content += '\n' + update.content + '\n';
+  // changing the signature of the original function to allow the addition of the wrapper.
+  content = content.replace(
+    'export function ' + funcToPrivate[0],
+    'export function _ms_' + funcToPrivate[0] + '_',
+  );
 
+  // appending wrapper to end of file
+  content += '\n' + update.content + '\n';
     return this.addImports(content, imports);
   }
 
@@ -552,27 +557,33 @@ export class MassaExport {
     return content;
   }
 
-  /**
-   * This function writes the protobuf content and generates the AS helpers in a folder for the given update.
-   *
-   * @param dir - The build directory path of the file containing the function to generate the wrapper for.
-   * @param func - The function name to generate wrapper for.
-   * @param protoContent - The protobuf content.
-   */
-  private _generateHelpers(
-    dir: string,
-    func: string,
-    protoContent: string,
-  ): void {
-    const wrapperPath = dir;
-    const protoFile = wrapperPath + func + 'Helper' + '.proto';
+  // adding corresponding asHelper imports for each added wrapper
+  imports.forEach((i) => {
+    content = i + '\n' + content;
+  });
+  return content;
+}
 
-    if (!existsSync(wrapperPath)) {
-      mkdirSync(wrapperPath, {
-        recursive: true,
-      });
-    }
-    writeFileSync(protoFile, protoContent);
-    generateASHelpers(protoFile, wrapperPath);
+/**
+ * This function writes the protobuf content and generates the AS helpers in a folder for the given update.
+ *
+ * @param dir - The build directory path of the file containing the function to generate the wrapper for.
+ * @param func - The function name to generate wrapper for.
+ * @param protoContent - The protobuf content.
+ */
+function generateHelpers(
+  dir: string,
+  func: string,
+  protoContent: string,
+): void {
+  const wrapperPath = dir;
+  const protoFile = wrapperPath + func + 'Helper' + '.proto';
+
+  if (!existsSync(wrapperPath)) {
+    mkdirSync(wrapperPath, {
+      recursive: true,
+    });
   }
+  writeFileSync(protoFile, protoContent);
+  generateASHelpers(protoFile, wrapperPath);
 }
