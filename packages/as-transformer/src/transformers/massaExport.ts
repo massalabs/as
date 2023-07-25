@@ -577,7 +577,7 @@ function generateHelpers(
   protoContent: string,
 ): void {
   const wrapperPath = dir;
-  const protoFile = wrapperPath + func + 'Helper' + '.proto';
+  const protoFile = wrapperPath + '/' + func + 'Helper' + '.proto';
 
   if (!existsSync(wrapperPath)) {
     mkdirSync(wrapperPath, {
