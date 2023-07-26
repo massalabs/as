@@ -26,7 +26,7 @@ describe('generateWrapper', () => {
     wrapper += `  const response = encode${node.name}RHelper`;
     wrapper += `(new ${node.name}RHelper(_ms_${node.name}_(args.language, args.name)));\n\n`;
     wrapper +=
-      "  generateEvent(`ResultSayHello:'${response.buffer.toString()}'`);\n";
+      "  generateEvent(`ResultSayHello:'${byteArrayToBase64(new Uint8Array(response.buffer))}'`);\n";
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
@@ -38,12 +38,15 @@ describe('generateWrapper', () => {
   it('should generate a non-void wrapper function without args', () => {
     const node = new MassaFunctionNode('SayHello', 'string', []);
 
-    let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
-    wrapper += `  const response = encode${node.name}RHelper(new ${node.name}RHelper(_ms_${node.name}_()));\n\n`;
-    wrapper +=
-      "  generateEvent(`ResultSayHello:'${response.buffer.toString()}'`);\n";
-    wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
-    wrapper += '}';
+    let wrapper =
+      `export function SayHello(_args: StaticArray<u8>): StaticArray<u8> {
+  const response = encodeSayHelloRHelper(new SayHelloRHelper(_ms_SayHello_()));
+    
+  generateEvent(` +
+      "`ResultSayHello:'${byteArrayToBase64(new Uint8Array(response.buffer))}'`" +
+      `);
+  return changetype<StaticArray<u8>>(response.buffer);
+}`;
 
     massaExportTransformer['_setFunctionSignatureData'](node);
     const actualWrapper = massaExportTransformer['_generateWrapper']();
