@@ -22,7 +22,8 @@
     "types": ["node", "jest"],
     "moduleResolution": "Node",
     "module": "ESNext",
-    "outDir": "dist"
+    "outDir": "dist",
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "dist", "assembly"],
   "include": ["src/**/*.ts"],
