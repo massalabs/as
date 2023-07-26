@@ -6,3 +6,4 @@ export * from './result';
 export * from './serialization';
 export * from './serializable';
 export * from './safeMath';
+export * from './uint8ArrayToBase64';
