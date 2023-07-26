@@ -154,40 +154,6 @@ export class MassaExport {
 
     wrapper += '}';
 
-    // add byteArrayToBase64
-    wrapper += `// Function to convert a byte array to a Base64 string
-function byteArrayToBase64(bytes: ArrayBufferLike): string {
-  // convert the ArrayBuffer to Uint8Array
-  const bytesUint8 = new Uint8Array(bytes);
-  const base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-  let result = "";
-  let padding = "";
-  let buffer = 0;
-  let bitsRemaining = 8;
-
-  for (let i = 0; i < bytesUint8.length; i++) {
-    buffer = (buffer << 8) | bytesUint8[i];
-    bitsRemaining += 8;
-
-    while (bitsRemaining >= 6) {
-      const index = (buffer >> (bitsRemaining - 6)) & 0x3F;
-      result += base64Chars.charAt(index);
-      bitsRemaining -= 6;
-    }
-  }
-
-  // If there are any remaining bits, pad and add padding characters ('=')
-  if (bitsRemaining > 0) {
-    buffer <<= (6 - bitsRemaining);
-    const index = buffer & 0x3F;
-    result += base64Chars.charAt(index);
-    padding = bitsRemaining === 2 ? "==" : bitsRemaining === 4 ? "=" : "";
-  }
-
-  return result + padding;
-}`;
-
     return wrapper;
   }
 
@@ -358,14 +324,6 @@ function byteArrayToBase64(bytes: ArrayBufferLike): string {
 
     if (uint8ArrayToBase64ImportRegex.exec(content) === null) {
       imports.push('import { uint8ArrayToBase64 } from "@massalabs/as-types";');
-    }
-
-    // checking if 'import { encode } from "as-base64";' is needed or if they are already imported by the contract
-    const encodeBase64ImportRegex =
-      /(?:import\s*{.*encode.*}\s*from\s*("|')as-base64("|'))/gm;
-
-    if (encodeBase64ImportRegex.exec(content) === null) {
-      imports.push('import { encode } from "as-base64";');
     }
 
     // adding corresponding asHelper imports for each added wrapper
