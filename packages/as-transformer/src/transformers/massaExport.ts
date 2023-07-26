@@ -17,6 +17,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
+import path from 'path';
 
 /**
  * The Massa Export transformer is responsible of exporting standard contract
@@ -259,22 +260,23 @@ export class MassaExport {
    * @returns The new raw file content of the file source.
    */
   updateSource(source: Source, dir: string): string {
+    Debug.log('Updating source: ' + source.internalPath);
+
     let content = source.text;
     const newPath = './build/' + dir;
+    const dirName = path.dirname(newPath);
 
     this.updates.forEach((update) => {
-      content = updateSourceFile(
-        update,
-        content,
-        newPath.replace(source.simplePath, ''),
-      );
+      content = updateSourceFile(update, content, dirName);
     });
 
     content = content.replaceAll('@massaExport()', '');
     // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
 
-    if (!existsSync(newPath.replace(source.simplePath, '')))
-      mkdirSync(newPath.replace(source.simplePath, ''), { recursive: true });
+    if (!existsSync(dirName)) {
+      mkdirSync(dirName, { recursive: true });
+    }
+
     writeFileSync(`${newPath}.ts`, content);
     return content;
   }
