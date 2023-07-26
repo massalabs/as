@@ -14,7 +14,7 @@ import {
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 // import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
-import { Update, GlobalUpdates } from './interfaces/Update.js';
+import { Update, GlobalUpdates, UpdateType } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 import path from 'path';
@@ -60,13 +60,13 @@ export class MassaExport {
   isMatching(node: MassaFunctionNode): boolean {
     const toMatch =
       this.updates.filter(
-        (update) => update.data.get('funcToPrivate')![0] === node.name,
+        (update) => update.getData().get('funcToPrivate')![0] === node.name,
       ).length <= 0 && hasDecorator(node.node!, 'massaExport');
     const alreadyDone =
       GlobalUpdates.get().filter(
         (update) =>
-          update.from === 'MassaExport' &&
-          update.data.get('funcToPrivate')![0] === node.name,
+          update.getFrom() === 'MassaExport' &&
+          update.getData().get('funcToPrivate')![0] === node.name,
       ).length > 0;
     return toMatch && !alreadyDone;
   }
@@ -96,15 +96,16 @@ export class MassaExport {
     );
     const wrapperContent = this._generateWrapper();
     const imports = this._generateImports();
-    const update = {
-      content: wrapperContent,
-      data: new Map([
+    const update = new Update(
+      UpdateType.FunctionDeclaration,
+      wrapperContent,
+      new Map([
         ['imports', imports],
         ['funcToPrivate', [node.name]],
         ['protoContent', protoContent.split('\n')],
       ]),
-      from: 'MassaExport',
-    };
+      'MassaExport',
+    );
 
     // why push in 2 different places?
     this.updates.push(update);
@@ -131,7 +132,7 @@ export class MassaExport {
    */
   private _generateWrapper(): string {
     const customArgs = this.updates.filter((update) =>
-      update.from.includes('custom-proto'),
+      update.getFrom().includes('custom-proto'),
     );
 
     const argDecodings = this.args
@@ -139,9 +140,9 @@ export class MassaExport {
         let argument = `args.${arg.name}`;
 
         // checking if the argument is a custom type to use proper deserializer
-        let carg = customArgs.find((carg) => carg.content === arg.name);
+        let carg = customArgs.find((carg) => carg.getContent() === arg.name);
         if (carg !== undefined) {
-          const deser = carg.data.get('deser');
+          const deser = carg.getData().get('deser');
           argument = deser![0]!.toString().replace('\\1', argument);
         }
 
@@ -163,9 +164,9 @@ export class MassaExport {
     })`;
     if (this.returnType && this.returnType !== 'void') {
       // checking if the return type is a custom type to use proper serializer
-      let carg = customArgs.find((carg) => carg.content === 'value');
+      let carg = customArgs.find((carg) => carg.getContent() === 'value');
       if (carg !== undefined) {
-        const ser = carg.data.get('ser');
+        const ser = carg.getData().get('ser');
         call = ser![0]!.toString().replace('\\1', call);
       }
       /* eslint-disable max-len */
@@ -218,14 +219,21 @@ export class MassaExport {
    * @returns A filepaths array of the additional sources.
    */
   getAdditionalSources(source: Source, dir: string): string[] {
+    Debug.log('** Getting additional sources for: ' + source.internalPath);
+
     const depsFilter: string[] = [];
     let dependencies: string[] = [];
     // Retrieving the generated functions
     for (const update of this.updates) {
-      const scFunc = update.data.get('funcToPrivate');
+      if (update.getContentType() !== UpdateType.FunctionDeclaration) {
+        continue;
+      }
+
+      const scFunc = update.getData().get('funcToPrivate');
       if (scFunc === undefined) {
         console.error(
-          'There was an error with pushing generated code imports to compilation',
+          'There was an error with pushing generated code imports to compilation. update:\n\t',
+          update.getContent(),
         );
         return [];
       }
@@ -299,23 +307,19 @@ function updateSourceFile(
   content: string,
   dir: string,
 ): string {
-  const funcToPrivate = update.data.get('funcToPrivate');
-  const imports = update.data.get('imports');
+  const funcToPrivate = update.getData().get('funcToPrivate');
+  const imports = update.getData().get('imports');
 
+  // checking if the update has to be applied
   if (funcToPrivate === undefined || imports === undefined) {
-    console.error(
-      'Failed to process a MassaExport decorated function: missing imports or function name',
-      funcToPrivate?.toString(),
-      imports?.toString(),
-      content,
-    );
+    console.log('Nothing to do for\n\tcontent:', content);
     return content;
   }
 
   generateHelpers(
     dir,
     funcToPrivate[0]!,
-    update.data.get('protoContent')!.join('\n'),
+    update.getData().get('protoContent')!.join('\n'),
   );
 
   // changing the signature of the original function to allow the addition of the wrapper.
@@ -325,9 +329,7 @@ function updateSourceFile(
   );
 
   // appending wrapper to end of file
-  content += '\n' + update.content + '\n';
-    return this.addImports(content, imports);
-  }
+  content += '\n' + update.getContent() + '\n';
 
   /**
    * This functions adds the needed import in the new contract file content.

@@ -1,6 +1,8 @@
 import { spawnSync } from 'child_process';
 import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
+import { Update, UpdateType } from '../transformers/interfaces/Update.js';
+import * as Debug from 'debug';
 
 enum ProtoType {
   Double = 'double',
@@ -115,14 +117,18 @@ function generateArgumentMessage(
       ? ` [(custom_type) = "${fieldSpec.cType?.name}"];`
       : ';';
   if (fieldSpec.cType !== null && fieldSpec.cType !== undefined) {
-    transformer.updates.push({
-      content: fieldName,
-      from: 'custom-proto',
-      data: new Map([
-        ['ser', [fieldSpec.cType.serialize]],
-        ['deser', [fieldSpec.cType.deserialize]],
-      ]),
-    });
+    Debug.log('Adding custom type to transformer', fieldSpec.cType.name);
+    transformer.updates.push(
+      new Update(
+        UpdateType.Argument,
+        fieldName,
+        new Map([
+          ['ser', [fieldSpec.cType.serialize]],
+          ['deser', [fieldSpec.cType.deserialize]],
+        ]),
+        'custom-proto',
+      ),
+    );
   }
   return `  ${fieldType} ${fieldName} = ${index}` + templateType;
 }

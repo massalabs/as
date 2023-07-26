@@ -10,6 +10,8 @@ import {
   StringLiteralExpression,
 } from 'types:assemblyscript/src/ast';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
+import * as Debug from 'debug';
+
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
@@ -19,10 +21,10 @@ import { Update, GlobalUpdates } from './interfaces/Update.js';
 export class MassaExportCalls {
   isMatching(expression: string): boolean {
     const calls = GlobalUpdates.get()
-      .filter((update: Update) => update.from === 'MassaExport')
+      .filter((update: Update) => update.getFrom() === 'MassaExport')
       .map((update: Update) =>
-        update.data.get('funcToPrivate') !== undefined
-          ? update.data.get('funcToPrivate')![0]
+        update.getData().get('funcToPrivate') !== undefined
+          ? update.getData().get('funcToPrivate')![0]
           : '',
       );
     return calls.includes(expression);
@@ -48,7 +50,7 @@ export class MassaExportCalls {
 
     let res = SimpleParser.parseExpression(expr);
     res.range = node.range;
-    console.log(
+    Debug.log(
       "MassaExport Function Call: New call expression => '" + expr + "'",
     );
     return RangeTransform.visit(res, node); // replace node

@@ -16,7 +16,7 @@ import { MassaExport } from './transformers/massaExport.js';
 import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
 import { MassaExportCalls } from './transformers/massaExportCalls.js';
-import { GlobalUpdates } from './transformers/interfaces/Update.js';
+import { GlobalUpdates, Update, UpdateType } from './transformers/interfaces/Update.js';
 
 const callTransformers = [
   new File2ByteArray(),
@@ -127,18 +127,17 @@ export class Transformer extends TransformVisitor {
       if (
         GlobalUpdates.get().filter(
           (update) =>
-            update.from === 'as-trm-deps' && update.content === newSource,
+            update.getFrom() === 'as-trm-deps' &&
+            update.getContent() === newSource,
         ).length > 0
       )
         continue;
       this.program.sources.push(
         parseFile(newSource, new Parser(parser.diagnostics)),
       );
-      GlobalUpdates.add({
-        content: newSource,
-        data: new Map(),
-        from: 'as-trm-deps',
-      });
+      GlobalUpdates.add(
+        new Update(UpdateType.Other, newSource, new Map(), 'as-trm-deps'),
+      );
     }
   }
 
