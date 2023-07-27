@@ -319,6 +319,14 @@ export class MassaExport {
       );
     }
 
+    // checking if 'import { encode } from "as-base64";' is needed or if they are already imported by the contract
+    const encodeImportRegex =
+      /(?:import\s*{.*encode.*}\s*from\s*("|')as-base64("|'))/gm;
+
+    if (encodeImportRegex.exec(content) === null) {
+      imports.push('import { encode } from "as-base64";');
+    }
+
     // adding corresponding asHelper imports for each added wrapper
     content = imports.join('\n') + '\n' + content;
 
