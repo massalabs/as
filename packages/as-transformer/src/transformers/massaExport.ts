@@ -318,13 +318,6 @@ export class MassaExport {
         'export declare function generateEvent(event: string): void;',
       );
     }
-    // checking if adding uint8ArrayToBase64 is needed or if they are already imported by the contract
-    const uint8ArrayToBase64ImportRegex =
-      /(?:import\s*{.*uint8ArrayToBase64.*}\s*from\s*("|')@massalabs\/as-types("|'))/gm;
-
-    if (uint8ArrayToBase64ImportRegex.exec(content) === null) {
-      imports.push('import { uint8ArrayToBase64 } from "@massalabs/as-types";');
-    }
 
     // adding corresponding asHelper imports for each added wrapper
     content = imports.join('\n') + '\n' + content;
