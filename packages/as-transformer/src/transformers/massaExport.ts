@@ -146,7 +146,7 @@ export class MassaExport {
       wrapper +=
         '  generateEvent(' +
         `\`Result${this.functionName}:` +
-        "'${new Uint8Array(response.buffer).toString()}'`);\n";
+        "'${encode(response)}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
