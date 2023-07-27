@@ -323,7 +323,7 @@ export class MassaExport {
     const encodeBase64ImportRegex =
       /(?:import\s*{.*encode.*}\s*from\s*("|')as-base64("|'))/gm;
 
-    if (encodeImportRegex.exec(content) === null) {
+    if (encodeBase64ImportRegex.exec(content) === null) {
       imports.push('import { encode } from "as-base64";');
     }
 
