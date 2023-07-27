@@ -158,7 +158,7 @@ export class MassaExport {
   }
 
   /**
-   * Generates the imports for the wrapper AS Helpers functions.
+   * Generates the imports for the wrapper AS Helpers functions
    *
    * @param name - The name of the function.
    * @param args - The arguments of the function.
