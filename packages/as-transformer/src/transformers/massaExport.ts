@@ -60,7 +60,9 @@ export class MassaExport {
   isMatching(node: MassaFunctionNode): boolean {
     const toMatch =
       this.updates.filter(
-        (update) => update.getData().get('funcToPrivate')![0] === node.name,
+        (update) =>
+          update.getContentType() == UpdateType.FunctionDeclaration &&
+          update.getData().get('funcToPrivate')![0] === node.name,
       ).length <= 0 && hasDecorator(node.node!, 'massaExport');
     const alreadyDone =
       GlobalUpdates.get().filter(
