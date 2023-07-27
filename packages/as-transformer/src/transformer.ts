@@ -16,7 +16,11 @@ import { MassaExport } from './transformers/massaExport.js';
 import { MassaFunctionNode } from './helpers/node.js';
 import { parseFile } from './helpers/source.js';
 import { MassaExportCalls } from './transformers/massaExportCalls.js';
-import { GlobalUpdates, Update, UpdateType } from './transformers/interfaces/Update.js';
+import {
+  GlobalUpdates,
+  Update,
+  UpdateType,
+} from './transformers/interfaces/Update.js';
 
 const callTransformers = [
   new File2ByteArray(),

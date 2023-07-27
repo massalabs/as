@@ -331,28 +331,28 @@ function updateSourceFile(
   // appending wrapper to end of file
   content += '\n' + update.getContent() + '\n';
 
-  /**
-   * This functions adds the needed import in the new contract file content.
-   *
-   * @remarks It also adds the declaration of the generateEvent function if not imported.
-   *
-   * @param content - The file content of the contract to update.
-   * @param imports - The imports to add.
-   *
-   * @returns The new file content.
-   */
-  private addImports(content: string, imports: string[]): string {
-    const generateEventImportRegex =
-      /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
+  return addImports(content, imports);
+}
 
-    // checking if adding declare of generateEvent is needed or if its already imported by the contract
-    if (generateEventImportRegex.exec(content) === null) {
-      imports.push('@external("massa", "assembly_script_generate_event")');
-      imports.push(
-        'export declare function generateEvent(event: string): void;',
-      );
-    }
+/**
+ * This functions adds the needed import in the new contract file content.
+ *
+ * @remarks It also adds the declaration of the generateEvent function if not imported.
+ *
+ * @param content - The file content of the contract to update.
+ * @param imports - The imports to add.
+ *
+ * @returns The new file content.
+ */
+function addImports(content: string, imports: string[]): string {
+  const generateEventImportRegex =
+    /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
 
+  // checking if adding declare of generateEvent is needed or if its already imported by the contract
+  if (generateEventImportRegex.exec(content) === null) {
+    imports.push('@external("massa", "assembly_script_generate_event")');
+    imports.push('export declare function generateEvent(event: string): void;');
+  }
     imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
       /**
        * base64 encoding/decoding
@@ -555,6 +555,10 @@ function updateSourceFile(
          }
       `);
 
+    if (encodeBase64ImportRegex.exec(content) === null) {
+      imports.push('import { encode } from "as-base64";');
+    }
+
     // adding corresponding asHelper imports for each added wrapper
     content = imports.join('\n') + '\n' + content;
 
@@ -562,9 +566,8 @@ function updateSourceFile(
   }
 
   // adding corresponding asHelper imports for each added wrapper
-  imports.forEach((i) => {
-    content = i + '\n' + content;
-  });
+  content = imports.join('\n') + '\n' + content;
+
   return content;
 }
 
