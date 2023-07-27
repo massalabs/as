@@ -1,5 +1,6 @@
 import { MassaExport } from '../../src/transformers/massaExport';
 import { MassaFunctionNode } from '../../src/helpers/node';
+import { Argument } from '../../src/helpers/protobuf';
 
 let massaExportTransformer = new MassaExport();
 
@@ -17,8 +18,8 @@ describe('generateWrapper', () => {
 
   it('should generate a non-void wrapper function with args', () => {
     const node = new MassaFunctionNode('SayHello', 'string', [
-      { name: 'language', type: 'string' },
-      { name: 'name', type: 'string' },
+      new Argument('language', 'string', 'SayHello'),
+      new Argument('name', 'string', 'SayHello'),
     ]);
 
     let wrapper = `export function ${node.name}(_args: StaticArray<u8>): StaticArray<u8> {\n`;
@@ -68,8 +69,8 @@ describe('generateImports', () => {
 
   it('should return only deserializing helper when args is not an empty and returnedType is', () => {
     const node = new MassaFunctionNode('SayHello', '', [
-      { name: 'language', type: 'string' },
-      { name: 'name', type: 'string' },
+      new Argument('language', 'string', 'SayHello'),
+      new Argument('name', 'string', 'SayHello'),
     ]);
 
     const expectedImports = [
@@ -95,8 +96,8 @@ describe('generateImports', () => {
 
   it('should return everything when args and returnedType are not empty', () => {
     const node = new MassaFunctionNode('SayHello', 'string', [
-      { name: 'language', type: 'string' },
-      { name: 'name', type: 'string' },
+      new Argument('language', 'string', 'SayHello'),
+      new Argument('name', 'string', 'SayHello'),
     ]);
 
     const expectedImports = [
