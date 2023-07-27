@@ -146,7 +146,7 @@ export class MassaExport {
       wrapper +=
         '  generateEvent(' +
         `\`Result${this.functionName}:` +
-        "'${response.buffer.toString()}'`);\n";
+        "'${encode(response)}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
@@ -158,7 +158,7 @@ export class MassaExport {
   }
 
   /**
-   * Generates the imports for the wrapper AS Helpers functions.
+   * Generates the imports for the wrapper AS Helpers functions
    *
    * @param name - The name of the function.
    * @param args - The arguments of the function.
@@ -317,6 +317,14 @@ export class MassaExport {
       imports.push(
         'export declare function generateEvent(event: string): void;',
       );
+    }
+
+    // checking if 'import { encode } from "as-base64";' is needed or if they are already imported by the contract
+    const encodeBase64ImportRegex =
+      /(?:import\s*{.*encode.*}\s*from\s*("|')as-base64("|'))/gm;
+
+    if (encodeBase64ImportRegex.exec(content) === null) {
+      imports.push('import { encode } from "as-base64";');
     }
 
     // adding corresponding asHelper imports for each added wrapper
