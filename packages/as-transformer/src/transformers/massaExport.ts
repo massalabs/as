@@ -146,7 +146,7 @@ export class MassaExport {
       wrapper +=
         '  generateEvent(' +
         `\`Result${this.functionName}:` +
-        "'${byteArrayToBase64(new Uint8Array(response.buffer))}'`);\n";
+        "'${new Uint8Array(response.buffer).toString()}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
@@ -317,13 +317,6 @@ export class MassaExport {
       imports.push(
         'export declare function generateEvent(event: string): void;',
       );
-    }
-    // checking if adding uint8ArrayToBase64 is needed or if they are already imported by the contract
-    const uint8ArrayToBase64ImportRegex =
-      /(?:import\s*{.*uint8ArrayToBase64.*}\s*from\s*("|')@massalabs\/as-types("|'))/gm;
-
-    if (uint8ArrayToBase64ImportRegex.exec(content) === null) {
-      imports.push('import { uint8ArrayToBase64 } from "@massalabs/as-types";');
     }
 
     // adding corresponding asHelper imports for each added wrapper
