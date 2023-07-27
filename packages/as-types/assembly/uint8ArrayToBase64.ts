@@ -25,13 +25,5 @@ export function uint8ArrayToBase64(bytes: Uint8Array): string {
     }
   }
 
-  // If there are any remaining bits, pad and add padding characters ('=')
-  if (bitsRemaining > 0) {
-    buffer <<= 6 - bitsRemaining;
-    const index = buffer & 0x3f;
-    result += base64Chars.charAt(index);
-    padding = bitsRemaining === 2 ? '==' : bitsRemaining === 4 ? '=' : '';
-  }
-
   return result + padding;
 }
