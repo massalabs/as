@@ -320,7 +320,7 @@ export class MassaExport {
     }
 
     // checking if 'import { encode } from "as-base64";' is needed or if they are already imported by the contract
-    const encodeImportRegex =
+    const encodeBase64ImportRegex =
       /(?:import\s*{.*encode.*}\s*from\s*("|')as-base64("|'))/gm;
 
     if (encodeImportRegex.exec(content) === null) {
