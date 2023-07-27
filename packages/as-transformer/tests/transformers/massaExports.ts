@@ -41,7 +41,7 @@ describe('generateWrapper', () => {
     let wrapper =
       `export function SayHello(_args: StaticArray<u8>): StaticArray<u8> {
   const response = encodeSayHelloRHelper(new SayHelloRHelper(_ms_SayHello_()));
-    
+
   generateEvent(` +
       "`ResultSayHello:'${byteArrayToBase64(new Uint8Array(response.buffer))}'`" +
       `);
