@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 enum ProtoType {
   Double = 'double',
@@ -28,9 +28,28 @@ interface FieldSpec {
   cType?: MassaCustomType;
 }
 
-export interface Argument {
-  name: string;
-  type: string;
+export class Argument {
+  private name: string;
+  private type: string;
+  private fnName: string;
+
+  constructor(name: string, type: string, fnName: string) {
+    this.name = name;
+    this.type = type;
+    this.fnName = fnName;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getType(): string {
+    return this.type;
+  }
+
+  getFnName(): string {
+    return this.fnName;
+  }
 }
 
 /**
@@ -71,10 +90,11 @@ ${fields}
 }`;
 
   if (returnedType && returnedType != 'void' && returnedType != 'null') {
-    const argumentResponse: Argument = {
-      name: 'value',
-      type: returnedType,
-    };
+    const argumentResponse: Argument = new Argument(
+      'value',
+      returnedType,
+      name,
+    );
 
     const response = generateArgumentMessage(argumentResponse, 1, transformer);
 
@@ -105,28 +125,31 @@ function generateArgumentMessage(
   index: number,
   transformer: MassaExport,
 ): string {
-  const fieldName = arg.name;
-  const fieldSpec = getTypeName(arg.type);
+  const fieldName = arg.getName();
+  const fieldSpec = getTypeName(arg.getType());
   const typeName = fieldSpec.type ?? fieldSpec.cType?.proto;
   const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + typeName;
   const templateType =
     fieldSpec.cType !== null && fieldSpec.cType !== undefined
       ? ` [(custom_type) = "${fieldSpec.cType?.name}"];`
       : ';';
-  if (fieldSpec.cType !== null && fieldSpec.cType !== undefined) {
+  if (fieldSpec.cType) {
     Debug.log('Adding custom type to transformer', fieldSpec.cType.name);
     transformer.updates.push(
       new Update(
         UpdateType.Argument,
         fieldName,
         new Map([
+          ['type', [fieldSpec.cType.name]],
           ['ser', [fieldSpec.cType.serialize]],
           ['deser', [fieldSpec.cType.deserialize]],
+          ['fnName', [arg.getFnName()]],
         ]),
         'custom-proto',
       ),
     );
   }
+
   return `  ${fieldType} ${fieldName} = ${index}` + templateType;
 }
 

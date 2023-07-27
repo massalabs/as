@@ -4,7 +4,7 @@ import {
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 import {
   Argument,
@@ -133,17 +133,25 @@ export class MassaExport {
    * @returns - The wrapper function as a string.
    */
   private _generateWrapper(): string {
-    const customArgs = this.updates.filter((update) =>
-      update.getFrom().includes('custom-proto'),
+    const customArgs = this.updates.filter(
+      (update) =>
+        update.getFrom().includes('custom-proto') &&
+        update.getData().has('fnName') &&
+        update.getData().get('fnName')?.includes(this.functionName),
     );
+
+    Debug.log('> customArgs', customArgs);
 
     const argDecodings = this.args
       .map((arg) => {
-        let argument = `args.${arg.name}`;
+        let argument = `args.${arg.getName()}`;
 
         // checking if the argument is a custom type to use proper deserializer
-        let carg = customArgs.find((carg) => carg.getContent() === arg.name);
+        let carg = customArgs.find(
+          (carg) => carg.getContent() === arg.getName(),
+        );
         if (carg !== undefined) {
+          Debug.log('Found custom arg', carg);
           const deser = carg.getData().get('deser');
           argument = deser![0]!.toString().replace('\\1', argument);
         }
@@ -314,7 +322,7 @@ function updateSourceFile(
 
   // checking if the update has to be applied
   if (funcToPrivate === undefined || imports === undefined) {
-    console.log('Nothing to do for\n\tcontent:', content);
+    // console.log('Nothing to do for\n\tcontent:', content);
     return content;
   }
 
@@ -499,11 +507,11 @@ function addImports(content: string, imports: string[]): string {
           0,
           0,
         ]);
-       
+
          /**
           * Encode Uint8Array as a base64 string.
           * @param bytes Byte array of type Uint8Array.
-          * This function was taken from here https://github.com/near/as-base64 
+          * This function was taken from here https://github.com/near/as-base64
           * as import are not working in transformer for now
           */
          export function massa_transformer_base64_encode(bytes: Uint8Array): string {

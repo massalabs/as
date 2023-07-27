@@ -3,7 +3,7 @@ import {
   IdentifierExpression,
   NamedTypeNode,
 } from 'assemblyscript/dist/assemblyscript.js';
-import { Argument } from './protobuf';
+import { Argument } from './protobuf.js';
 
 export class MassaFunctionNode {
   name: string;
@@ -16,11 +16,12 @@ export class MassaFunctionNode {
     const returnType = (node.signature.returnType as NamedTypeNode).name
       .identifier.text;
     const args = node.signature.parameters.map((arg) => {
-      return {
-        name: arg.name.text,
-        type: (arg.type as NamedTypeNode).name.identifier.text,
-      };
-    }) as Argument[];
+      return new Argument(
+        arg.name.text,
+        (arg.type as NamedTypeNode).name.identifier.text,
+        name,
+      );
+    });
 
     let newNode = new MassaFunctionNode(name, returnType, args);
     newNode.node = node;

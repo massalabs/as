@@ -36,9 +36,9 @@ message MyFunctionHelper {
   it('should generate a Protobuf file with multiple arguments', () => {
     const name = 'MyFunction';
     const args: Argument[] = [
-      { name: 'arg1', type: 'i32' },
-      { name: 'arg2', type: 'string' },
-      { name: 'arg3', type: 'bool' },
+      new Argument('arg1', 'i32', 'MyFunction'),
+      new Argument('arg2', 'string', 'MyFunction'),
+      new Argument('arg3', 'bool', 'MyFunction'),
     ];
     const returnedType = '';
 
@@ -63,8 +63,8 @@ message MyFunctionHelper {
   it('should generate a Protobuf file with a returned value', () => {
     const name = 'MyFunction';
     const args: Argument[] = [
-      { name: 'arg1', type: 'i32' },
-      { name: 'arg2', type: 'string' },
+      new Argument('arg1', 'i32', 'MyFunction'),
+      new Argument('arg2', 'string', 'MyFunction'),
     ];
     const returnedType = 'bool';
 
@@ -92,8 +92,8 @@ message MyFunctionRHelper {
   it('should generate a Protobuf file with repeated fields', () => {
     const name = 'MyFunction';
     const args: Argument[] = [
-      { name: 'arg1', type: 'Int32Array' },
-      { name: 'arg2', type: 'Array<string>' },
+      new Argument('arg1', 'Int32Array', 'MyFunction'),
+      new Argument('arg2', 'Array<string>', 'MyFunction'),
     ];
     const returnedType = 'bool';
 
@@ -120,7 +120,7 @@ message MyFunctionRHelper {
 
   it('should throw an error for unsupported types', () => {
     const name = 'MyFunction';
-    const args: Argument[] = [{ name: 'arg1', type: 'v64' }];
+    const args: Argument[] = [new Argument('arg1', 'v64', 'MyFunction')];
     const returnedType = '';
 
     expect(() =>

@@ -1,4 +1,4 @@
-import Debug from 'debug';
+// import Debug from 'debug';
 
 export enum UpdateType {
   FunctionDeclaration,
@@ -18,16 +18,16 @@ export class Update {
     data: Map<string, string[]>,
     from: string,
   ) {
-    Debug.log(
-      'New Update:\n\tcontentType:',
-      contentType,
-      '\n\tcontent:',
-      content,
-      '\n\tdata:',
-      data,
-      '\n\tfrom:',
-      from,
-    );
+    // Debug.log(
+    //   'New Update:\n\tcontentType:',
+    //   contentType,
+    //   '\n\tcontent:',
+    //   content,
+    //   '\n\tdata:',
+    //   data,
+    //   '\n\tfrom:',
+    //   from,
+    // );
     this.contentType = contentType;
     this.content = content;
     this.data = data;
