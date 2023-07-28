@@ -319,7 +319,7 @@ export class MassaExport {
       );
     }
 
-    imports.push(`// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
+    imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
       /**
        * base64 encoding/decoding
        */
