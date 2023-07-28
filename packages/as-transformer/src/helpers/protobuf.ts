@@ -107,10 +107,7 @@ function generateArgumentMessage(
 ): string {
   const fieldName = arg.name;
   const fieldSpec = getTypeName(arg.type);
-  const typeName =
-    fieldSpec.type !== null && fieldSpec.type !== undefined
-      ? fieldSpec.type
-      : fieldSpec.cType?.proto;
+  const typeName = fieldSpec.type ?? fieldSpec.cType?.proto;
   const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + typeName;
   const templateType =
     fieldSpec.cType !== null && fieldSpec.cType !== undefined
