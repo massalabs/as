@@ -26,7 +26,7 @@ describe('generateWrapper', () => {
     wrapper += `  const response = encode${node.name}RHelper`;
     wrapper += `(new ${node.name}RHelper(_ms_${node.name}_(args.language, args.name)));\n\n`;
     wrapper +=
-      "  generateEvent(`ResultSayHello:'${encode_80083(response)}'`);\n";
+      "  generateEvent(`ResultSayHello:'${massa_transformer_base64_encode(response)}'`);\n";
     wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     wrapper += '}';
 
@@ -43,7 +43,7 @@ describe('generateWrapper', () => {
   const response = encodeSayHelloRHelper(new SayHelloRHelper(_ms_SayHello_()));
 
   generateEvent(` +
-      "`ResultSayHello:'${encode_80083(response)}'`" +
+      "`ResultSayHello:'${massa_transformer_base64_encode(response)}'`" +
       `);
   return changetype<StaticArray<u8>>(response.buffer);
 }`;

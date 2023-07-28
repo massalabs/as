@@ -147,7 +147,7 @@ export class MassaExport {
       wrapper +=
         '  generateEvent(' +
         `\`Result${this.functionName}:` +
-        "'${encode_80083(response)}'`);\n";
+        "'${massa_transformer_base64_encode(response)}'`);\n";
       wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
     } else {
       wrapper += '  ' + call + ';\n';
@@ -468,8 +468,10 @@ export class MassaExport {
          /**
           * Encode Uint8Array as a base64 string.
           * @param bytes Byte array of type Uint8Array.
+          * This function was taken from here https://github.com/near/as-base64 
+          * as import are not working in transformer for now
           */
-         export function encode_80083(bytes: Uint8Array): string {
+         export function massa_transformer_base64_encode(bytes: Uint8Array): string {
            let i: i32, b10: u32;
            
            const extrabytes = (bytes.length % 3);
