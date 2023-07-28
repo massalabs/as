@@ -353,18 +353,18 @@ function addImports(content: string, imports: string[]): string {
     imports.push('@external("massa", "assembly_script_generate_event")');
     imports.push('export declare function generateEvent(event: string): void;');
   }
-    imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
+  imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
       /**
        * base64 encoding/decoding
        */
-      
+
       // @ts-ignore: decorator
       @lazy
         const PADCHAR = "=";
       // @ts-ignore: decorator
       @lazy
         const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-      
+
       // @ts-ignore: decorator
       @lazy
         const ALPHAVALUES = StaticArray.fromArray<u8>([
@@ -506,16 +506,16 @@ function addImports(content: string, imports: string[]): string {
           */
          export function massa_transformer_base64_encode(bytes: Uint8Array): string {
            let i: i32, b10: u32;
-           
+
            const extrabytes = (bytes.length % 3);
            let imax = bytes.length - extrabytes;
            const len = ((bytes.length / 3) as i32) * 4 + (extrabytes == 0 ? 0 : 4);
            let x = changetype<string>(__new(<usize>(len << 1), idof<string>()));
-       
+
            if (bytes.length == 0) {
              return "";
            }
-       
+
            let ptr = changetype<usize>(x) - 2;
            for (i = 0; i < imax; i += 3) {
              b10 =
@@ -527,7 +527,7 @@ function addImports(content: string, imports: string[]): string {
              store<u16>(ptr+=2, (ALPHA.charCodeAt(((b10 >> 6) & 63)) as u16));
              store<u16>(ptr+=2, (ALPHA.charCodeAt((b10 & 63)) as u16));
            }
-       
+
            switch (bytes.length - imax) {
              case 1:
                b10 = (bytes[i] as u32) << 16;
@@ -544,26 +544,16 @@ function addImports(content: string, imports: string[]): string {
                store<u16>(ptr+=2, ((PADCHAR.charCodeAt(0)) as u16));
                break;
            }
-       
+
            return x;
          }
-       
+
         // @ts-ignore: decorator
          @inline
          function getByte64(s: string, i: u32): u32 {
            return ALPHAVALUES[s.charCodeAt(i)];
          }
       `);
-
-    if (encodeBase64ImportRegex.exec(content) === null) {
-      imports.push('import { encode } from "as-base64";');
-    }
-
-    // adding corresponding asHelper imports for each added wrapper
-    content = imports.join('\n') + '\n' + content;
-
-    return content;
-  }
 
   // adding corresponding asHelper imports for each added wrapper
   content = imports.join('\n') + '\n' + content;
