@@ -17,6 +17,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
+## [@types/js-yaml](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.0.5
+
+**Many thanks to:** n/a
+
 ## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
 
 **License:** MIT - perpetual
@@ -40,6 +48,22 @@ The following is a list of all the dependencies of this project:
 **Used version:** 0.24.1
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
+
+## [js-yaml](git+https://github.com/nodeca/js-yaml.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.1.0
+
+**Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
+
+## [protobufjs](git+https://github.com/protobufjs/protobuf.js.git)
+
+**License:** BSD-3-Clause - perpetual
+
+**Used version:** 7.2.4
+
+**Many thanks to:** [Daniel Wirtz](dcode+protobufjs@dcode.io)
 
 ## [ts-morph](git+https://github.com/dsherret/ts-morph.git)
 
@@ -73,6 +97,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
+## [@types/protobufjs](https://github.com/dcodeIO/ProtoBuf.js)
+
+**License:** MIT - perpetual
+
+**Used version:** 6.0.0
+
+**Many thanks to:** 
+
 ## [jest](git+https://github.com/facebook/jest.git)
 
 **License:** MIT - perpetual
@@ -88,4 +120,12 @@ The following is a list of all the dependencies of this project:
 **Used version:** 29.1.0
 
 **Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
+
+## [typescript](git+https://github.com/Microsoft/TypeScript.git)
+
+**License:** Apache-2.0 - perpetual
+
+**Used version:** 5.1.6
+
+**Many thanks to:** Microsoft Corp.
 
