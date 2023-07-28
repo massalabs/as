@@ -142,7 +142,7 @@ export class MassaExport {
     })`;
     if (this.returnType && this.returnType !== 'void') {
       /* eslint-disable max-len */
-      wrapper += `  const response = encode_80083${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
+      wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
 
       wrapper +=
         '  generateEvent(' +
