@@ -1,6 +1,15 @@
 import { generateProtoFile, Argument } from '../../src/helpers/protobuf';
 import { MassaExport } from '../../src/transformers/massaExport';
+
 let massaExportTransformer = new MassaExport();
+
+const protoStart = `syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}`;
 
 describe('generateProtoFile', () => {
   it('should generate a simple Protobuf file with no arguments or returned value', () => {
@@ -8,7 +17,7 @@ describe('generateProtoFile', () => {
     const args: Argument[] = [];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
 
@@ -33,7 +42,7 @@ message MyFunctionHelper {
     ];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   int32 arg1 = 1;
@@ -59,7 +68,7 @@ message MyFunctionHelper {
     ];
     const returnedType = 'bool';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   int32 arg1 = 1;
@@ -88,7 +97,7 @@ message MyFunctionRHelper {
     ];
     const returnedType = 'bool';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   repeated int32 arg1 = 1;
@@ -124,7 +133,7 @@ message MyFunctionRHelper {
     const args: Argument[] = [];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message Helper {
 
