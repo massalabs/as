@@ -11,6 +11,7 @@ import {
 } from 'types:assemblyscript/src/ast';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
 import * as Debug from 'debug';
+
 // import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
 
 /**
@@ -20,32 +21,13 @@ import * as Debug from 'debug';
 export class MassaExportCalls {
   isMatching(expression: string): boolean {
     const calls = GlobalUpdates.get()
-      .filter((update: Update) => update.from === 'MassaExport')
+      .filter((update: Update) => update.getFrom() === 'MassaExport')
       .map((update: Update) =>
-        update.data.get('funcToPrivate') !== undefined
-          ? update.data.get('funcToPrivate')![0]
+        update.getData().get('funcToPrivate') !== undefined
+          ? update.getData().get('funcToPrivate')![0]
           : '',
       );
     return calls.includes(expression);
-  }
-
-  private _getArgs(node: CallExpression): string {
-    return node.args
-      .map((arg) => {
-        // if argument is a variable
-        if ((arg as IdentifierExpression).text !== undefined)
-          return (arg as IdentifierExpression).text;
-
-        // if argument is a value
-        let value = arg as StringLiteralExpression;
-
-        // if argument value is a number
-        if (value.isNumericLiteral) return value.value;
-
-        // if argument value is a string
-        return '"' + value.value + '"';
-      })
-      .join(', ');
   }
 
   /**
@@ -63,7 +45,7 @@ export class MassaExportCalls {
    */
   transform(node: CallExpression): Expression {
     const functionName = (node.expression as IdentifierExpression).text;
-    const args = this._getArgs(node);
+    const args = getArgs(node);
     const expr = `_ms_${functionName}_(${args})\n`;
 
     let res = SimpleParser.parseExpression(expr);
@@ -73,4 +55,23 @@ export class MassaExportCalls {
     );
     return RangeTransform.visit(res, node); // replace node
   }
+}
+
+function getArgs(node: CallExpression): string {
+  return node.args
+    .map((arg) => {
+      // if argument is a variable
+      if ((arg as IdentifierExpression).text !== undefined)
+        return (arg as IdentifierExpression).text;
+
+      // if argument is a value
+      let value = arg as StringLiteralExpression;
+
+      // if argument value is a number
+      if (value.isNumericLiteral) return value.value;
+
+      // if argument value is a string
+      return '"' + value.value + '"';
+    })
+    .join(', ');
 }

@@ -1,4 +1,15 @@
 import { generateProtoFile, Argument } from '../../src/helpers/protobuf';
+import { MassaExport } from '../../src/transformers/massaExport';
+
+let massaExportTransformer = new MassaExport();
+
+const protoStart = `syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}`;
 
 describe('generateProtoFile', () => {
   it('should generate a simple Protobuf file with no arguments or returned value', () => {
@@ -6,13 +17,18 @@ describe('generateProtoFile', () => {
     const args: Argument[] = [];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
 
 }`;
 
-    const result = generateProtoFile(name, args, returnedType);
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
 
     expect(result).toEqual(expectedOutput);
   });
@@ -26,7 +42,7 @@ message MyFunctionHelper {
     ];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   int32 arg1 = 1;
@@ -34,7 +50,12 @@ message MyFunctionHelper {
   bool arg3 = 3;
 }`;
 
-    const result = generateProtoFile(name, args, returnedType);
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
 
     expect(result).toEqual(expectedOutput);
   });
@@ -47,7 +68,7 @@ message MyFunctionHelper {
     ];
     const returnedType = 'bool';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   int32 arg1 = 1;
@@ -58,7 +79,12 @@ message MyFunctionRHelper {
   bool value = 1;
 }`;
 
-    const result = generateProtoFile(name, args, returnedType);
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
 
     expect(result).toEqual(expectedOutput);
   });
@@ -71,7 +97,7 @@ message MyFunctionRHelper {
     ];
     const returnedType = 'bool';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message MyFunctionHelper {
   repeated int32 arg1 = 1;
@@ -82,7 +108,12 @@ message MyFunctionRHelper {
   bool value = 1;
 }`;
 
-    const result = generateProtoFile(name, args, returnedType);
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
 
     expect(result).toEqual(expectedOutput);
   });
@@ -92,9 +123,9 @@ message MyFunctionRHelper {
     const args: Argument[] = [{ name: 'arg1', type: 'v64' }];
     const returnedType = '';
 
-    expect(() => generateProtoFile(name, args, returnedType)).toThrow(
-      'Unsupported type: v64',
-    );
+    expect(() =>
+      generateProtoFile(name, args, returnedType, massaExportTransformer),
+    ).toThrow('Unsupported type: v64');
   });
 
   it('should handle empty input values', () => {
@@ -102,13 +133,18 @@ message MyFunctionRHelper {
     const args: Argument[] = [];
     const returnedType = '';
 
-    const expectedOutput = `syntax = "proto3";
+    const expectedOutput = `${protoStart}
 
 message Helper {
 
 }`;
 
-    const result = generateProtoFile(name, args, returnedType);
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
 
     expect(result).toEqual(expectedOutput);
   });

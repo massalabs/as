@@ -14,9 +14,10 @@ import {
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
 // import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
-import { Update, GlobalUpdates } from './interfaces/Update.js';
+import { Update, GlobalUpdates, UpdateType } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
+import path from 'path';
 
 /**
  * The Massa Export transformer is responsible of exporting standard contract
@@ -59,13 +60,13 @@ export class MassaExport {
   isMatching(node: MassaFunctionNode): boolean {
     const toMatch =
       this.updates.filter(
-        (update) => update.data.get('funcToPrivate')![0] === node.name,
+        (update) => update.getData().get('funcToPrivate')![0] === node.name,
       ).length <= 0 && hasDecorator(node.node!, 'massaExport');
     const alreadyDone =
       GlobalUpdates.get().filter(
         (update) =>
-          update.from === 'MassaExport' &&
-          update.data.get('funcToPrivate')![0] === node.name,
+          update.getFrom() === 'MassaExport' &&
+          update.getData().get('funcToPrivate')![0] === node.name,
       ).length > 0;
     return toMatch && !alreadyDone;
   }
@@ -91,18 +92,22 @@ export class MassaExport {
       this.functionName,
       this.args,
       this.returnType,
+      this,
     );
     const wrapperContent = this._generateWrapper();
     const imports = this._generateImports();
-    const update = {
-      content: wrapperContent,
-      data: new Map([
+    const update = new Update(
+      UpdateType.FunctionDeclaration,
+      wrapperContent,
+      new Map([
         ['imports', imports],
         ['funcToPrivate', [node.name]],
         ['protoContent', protoContent.split('\n')],
       ]),
-      from: 'MassaExport',
-    };
+      'MassaExport',
+    );
+
+    // why push in 2 different places?
     this.updates.push(update);
     GlobalUpdates.add(update);
     this._resetFunctionSignatureData();
@@ -126,7 +131,24 @@ export class MassaExport {
    * @returns - The wrapper function as a string.
    */
   private _generateWrapper(): string {
-    const argDecodings = this.args.map((arg) => `args.${arg.name}`).join(', ');
+    const customArgs = this.updates.filter((update) =>
+      update.getFrom().includes('custom-proto'),
+    );
+
+    const argDecodings = this.args
+      .map((arg) => {
+        let argument = `args.${arg.name}`;
+
+        // checking if the argument is a custom type to use proper deserializer
+        let carg = customArgs.find((carg) => carg.getContent() === arg.name);
+        if (carg !== undefined) {
+          const deser = carg.getData().get('deser');
+          argument = deser![0]!.toString().replace('\\1', argument);
+        }
+
+        return argument;
+      })
+      .join(', ');
 
     let wrapper = `export function ${
       this.functionName
@@ -137,10 +159,16 @@ export class MassaExport {
     if (this.args.length > 0) {
       wrapper += `  const args = decode${this.functionName}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
     }
-    const call = `_ms_${this.functionName}_(${
+    let call = `_ms_${this.functionName}_(${
       this.args.length > 0 ? argDecodings : ''
     })`;
     if (this.returnType && this.returnType !== 'void') {
+      // checking if the return type is a custom type to use proper serializer
+      let carg = customArgs.find((carg) => carg.getContent() === 'value');
+      if (carg !== undefined) {
+        const ser = carg.getData().get('ser');
+        call = ser![0]!.toString().replace('\\1', call);
+      }
       /* eslint-disable max-len */
       wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
 
@@ -191,14 +219,21 @@ export class MassaExport {
    * @returns A filepaths array of the additional sources.
    */
   getAdditionalSources(source: Source, dir: string): string[] {
+    Debug.log('** Getting additional sources for: ' + source.internalPath);
+
     const depsFilter: string[] = [];
     let dependencies: string[] = [];
     // Retrieving the generated functions
     for (const update of this.updates) {
-      const scFunc = update.data.get('funcToPrivate');
+      if (update.getContentType() !== UpdateType.FunctionDeclaration) {
+        continue;
+      }
+
+      const scFunc = update.getData().get('funcToPrivate');
       if (scFunc === undefined) {
         console.error(
-          'There was an error with pushing generated code imports to compilation',
+          'There was an error with pushing generated code imports to compilation. update:\n\t',
+          update.getContent(),
         );
         return [];
       }
@@ -233,105 +268,103 @@ export class MassaExport {
    * @returns The new raw file content of the file source.
    */
   updateSource(source: Source, dir: string): string {
+    Debug.log('Updating source: ' + source.internalPath);
+
     let content = source.text;
     const newPath = './build/' + dir;
+    const dirName = path.dirname(newPath);
 
     this.updates.forEach((update) => {
-      content = this._updateSourceFile(
-        update,
-        content,
-        newPath.replace(source.simplePath, ''),
-      );
+      content = updateSourceFile(update, content, dirName);
     });
 
     content = content.replaceAll('@massaExport()', '');
     // Writing the new file in the build directory to avoid overwriting the original contract produced by the sc dev.
 
-    if (!existsSync(newPath.replace(source.simplePath, '')))
-      mkdirSync(newPath.replace(source.simplePath, ''), { recursive: true });
+    if (!existsSync(dirName)) {
+      mkdirSync(dirName, { recursive: true });
+    }
+
     writeFileSync(`${newPath}.ts`, content);
     return content;
   }
+}
 
-  /**
-   * Adds the given wrapper update and imports into the file content.
-   *
-   * @remarks
-   * Since the wrapper will have the original function name
-   * the original function is changed and marked as not exported.
-   *
-   * @param update - The update containing the wrapper and the imports
-   * @param content - The file content of the contract to update.
-   *
-   * @returns The updated file content.
-   */
-  private _updateSourceFile(
-    update: Update,
-    content: string,
-    dir: string,
-  ): string {
-    const funcToPrivate = update.data.get('funcToPrivate');
-    const imports = update.data.get('imports');
+/**
+ * Adds the given wrapper update and imports into the file content.
+ *
+ * @remarks
+ * Since the wrapper will have the original function name
+ * the original function is changed and marked as not exported.
+ *
+ * @param update - The update containing the wrapper and the imports
+ * @param content - The file content of the contract to update.
+ *
+ * @returns The updated file content.
+ */
+function updateSourceFile(
+  update: Update,
+  content: string,
+  dir: string,
+): string {
+  const funcToPrivate = update.getData().get('funcToPrivate');
+  const imports = update.getData().get('imports');
 
-    if (funcToPrivate === undefined || imports === undefined) {
-      console.error(
-        'Failed to process a MassaExport decorated function: missing imports or function name',
-      );
-      return content;
-    }
-
-    this._generateHelpers(
-      dir,
-      funcToPrivate[0]!,
-      update.data.get('protoContent')!.join('\n'),
-    );
-
-    // changing the signature of the original function to allow the addition of the wrapper.
-    content = content.replace(
-      'export function ' + funcToPrivate[0],
-      'export function _ms_' + funcToPrivate[0] + '_',
-    );
-
-    // appending wrapper to end of file
-    content += '\n' + update.content + '\n';
-
-    return this.addImports(content, imports);
+  // checking if the update has to be applied
+  if (funcToPrivate === undefined || imports === undefined) {
+    console.log('Nothing to do for\n\tcontent:', content);
+    return content;
   }
 
-  /**
-   * This functions adds the needed import in the new contract file content.
-   *
-   * @remarks It also adds the declaration of the generateEvent function if not imported.
-   *
-   * @param content - The file content of the contract to update.
-   * @param imports - The imports to add.
-   *
-   * @returns The new file content.
-   */
-  private addImports(content: string, imports: string[]): string {
-    const generateEventImportRegex =
-      /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
+  generateHelpers(
+    dir,
+    funcToPrivate[0]!,
+    update.getData().get('protoContent')!.join('\n'),
+  );
 
-    // checking if adding declare of generateEvent is needed or if its already imported by the contract
-    if (generateEventImportRegex.exec(content) === null) {
-      imports.push('@external("massa", "assembly_script_generate_event")');
-      imports.push(
-        'export declare function generateEvent(event: string): void;',
-      );
-    }
+  // changing the signature of the original function to allow the addition of the wrapper.
+  content = content.replace(
+    'export function ' + funcToPrivate[0],
+    'export function _ms_' + funcToPrivate[0] + '_',
+  );
 
-    imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
+  // appending wrapper to end of file
+  content += '\n' + update.getContent() + '\n';
+
+  return addImports(content, imports);
+}
+
+/**
+ * This functions adds the needed import in the new contract file content.
+ *
+ * @remarks It also adds the declaration of the generateEvent function if not imported.
+ *
+ * @param content - The file content of the contract to update.
+ * @param imports - The imports to add.
+ *
+ * @returns The new file content.
+ */
+function addImports(content: string, imports: string[]): string {
+  const generateEventImportRegex =
+    /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
+
+  // checking if adding declare of generateEvent is needed or if its already imported by the contract
+  if (generateEventImportRegex.exec(content) === null) {
+    imports.push('@external("massa", "assembly_script_generate_event")');
+    imports.push('export declare function generateEvent(event: string): void;');
+  }
+  imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
       /**
        * base64 encoding/decoding
        */
-      
+
       // @ts-ignore: decorator
       @lazy
         const PADCHAR = "=";
       // @ts-ignore: decorator
       @lazy
         const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-      
+
       // @ts-ignore: decorator
       @lazy
         const ALPHAVALUES = StaticArray.fromArray<u8>([
@@ -473,16 +506,16 @@ export class MassaExport {
           */
          export function massa_transformer_base64_encode(bytes: Uint8Array): string {
            let i: i32, b10: u32;
-           
+
            const extrabytes = (bytes.length % 3);
            let imax = bytes.length - extrabytes;
            const len = ((bytes.length / 3) as i32) * 4 + (extrabytes == 0 ? 0 : 4);
            let x = changetype<string>(__new(<usize>(len << 1), idof<string>()));
-       
+
            if (bytes.length == 0) {
              return "";
            }
-       
+
            let ptr = changetype<usize>(x) - 2;
            for (i = 0; i < imax; i += 3) {
              b10 =
@@ -494,7 +527,7 @@ export class MassaExport {
              store<u16>(ptr+=2, (ALPHA.charCodeAt(((b10 >> 6) & 63)) as u16));
              store<u16>(ptr+=2, (ALPHA.charCodeAt((b10 & 63)) as u16));
            }
-       
+
            switch (bytes.length - imax) {
              case 1:
                b10 = (bytes[i] as u32) << 16;
@@ -511,10 +544,10 @@ export class MassaExport {
                store<u16>(ptr+=2, ((PADCHAR.charCodeAt(0)) as u16));
                break;
            }
-       
+
            return x;
          }
-       
+
         // @ts-ignore: decorator
          @inline
          function getByte64(s: string, i: u32): u32 {
@@ -522,33 +555,32 @@ export class MassaExport {
          }
       `);
 
-    // adding corresponding asHelper imports for each added wrapper
-    content = imports.join('\n') + '\n' + content;
+  // adding corresponding asHelper imports for each added wrapper
+  content = imports.join('\n') + '\n' + content;
 
-    return content;
+  return content;
+}
+
+/**
+ * This function writes the protobuf content and generates the AS helpers in a folder for the given update.
+ *
+ * @param dir - The build directory path of the file containing the function to generate the wrapper for.
+ * @param func - The function name to generate wrapper for.
+ * @param protoContent - The protobuf content.
+ */
+function generateHelpers(
+  dir: string,
+  func: string,
+  protoContent: string,
+): void {
+  const wrapperPath = dir;
+  const protoFile = wrapperPath + '/' + func + 'Helper' + '.proto';
+
+  if (!existsSync(wrapperPath)) {
+    mkdirSync(wrapperPath, {
+      recursive: true,
+    });
   }
-
-  /**
-   * This function writes the protobuf content and generates the AS helpers in a folder for the given update.
-   *
-   * @param dir - The build directory path of the file containing the function to generate the wrapper for.
-   * @param func - The function name to generate wrapper for.
-   * @param protoContent - The protobuf content.
-   */
-  private _generateHelpers(
-    dir: string,
-    func: string,
-    protoContent: string,
-  ): void {
-    const wrapperPath = dir;
-    const protoFile = wrapperPath + func + 'Helper' + '.proto';
-
-    if (!existsSync(wrapperPath)) {
-      mkdirSync(wrapperPath, {
-        recursive: true,
-      });
-    }
-    writeFileSync(protoFile, protoContent);
-    generateASHelpers(protoFile, wrapperPath);
-  }
+  writeFileSync(protoFile, protoContent);
+  generateASHelpers(protoFile, wrapperPath);
 }

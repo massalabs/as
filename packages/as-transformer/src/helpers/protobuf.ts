@@ -1,4 +1,8 @@
 import { spawnSync } from 'child_process';
+import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
+import { MassaExport } from '../transformers/massaExport.js';
+import { Update, UpdateType } from '../transformers/interfaces/Update.js';
+import * as Debug from 'debug';
 
 enum ProtoType {
   Double = 'double',
@@ -19,8 +23,9 @@ enum ProtoType {
 }
 
 interface FieldSpec {
-  type: ProtoType;
+  type?: ProtoType;
   repeated: boolean;
+  cType?: MassaCustomType;
 }
 
 export interface Argument {
@@ -46,13 +51,20 @@ export function generateProtoFile(
   name: string,
   args: Argument[],
   returnedType: string | undefined,
+  transformer: MassaExport,
 ): string {
   const argumentMessages = args.map((arg, index) =>
-    generateArgumentMessage(arg, index + 1),
+    generateArgumentMessage(arg, index + 1, transformer),
   );
   const fields = argumentMessages.join('\n');
 
   let protoFile = `syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
 
 message ${name}Helper {
 ${fields}
@@ -64,7 +76,7 @@ ${fields}
       type: returnedType,
     };
 
-    const response = generateArgumentMessage(argumentResponse, 1);
+    const response = generateArgumentMessage(argumentResponse, 1, transformer);
 
     protoFile += `
 
@@ -88,18 +100,41 @@ ${response}
  *
  * @returns the protobuf argument as a string.
  */
-function generateArgumentMessage(arg: Argument, index: number): string {
+function generateArgumentMessage(
+  arg: Argument,
+  index: number,
+  transformer: MassaExport,
+): string {
   const fieldName = arg.name;
   const fieldSpec = getTypeName(arg.type);
-  const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + fieldSpec.type;
-  return `  ${fieldType} ${fieldName} = ${index};`;
+  const typeName = fieldSpec.type ?? fieldSpec.cType?.proto;
+  const fieldType = (fieldSpec.repeated ? 'repeated ' : '') + typeName;
+  const templateType =
+    fieldSpec.cType !== null && fieldSpec.cType !== undefined
+      ? ` [(custom_type) = "${fieldSpec.cType?.name}"];`
+      : ';';
+  if (fieldSpec.cType !== null && fieldSpec.cType !== undefined) {
+    Debug.log('Adding custom type to transformer', fieldSpec.cType.name);
+    transformer.updates.push(
+      new Update(
+        UpdateType.Argument,
+        fieldName,
+        new Map([
+          ['ser', [fieldSpec.cType.serialize]],
+          ['deser', [fieldSpec.cType.deserialize]],
+        ]),
+        'custom-proto',
+      ),
+    );
+  }
+  return `  ${fieldType} ${fieldName} = ${index}` + templateType;
 }
 
 function getTypeName(type: string): FieldSpec {
   let spec: FieldSpec = {
-    type: ProtoType.Int32,
     repeated: false,
   };
+  let cType: MassaCustomType | null = null;
 
   switch (type) {
     case 'bool':
@@ -144,12 +179,27 @@ function getTypeName(type: string): FieldSpec {
       spec.type = ProtoType.String;
       break;
     default:
-      throw new Error(`Unsupported type: ${type}`);
+      cType = getCustomType(type);
+      if (cType === null) {
+        throw new Error(`Unsupported type: ${type}`);
+      }
+      spec.cType = cType;
   }
 
   spec.repeated = type.indexOf('Array') > -1;
 
   return spec;
+}
+
+function getCustomType(type: string): MassaCustomType | null {
+  let types: MassaCustomType[] = fetchCustomTypes();
+
+  for (const customType of types) {
+    if (customType.name === type) {
+      return customType;
+    }
+  }
+  return null;
 }
 
 /**
