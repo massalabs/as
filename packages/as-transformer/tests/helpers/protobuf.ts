@@ -1,16 +1,18 @@
 import { generateProtoFile, Argument } from '../../src/helpers/protobuf';
 import { MassaExport } from '../../src/transformers/massaExport';
+import * as fs from 'fs';
 
 let massaExportTransformer = new MassaExport();
 
-const protoStart = `syntax = "proto3";
+const protoStart = 'syntax = "proto3";';
+protoStart.concat('\n');
 
+const customTypeImports = `
 import "google/protobuf/descriptor.proto";
 
 extend google.protobuf.FieldOptions {
   optional string custom_type = 50002;
 }`;
-
 describe('generateProtoFile', () => {
   it('should generate a simple Protobuf file with no arguments or returned value', () => {
     const name = 'MyFunction';
@@ -148,4 +150,53 @@ message Helper {
 
     expect(result).toEqual(expectedOutput);
   });
+
+  it('should generate a simple Protobuf file with custom fields', () => {
+    /* export function MyFunction(arg1: u256, arg2: u256): void {} */
+
+    generateBignumYml();
+
+    const name = 'MyFunction';
+    const args: Argument[] = [
+      new Argument('arg1', 'u256', 'MyFunction'),
+      new Argument('arg2', 'u256', 'MyFunction'),
+    ];
+    const returnedType = 'void';
+    const expectedOutput = `syntax = "proto3";
+${customTypeImports}
+
+
+message MyFunctionHelper {
+  bytes arg1 = 1 [(custom_type) = "u256"];
+  bytes arg2 = 2 [(custom_type) = "u256"];
+}`;
+
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
+
+    expect(result).toEqual(expectedOutput);
+  });
 });
+
+function generateBignumYml() {
+  const customTypeYml = `
+- type:
+  name: u256
+  proto: bytes
+  import: "as-bignum/assembly"
+  serialize: "\\\\1.toStaticBytes()"
+  deserialize: "u256.fromUint8ArrayLE(\\\\1)"
+- type:
+  name: u128
+  proto: bytes
+  import: "as-bignum/assembly"
+  serialize: "\\\\1.toStaticBytes()"
+  deserialize: "u128.fromUint8ArrayLE(\\\\1)"
+`;
+
+  fs.writeFileSync('./node_modules/' + 'bignum.massa-type.yml', customTypeYml);
+}

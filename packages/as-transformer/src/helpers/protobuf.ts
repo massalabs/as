@@ -77,14 +77,12 @@ export function generateProtoFile(
   );
   const fields = argumentMessages.join('\n');
 
+  // FIXME: Q'n D to unblock the cli:
+  // if field contains a custom_type, add correcponding import to the generated proto file
+  let customTypeImports = hasCustomTypes();
+
   let protoFile = `syntax = "proto3";
-
-import "google/protobuf/descriptor.proto";
-
-extend google.protobuf.FieldOptions {
-  optional string custom_type = 50002;
-}
-
+${customTypeImports}
 message ${name}Helper {
 ${fields}
 }`;
@@ -106,6 +104,19 @@ ${response}
   }
 
   return protoFile;
+
+  function hasCustomTypes() {
+    return fields.indexOf('custom_type') > -1
+      ? `
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+`
+      : '';
+  }
 }
 
 /**
