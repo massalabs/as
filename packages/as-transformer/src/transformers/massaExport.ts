@@ -140,8 +140,6 @@ export class MassaExport {
         update.getData().get('fnName')?.includes(this.functionName),
     );
 
-    Debug.log('> customArgs', customArgs);
-
     const argDecodings = this.args
       .map((arg) => {
         let argument = `args.${arg.getName()}`;
@@ -151,7 +149,7 @@ export class MassaExport {
           (carg) => carg.getContent() === arg.getName(),
         );
         if (carg !== undefined) {
-          Debug.log('Found custom arg', carg);
+          // Debug.log('Found custom arg', carg);
           const deser = carg.getData().get('deser');
           argument = deser![0]!.toString().replace('\\1', argument);
         }
@@ -252,6 +250,11 @@ export class MassaExport {
       depsFilter.push(path);
     }
 
+    // FIXME: Q'n D
+    // we need to add all added sources to the dependencies
+    // should be done in a better way
+    depsFilter.push('build/base64.ts');
+
     // Dynamically fetching additional import's dependencies
     // Filtering fetched dependencies to avoid adding again dependencies
     // that where already imported by the original file.
@@ -341,20 +344,20 @@ function updateSourceFile(
   // appending wrapper to end of file
   content += '\n' + update.getContent() + '\n';
 
-  return addImports(content, imports);
+  return addImports(content, imports, dir) + '\n' + content;
 }
 
 /**
- * This functions adds the needed import in the new contract file content.
+ * This functions generate the needed import list.
  *
  * @remarks It also adds the declaration of the generateEvent function if not imported.
  *
- * @param content - The file content of the contract to update.
+ * @param content - The file content of the contract being updated.
  * @param imports - The imports to add.
  *
- * @returns The new file content.
+ * @returns The import section.
  */
-function addImports(content: string, imports: string[]): string {
+function addImports(content: string, imports: string[], dir: string): string {
   const generateEventImportRegex =
     /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
 
@@ -363,7 +366,31 @@ function addImports(content: string, imports: string[]): string {
     imports.push('@external("massa", "assembly_script_generate_event")');
     imports.push('export declare function generateEvent(event: string): void;');
   }
-  imports.push(`\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
+
+  addBase64Import(content, imports, dir);
+
+  return imports.join('\n');
+}
+
+function addBase64Import(content: string, imports: string[], dir: string) {
+  // Matches: import { massa_transformer_base64_encode } from "./base64";
+  const base64Rexex =
+    /import\s+\{\s*massa_transformer_base64_encode\s*\}\s+from\s+("|')\.\/base64("|');/gm;
+
+  // Already imported?
+  if (base64Rexex.exec(content)) {
+    return;
+  }
+
+  const base64 = dir + '/base64.ts';
+
+  if (!existsSync(dir)) {
+    throw new Error('Directory does not exist: ' + dir);
+  }
+
+  imports.push(`import { massa_transformer_base64_encode } from "./base64";`);
+
+  const base64Code = `\n// adapted from https://gist.github.com/Juszczak/63e6d9e01decc850de03
       /**
        * base64 encoding/decoding
        */
@@ -563,12 +590,8 @@ function addImports(content: string, imports: string[]): string {
          function getByte64(s: string, i: u32): u32 {
            return ALPHAVALUES[s.charCodeAt(i)];
          }
-      `);
-
-  // adding corresponding asHelper imports for each added wrapper
-  content = imports.join('\n') + '\n' + content;
-
-  return content;
+      `;
+  writeFileSync(base64, base64Code);
 }
 
 /**
