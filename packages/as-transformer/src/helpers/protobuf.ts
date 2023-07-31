@@ -78,7 +78,7 @@ export function generateProtoFile(
   const fields = argumentMessages.join('\n');
 
   // FIXME: Q'n D to unblock the cli:
-  // if field contains a custom_type, add correcponding import to the generated proto file
+  // if field contains a custom_type, add corresponding import to the generated proto file
   let customTypeImports = hasCustomTypes();
 
   let protoFile = `syntax = "proto3";
