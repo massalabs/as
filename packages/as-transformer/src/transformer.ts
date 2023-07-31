@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { TransformVisitor, utils } from 'visitor-as';
-import * as Debug from 'debug';
+import Debug from 'debug';
 import {
   Expression,
   Parser,
