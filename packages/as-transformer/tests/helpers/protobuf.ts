@@ -188,13 +188,13 @@ function generateBignumYml() {
   name: u256
   proto: bytes
   import: "as-bignum/assembly"
-  serialize: "\\\\1.toStaticBytes()"
+  serialize: "\\\\1.toUint8Array()"
   deserialize: "u256.fromUint8ArrayLE(\\\\1)"
 - type:
   name: u128
   proto: bytes
   import: "as-bignum/assembly"
-  serialize: "\\\\1.toStaticBytes()"
+  serialize: "\\\\1.toUint8Array()"
   deserialize: "u128.fromUint8ArrayLE(\\\\1)"
 `;
 
