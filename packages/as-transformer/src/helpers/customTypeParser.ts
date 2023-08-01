@@ -8,7 +8,7 @@ export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 export interface MassaType {
   name: string;
   repeated?: bool;
-  meta_data?: TypeMetaData;
+  metaData?: TypeMetaData;
 }
 
 class TypeMetaData {
@@ -45,7 +45,7 @@ function extractTypes(fileContent: string): MassaType[] {
   for (const type of data) {
     types.push({
       name: type.name,
-      meta_data: new TypeMetaData(
+      metaData: new TypeMetaData(
         type.proto,
         type.import,
         type.serialize,
