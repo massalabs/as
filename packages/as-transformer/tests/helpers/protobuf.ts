@@ -180,6 +180,36 @@ message MyFunctionHelper {
 
     expect(result).toEqual(expectedOutput);
   });
+
+  it('should generate a simple Protobuf file from function returning array', () => {
+    /* export function test(arg1: i32, arg2: i32) : Array<i32> */
+
+    const name = 'test';
+    const args: Argument[] = [
+      new Argument('arg1', 'i32', 'test'),
+      new Argument('arg2', 'i32', 'test'),
+    ];
+    const returnedType = 'Array<i32>';
+    const expectedOutput = `syntax = "proto3";
+
+message testHelper {
+  int32 arg1 = 1;
+  int32 arg2 = 2;
+}
+
+message testRHelper {
+  repeated int32 value = 1;
+}`;
+
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
+
+    expect(result).toEqual(expectedOutput);
+  });
 });
 
 function generateBignumYml() {
