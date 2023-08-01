@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "assemblyscript": "^0.25.0"
+    "assemblyscript": "^0.25.2"
   },
   "files": [
     "assembly",

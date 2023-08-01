@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
-import Debug from 'debug';
+// import Debug from 'debug';
 
 enum ProtoType {
   Double = 'double',
@@ -145,7 +145,7 @@ function generateArgumentMessage(
       ? ` [(custom_type) = "${fieldSpec.cType?.name}"];`
       : ';';
   if (fieldSpec.cType) {
-    Debug.log('Adding custom type to transformer', fieldSpec.cType.name);
+    // Debug.log('Adding custom type to transformer', fieldSpec.cType.name);
     transformer.updates.push(
       new Update(
         UpdateType.Argument,
@@ -183,7 +183,6 @@ function getTypeName(type: string): FieldSpec {
     case 'Array<i8>':
     case 'Array<i16>':
     case 'Array<i32>':
-      Debug.log('Found i32', type);
       spec.type = ProtoType.Int32;
       break;
     case 'i64':
