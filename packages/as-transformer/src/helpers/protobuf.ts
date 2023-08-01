@@ -2,6 +2,7 @@ import { spawnSync } from 'child_process';
 import { MassaType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
+import dedent from 'ts-dedent';
 
 type ASType = string;
 
@@ -98,24 +99,24 @@ export function generateProtoFile(
   const argumentMessages = args.map((arg, index) => {
     let typeInfo = refTable.get(arg.getType())!;
     let fieldName = arg.getName();
-    let message = generateArgumentMessage(fieldName, typeInfo, index + 1);
+    let message = generatePayload(fieldName, typeInfo, index + 1);
     if (typeInfo.metaData !== null && typeInfo.metaData !== undefined) {
       pushCustomTypeUpdate(transformer, arg.getFnName(), typeInfo);
     }
     return message;
-  }
-  );
+  });
   const fields = argumentMessages.join('\n');
 
   // FIXME: Q'n D to unblock the cli:
   // if field contains a custom_type, add corresponding import to the generated proto file
-  let customTypeImports = hasCustomTypes();
+  let imports = getImports();
 
-  let protoFile = `syntax = "proto3";
-${customTypeImports}
-message ${name}Helper {
-${fields}
-}`;
+  let protoFile = dedent`
+  syntax = "proto3";
+  ${imports}
+  message ${name}Helper {
+    ${fields}
+  }`;
 
   if (returnedType && returnedType != 'void' && returnedType != 'null') {
     const argumentResponse: Argument = new Argument(
@@ -126,35 +127,38 @@ ${fields}
 
     let typeInfo = refTable.get(argumentResponse.getType())!;
     let fieldName = argumentResponse.getName();
-    const response = generateArgumentMessage(fieldName, typeInfo, 1);
+    const response = generatePayload(fieldName, typeInfo, 1);
     if (typeInfo.metaData !== null && typeInfo.metaData !== undefined) {
       pushCustomTypeUpdate(transformer, argumentResponse.getFnName(), typeInfo);
     }
 
-    protoFile += `
+    protoFile += dedent`
 
-message ${name}RHelper {
-${response}
-}`;
+    message ${name}RHelper {
+      ${response}
+    }`;
   }
 
   return protoFile;
 
-  function hasCustomTypes() {
-    return fields.indexOf('custom_type') > -1
-      ? `
-import "google/protobuf/descriptor.proto";
+  function getImports(): string {
+    let customImports = dedent`
+    import "google/protobuf/descriptor.proto";
 
-extend google.protobuf.FieldOptions {
-  optional string custom_type = 50002;
-}
+    extend google.protobuf.FieldOptions {
+      optional string custom_type = 50002;
+    }
 
-`
-      : '';
+    `;
+    return fields.indexOf('custom_type') > -1 ? customImports : '';
   }
 }
 
-function pushCustomTypeUpdate(transformer: MassaExport, functionName: string, type: MassaType) {
+function pushCustomTypeUpdate(
+  transformer: MassaExport,
+  functionName: string,
+  type: MassaType,
+) {
   transformer.updates.push(
     new Update(
       UpdateType.Argument,
@@ -178,7 +182,7 @@ function pushCustomTypeUpdate(transformer: MassaExport, functionName: string, ty
  *
  * @returns the protobuf argument as a string.
  */
-function generateArgumentMessage(
+function generatePayload(
   fieldName: string,
   typeInfo: MassaType,
   index: number,
