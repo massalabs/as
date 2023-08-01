@@ -180,6 +180,10 @@ function getTypeName(type: string): FieldSpec {
     case 'Int16Array':
     case 'i32':
     case 'Int32Array':
+    case 'Array<i8>':
+    case 'Array<i16>':
+    case 'Array<i32>':
+      Debug.log('Found i32', type);
       spec.type = ProtoType.Int32;
       break;
     case 'i64':

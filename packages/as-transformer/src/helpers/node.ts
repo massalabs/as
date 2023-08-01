@@ -13,8 +13,7 @@ export class MassaFunctionNode {
 
   static createFromASTNode(node: FunctionDeclaration) {
     const name = node.name.text;
-    const returnType = (node.signature.returnType as NamedTypeNode).name
-      .identifier.text;
+    const returnType = node.signature.returnType.range.toString();
     const args = node.signature.parameters.map((arg) => {
       return new Argument(
         arg.name.text,
