@@ -36,7 +36,7 @@ export class MassaFunctionNode {
 
 // inspired from https://github.com/as-pect/visitor-as/blob/master/src/utils.ts#L35
 // TODO: check if it's still needed.
-export function hasDecorator(node: FunctionDeclaration, name: string): bool {
+export function hasDecorator(node: FunctionDeclaration, name: string): boolean {
   let decl = node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

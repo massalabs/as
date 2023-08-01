@@ -2,7 +2,7 @@ import {
   FunctionDeclaration,
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
-import { MassaFunctionNode } from '../../helpers/node';
+import { MassaFunctionNode } from '../../helpers/node.js';
 
 /**
  * An interface to implement a function declaration node transformer.
@@ -21,7 +21,7 @@ export interface IFunctionTransformer {
    *
    * @returns true if the transformer has to operate on the given declaration
    */
-  isMatching(node: MassaFunctionNode): bool;
+  isMatching(node: MassaFunctionNode): boolean;
 
   /**
    * The function that operates a transformation on a {@link FunctionDeclaration}.

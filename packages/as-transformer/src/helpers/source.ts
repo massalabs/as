@@ -1,4 +1,5 @@
 import { Parser, Source } from 'assemblyscript/dist/assemblyscript.js';
+import assert from 'assert';
 import { readFileSync } from 'fs';
 
 export function parseFile(filePath: string, parser: Parser): Source {

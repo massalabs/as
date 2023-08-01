@@ -4,7 +4,7 @@ import {
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
-import Debug from 'debug';
+// import Debug from 'debug';
 
 import {
   Argument,
@@ -53,7 +53,7 @@ export class MassaExport {
     this.updates = [];
   }
 
-  hasUpdates(): bool {
+  hasUpdates(): boolean {
     return this.updates.length > 0;
   }
 
@@ -113,9 +113,9 @@ export class MassaExport {
     this.updates.push(update);
     GlobalUpdates.add(update);
     this._resetFunctionSignatureData();
-    Debug.log(
-      "MassaExport Function: generated '" + node.name + "' function's wrapper",
-    );
+    // Debug.log(
+    //   "MassaExport Function: generated '" + node.name + "' function's wrapper",
+    // );
     return node.node!;
   }
 
@@ -227,12 +227,13 @@ export class MassaExport {
    * @returns A filepaths array of the additional sources.
    */
   getAdditionalSources(source: Source, dir: string): string[] {
-    Debug.log('** Getting additional sources for: ' + source.internalPath);
+    // Debug.log('** Getting additional sources for: ' + source.internalPath);
 
     const depsFilter: string[] = [];
     let dependencies: string[] = [];
     // Retrieving the generated functions
     for (const update of this.updates) {
+      // Debug.log('** Update: ' + update.getContent());
       if (update.getContentType() !== UpdateType.FunctionDeclaration) {
         continue;
       }
@@ -250,17 +251,15 @@ export class MassaExport {
       depsFilter.push(path);
     }
 
-    // FIXME: Q'n D
-    // we need to add all added sources to the dependencies
-    // should be done in a better way
-    depsFilter.push('build/base64.ts');
-
     // Dynamically fetching additional import's dependencies
     // Filtering fetched dependencies to avoid adding again dependencies
     // that where already imported by the original file.
     getDependencies(`./build/${dir}.ts`)
       .filter(
         (dep) =>
+          // dep.includes('as-types') ||
+          // dep.includes('massa-as-sdk') ||
+          dep.includes('base64.ts') ||
           dep.includes('as-proto') ||
           depsFilter.some((filter) => dep.includes(filter)),
       )
@@ -281,7 +280,7 @@ export class MassaExport {
    * @returns The new raw file content of the file source.
    */
   updateSource(source: Source, dir: string): string {
-    Debug.log('Updating source: ' + source.internalPath);
+    // Debug.log('Updating source: ' + source.internalPath);
 
     let content = source.text;
     const newPath = './build/' + dir;
@@ -382,7 +381,7 @@ function addBase64Import(content: string, imports: string[], dir: string) {
     return;
   }
 
-  const base64 = dir + '/base64.ts';
+  const base64File = dir + '/base64.ts';
 
   if (!existsSync(dir)) {
     throw new Error('Directory does not exist: ' + dir);
@@ -591,7 +590,8 @@ function addBase64Import(content: string, imports: string[], dir: string) {
            return ALPHAVALUES[s.charCodeAt(i)];
          }
       `;
-  writeFileSync(base64, base64Code);
+
+  writeFileSync(base64File, base64Code);
 }
 
 /**
