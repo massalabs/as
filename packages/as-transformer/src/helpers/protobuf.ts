@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
+import { MassaType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
 import Debug from 'debug';
@@ -26,10 +26,53 @@ const ProtoType: Map<ASType, protoType> = new Map([
   ['Bytes', 'bytes'],
 ]);
 
+function createRefTable(): Map<ASType, MassaType> {
+  let table: Map<ASType, MassaType> = new Map([
+    // bool
+    ['bool', { name: 'bool' }],
+    // int32
+    ['i8', { name: 'int32' }],
+    ['Int8Array', { name: 'int32', repeated: true }],
+    ['i16', { name: 'int32' }],
+    ['Int16Array', { name: 'int32', repeated: true }],
+    ['i32', { name: 'int32' }],
+    ['Int32Array', { name: 'int32', repeated: true }],
+    // int64
+    ['i64', { name: 'int64' }],
+    ['Int64Array', { name: 'int64', repeated: true }],
+    ['isize', { name: 'int64' }],
+    // uint32
+    ['u8', { name: 'uint32' }],
+    ['Uint8Array', { name: 'uint32', repeated: true }],
+    ['u16', { name: 'uint32' }],
+    ['Uint16Array', { name: 'uint32', repeated: true }],
+    ['u32', { name: 'uint32' }],
+    ['Uint32Array', { name: 'uint32', repeated: true }],
+    // uint64
+    ['u64', { name: 'uint64' }],
+    ['Uint64Array', { name: 'uint64', repeated: true }],
+    ['usize', { name: 'uint64' }],
+    // float
+    ['f32', { name: 'float' }],
+    ['Float32Array', { name: 'float', repeated: true }],
+    // double
+    ['f64', { name: 'double' }],
+    ['Float64Array', { name: 'double', repeated: true }],
+    // string
+    ['string', { name: 'string' }],
+    ['Array<string>', { name: 'string', repeated: true }],
+  ]);
+  let customs: MassaType[] = fetchCustomTypes();
+  for (const custom of customs) {
+    table.set(custom.name, custom);
+  }
+  return table;
+}
+
 class FieldSpec {
   private type?: ASType;
   repeated: boolean;
-  cType?: MassaCustomType;
+  cType?: MassaType;
 
   constructor(repeated = false) {
     this.repeated = repeated;
@@ -187,7 +230,7 @@ function generateArgumentMessage(
 
 function getProtobufTypeName(type: ASType): FieldSpec {
   let spec: FieldSpec = new FieldSpec();
-  let cType: MassaCustomType | null = null;
+  let cType: MassaType | null = null;
 
   switch (type) {
     case 'bool':
@@ -245,9 +288,9 @@ function getProtobufTypeName(type: ASType): FieldSpec {
   return spec;
 }
 
-function getCustomType(type: string): MassaCustomType | null {
+function getCustomType(type: string): MassaType | null {
   Debug.log('Getting custom type', type);
-  let types: MassaCustomType[] = fetchCustomTypes();
+  let types: MassaType[] = fetchCustomTypes();
 
   for (const customType of types) {
     if (customType.name === type) {

@@ -1,6 +1,7 @@
 import { Transformer } from './transformer.js';
 export default Transformer;
 export {
-  MassaCustomType,
+  // TODO: update export name
+  MassaType as MassaCustomType,
   fetchCustomTypes,
 } from './helpers/customTypeParser.js';

@@ -5,8 +5,9 @@ import Debug from 'debug';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
-export interface MassaCustomType {
+export interface MassaType {
   name: string;
+  repeated?: bool;
   meta_data?: TypeMetaData;
 }
 
@@ -31,14 +32,14 @@ class TypeMetaData {
 
 /**
  * Extract each custom type found in the given file content.
- * @see MassaCustomType
+ * @see MassaType
  *
  * @param fileContent - the yaml fiel content to parse.
  *
  * @returns an array of extracted types.
  */
-function extractTypes(fileContent: string): MassaCustomType[] {
-  const types: MassaCustomType[] = [];
+function extractTypes(fileContent: string): MassaType[] {
+  const types: MassaType[] = [];
   const data = yaml.parse(fileContent);
 
   for (const type of data) {
@@ -87,9 +88,9 @@ function scanForTypes(dir = './node_modules/'): string[] {
  *
  * @returns an array of object defining each types.
  */
-export function fetchCustomTypes(): MassaCustomType[] {
+export function fetchCustomTypes(): MassaType[] {
   let files = scanForTypes();
-  let types: MassaCustomType[] = [];
+  let types: MassaType[] = [];
 
   for (const file of files) {
     let data = fs.readFileSync(file).toString();
