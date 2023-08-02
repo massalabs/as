@@ -2,7 +2,6 @@ import { spawnSync } from 'child_process';
 import { MassaType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
-import dedent from 'ts-dedent';
 
 type ASType = string;
 
@@ -111,12 +110,12 @@ export function generateProtoFile(
   // if field contains a custom_type, add corresponding import to the generated proto file
   let imports = getImports();
 
-  let protoFile = dedent`
-  syntax = "proto3";
-  ${imports}
-  message ${name}Helper {
-    ${fields}
-  }`;
+  let protoFile =
+    `syntax = "proto3";
+${imports}
+message ${name}Helper {
+${fields}
+}`;
 
   if (returnedType && returnedType != 'void' && returnedType != 'null') {
     const argumentResponse: Argument = new Argument(
@@ -132,24 +131,27 @@ export function generateProtoFile(
       pushCustomTypeUpdate(transformer, argumentResponse.getFnName(), typeInfo);
     }
 
-    protoFile += dedent`
+    protoFile +=
+      `
 
-    message ${name}RHelper {
-      ${response}
-    }`;
+message ${name}RHelper {
+${response}
+}`;
+
   }
 
   return protoFile;
 
   function getImports(): string {
-    let customImports = dedent`
-    import "google/protobuf/descriptor.proto";
+    let customImports =
+      `
+import "google/protobuf/descriptor.proto";
 
-    extend google.protobuf.FieldOptions {
-      optional string custom_type = 50002;
-    }
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
 
-    `;
+`;
     return fields.indexOf('custom_type') > -1 ? customImports : '';
   }
 }
@@ -187,12 +189,12 @@ function generatePayload(
   typeInfo: MassaType,
   index: number,
 ): string {
-  const fieldType = (typeInfo.repeated ? 'repeated ' : '') + typeInfo.name;
-  const templateType =
+  const fieldType = (typeInfo.repeated ? 'repeated ' : '') + (typeInfo.metaData?.proto ?? typeInfo.name);
+  const optTemplateType =
     typeInfo.metaData !== null && typeInfo.metaData !== undefined
       ? ` [(custom_type) = "${typeInfo.name}"];`
       : ';';
-  return `  ${fieldType} ${fieldName} = ${index}` + templateType;
+  return `  ${fieldType} ${fieldName} = ${index}` + optTemplateType;
 }
 
 /**

@@ -5,6 +5,7 @@ import Debug from 'debug';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
+// TODO: care about yaml parsing
 export interface MassaType {
   name: string;
   repeated?: bool;
