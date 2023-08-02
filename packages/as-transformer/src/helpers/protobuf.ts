@@ -1,50 +1,20 @@
 import { spawnSync } from 'child_process';
-import { MassaType, fetchCustomTypes } from './customTypeParser.js';
+import { ASType, ProtoType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
+import * as fs from 'fs';
+import yaml from 'yaml';
 
-type ASType = string;
+function readRefTable(): Map<ASType, ProtoType> {
+  const file = fs.readFileSync('./reftable.yml').toString();
+  let parsed = yaml.parse(file);
 
-function createRefTable(): Map<ASType, MassaType> {
-  let table: Map<ASType, MassaType> = new Map([
-    // bool
-    ['bool', { name: 'bool' }],
-    // int32
-    ['i8', { name: 'int32' }],
-    ['Int8Array', { name: 'int32', repeated: true }],
-    ['i16', { name: 'int32' }],
-    ['Int16Array', { name: 'int32', repeated: true }],
-    ['i32', { name: 'int32' }],
-    ['Int32Array', { name: 'int32', repeated: true }],
-    // int64
-    ['i64', { name: 'int64' }],
-    ['Int64Array', { name: 'int64', repeated: true }],
-    ['isize', { name: 'int64' }],
-    // uint32
-    ['u8', { name: 'uint32' }],
-    ['Uint8Array', { name: 'uint32', repeated: true }],
-    ['u16', { name: 'uint32' }],
-    ['Uint16Array', { name: 'uint32', repeated: true }],
-    ['u32', { name: 'uint32' }],
-    ['Uint32Array', { name: 'uint32', repeated: true }],
-    // uint64
-    ['u64', { name: 'uint64' }],
-    ['Uint64Array', { name: 'uint64', repeated: true }],
-    ['usize', { name: 'uint64' }],
-    // float
-    ['f32', { name: 'float' }],
-    ['Float32Array', { name: 'float', repeated: true }],
-    // double
-    ['f64', { name: 'double' }],
-    ['Float64Array', { name: 'double', repeated: true }],
-    // string
-    ['string', { name: 'string' }],
-    ['Array<string>', { name: 'string', repeated: true }],
-  ]);
-  let customs: MassaType[] = fetchCustomTypes();
-  for (const custom of customs) {
-    table.set(custom.name, custom);
+  let initial: Map<ASType, ProtoType> = new Map();
+  for (const t of parsed) {
+    initial.set(t.as, { name: t.proto, repeated: t.repeated });
   }
+  let customs: Map<ASType, ProtoType> = fetchCustomTypes();
+  let table = new Map([...initial.entries(), ...customs.entries()]);
   return table;
 }
 
@@ -92,8 +62,9 @@ export function generateProtoFile(
   returnedType: string | undefined,
   transformer: MassaExport,
 ): string {
-  // TODO: call this only once
-  let refTable = createRefTable();
+  // NOTE: this is called only once atm
+  // if it not the case anymore move this to the upper call
+  let refTable = readRefTable();
 
   const argumentMessages = args.map((arg, index) => {
     let typeInfo = refTable.get(arg.getType())!;
@@ -107,11 +78,18 @@ export function generateProtoFile(
   const fields = argumentMessages.join('\n');
 
   // FIXME: Q'n D to unblock the cli:
-  // if field contains a custom_type, add corresponding import to the generated proto file
-  let imports = getImports();
+  let customImports = `
+import "google/protobuf/descriptor.proto";
 
-  let protoFile =
-    `syntax = "proto3";
+extend google.protobuf.FieldOptions {
+optional string custom_type = 50002;
+}
+`;
+
+  let imports = fields.indexOf('custom_type') > -1 ? customImports : '';
+
+  let protoFile = `
+syntax = "proto3";
 ${imports}
 message ${name}Helper {
 ${fields}
@@ -131,35 +109,20 @@ ${fields}
       pushCustomTypeUpdate(transformer, argumentResponse.getFnName(), typeInfo);
     }
 
-    protoFile +=
-      `
+    protoFile += `
 
 message ${name}RHelper {
 ${response}
 }`;
-
   }
 
   return protoFile;
-
-  function getImports(): string {
-    let customImports =
-      `
-import "google/protobuf/descriptor.proto";
-
-extend google.protobuf.FieldOptions {
-  optional string custom_type = 50002;
-}
-
-`;
-    return fields.indexOf('custom_type') > -1 ? customImports : '';
-  }
 }
 
 function pushCustomTypeUpdate(
   transformer: MassaExport,
   functionName: string,
-  type: MassaType,
+  type: ProtoType,
 ) {
   transformer.updates.push(
     new Update(
@@ -185,16 +148,16 @@ function pushCustomTypeUpdate(
  * @returns the protobuf argument as a string.
  */
 function generatePayload(
-  fieldName: string,
-  typeInfo: MassaType,
+  field: string,
+  proto: ProtoType,
   index: number,
 ): string {
-  const fieldType = (typeInfo.repeated ? 'repeated ' : '') + (typeInfo.metaData?.proto ?? typeInfo.name);
+  const fieldType = (proto.repeated ? 'repeated ' : '') + proto.name;
   const optTemplateType =
-    typeInfo.metaData !== null && typeInfo.metaData !== undefined
-      ? ` [(custom_type) = "${typeInfo.name}"];`
+    proto.metaData !== null && proto.metaData !== undefined
+      ? ` [(custom_type) = "${proto.name}"];`
       : ';';
-  return `  ${fieldType} ${fieldName} = ${index}` + optTemplateType;
+  return `  ${fieldType} ${field} = ${index}` + optTemplateType;
 }
 
 /**

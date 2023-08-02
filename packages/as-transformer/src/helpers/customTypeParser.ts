@@ -5,26 +5,20 @@ import Debug from 'debug';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
-// TODO: care about yaml parsing
-export interface MassaType {
+export type ASType = string;
+
+export interface ProtoType {
   name: string;
   repeated?: bool;
-  metaData?: TypeMetaData;
+  metaData?: ProtoMetadata;
 }
 
-class TypeMetaData {
-  proto: string;
+class ProtoMetadata {
   import: string;
   serialize: string;
   deserialize: string;
 
-  constructor(
-    proto: string,
-    importPath: string,
-    serialize: string,
-    deserialize: string,
-  ) {
-    this.proto = proto;
+  constructor(importPath: string, serialize: string, deserialize: string) {
     this.import = importPath;
     this.serialize = serialize;
     this.deserialize = deserialize;
@@ -33,21 +27,20 @@ class TypeMetaData {
 
 /**
  * Extract each custom type found in the given file content.
- * @see MassaType
+ * @see ProtoType
  *
- * @param fileContent - the yaml fiel content to parse.
+ * @param fileContent - the yaml file content to parse.
  *
- * @returns an array of extracted types.
+ * @returns a map of extracted types.
  */
-function extractTypes(fileContent: string): MassaType[] {
-  const types: MassaType[] = [];
+function extractTypes(fileContent: string): Map<ASType, ProtoType> {
+  const types: Map<ASType, ProtoType> = new Map();
   const data = yaml.parse(fileContent);
 
   for (const type of data) {
-    types.push({
-      name: type.name,
-      metaData: new TypeMetaData(
-        type.proto,
+    types.set(type.name, {
+      name: type.proto,
+      metaData: new ProtoMetadata(
         type.import,
         type.serialize,
         type.deserialize,
@@ -87,15 +80,16 @@ function scanForTypes(dir = './node_modules/'): string[] {
 /**
  * This function is used to recover any accessible and defined custom protobuf types present in the current project.
  *
- * @returns an array of object defining each types.
+ * @returns a map of objects defining each type.
  */
-export function fetchCustomTypes(): MassaType[] {
+export function fetchCustomTypes(): Map<ASType, ProtoType> {
   let files = scanForTypes();
-  let types: MassaType[] = [];
+  let types: Map<ASType, ProtoType> = new Map();
 
   for (const file of files) {
     let data = fs.readFileSync(file).toString();
-    types.push(...extractTypes(data));
+    let ntypes = extractTypes(data);
+    types = new Map([...types.entries(), ...ntypes.entries()]);
   }
   return types;
 }

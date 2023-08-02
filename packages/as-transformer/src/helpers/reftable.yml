@@ -1,0 +1,85 @@
+- as: bool
+  proto: bool
+
+- as: i8
+  proto: int32
+
+- as: Int8Array
+  proto: int32
+  repeated: true
+
+- as: i16
+  proto: int32
+
+- as: Int16Array
+  proto: int32
+  repeated: true
+
+- as: i32
+  proto: int32
+
+- as: Int32Array
+  proto: int32
+  repeated: true
+
+- as: i64
+  proto: int64
+
+- as: Int64Array
+  proto: int64
+  repeated: true
+
+- as: isize
+  proto: int64
+
+- as: u8
+  proto: uint32
+
+- as: Uint8Array
+  proto: uint32
+  repeated: true
+
+- as: u16
+  proto: uint32
+
+- as: Uint16Array
+  proto: uint32
+  repeated: true
+
+- as: u32
+  proto: uint32
+
+- as: Uint32Array
+  proto: uint32
+  repeated: true
+
+- as: u64
+  proto: uint64
+
+- as: Uint64Array
+  proto: uint64
+  repeated: true
+
+- as: usize
+  proto: uint64
+
+- as: f32
+  proto: float
+
+- as: Float32Array
+  proto: float
+  repeated: true
+
+- as: f64
+  proto: double
+
+- as: Float64Array
+  proto: double
+  repeated: true
+
+- as: string
+  proto: string
+
+- as: Array<string>
+  proto: string
+  repeated: true
