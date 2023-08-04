@@ -67,17 +67,11 @@ export function generateProtoFile(
   let refTable = readRefTable();
 
   const argumentMessages = args.map((arg, index) => {
-    let typeInfo = refTable.get(arg.getType())!;
-    let fieldName = arg.getName();
-    let message = generatePayload(fieldName, typeInfo, index + 1);
-    if (typeInfo.metaData !== null && typeInfo.metaData !== undefined) {
-      pushCustomTypeUpdate(transformer, arg.getFnName(), typeInfo);
-    }
+    const message = computeArgument(transformer, arg, index, refTable);
     return message;
   });
   const fields = argumentMessages.join('\n');
 
-  // FIXME: Q'n D to unblock the cli:
   let customImports = `
 import "google/protobuf/descriptor.proto";
 
@@ -93,7 +87,8 @@ syntax = "proto3";
 ${imports}
 message ${name}Helper {
 ${fields}
-}`;
+}
+`;
 
   if (returnedType && returnedType != 'void' && returnedType != 'null') {
     const argumentResponse: Argument = new Argument(
@@ -102,15 +97,14 @@ ${fields}
       name,
     );
 
-    let typeInfo = refTable.get(argumentResponse.getType())!;
-    let fieldName = argumentResponse.getName();
-    const response = generatePayload(fieldName, typeInfo, 1);
-    if (typeInfo.metaData !== null && typeInfo.metaData !== undefined) {
-      pushCustomTypeUpdate(transformer, argumentResponse.getFnName(), typeInfo);
-    }
+    const response = computeArgument(
+      transformer,
+      argumentResponse,
+      0,
+      refTable,
+    );
 
     protoFile += `
-
 message ${name}RHelper {
 ${response}
 }`;
@@ -119,19 +113,43 @@ ${response}
   return protoFile;
 }
 
+function computeArgument(
+  transformer: MassaExport,
+  arg: Argument,
+  prevIndex: u32,
+  refTable: Map<ASType, ProtoType>,
+): string {
+  let asType = arg.getType();
+  let protoType = refTable.get(asType)!;
+  let fieldName = arg.getName();
+  let message = generatePayload(fieldName, protoType, prevIndex + 1);
+  if (protoType.metaData !== null && protoType.metaData !== undefined) {
+    pushCustomTypeUpdate(
+      transformer,
+      arg.getFnName(),
+      asType,
+      protoType,
+      fieldName,
+    );
+  }
+  return message;
+}
+
 function pushCustomTypeUpdate(
   transformer: MassaExport,
   functionName: string,
-  type: ProtoType,
+  as: ASType,
+  proto: ProtoType,
+  field: string,
 ) {
   transformer.updates.push(
     new Update(
       UpdateType.Argument,
-      type.name,
+      field,
       new Map([
-        ['type', [type.name]],
-        ['ser', [type.metaData!.serialize]],
-        ['deser', [type.metaData!.deserialize]],
+        ['type', [as]],
+        ['ser', [proto.metaData!.serialize]],
+        ['deser', [proto.metaData!.deserialize]],
         ['fnName', [functionName]],
       ]),
       'custom-proto',
@@ -153,10 +171,9 @@ function generatePayload(
   index: number,
 ): string {
   const fieldType = (proto.repeated ? 'repeated ' : '') + proto.name;
-  const optTemplateType =
-    proto.metaData !== null && proto.metaData !== undefined
-      ? ` [(custom_type) = "${proto.name}"];`
-      : ';';
+  const optTemplateType = proto.metaData
+    ? ` [(custom_type) = "${proto.name}"];`
+    : ';';
   return `  ${fieldType} ${field} = ${index}` + optTemplateType;
 }
 
