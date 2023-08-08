@@ -278,7 +278,7 @@ export class Args {
     if (this._offset + size > this.serialized.length) {
       return new Result(
         u256.Zero,
-        "can't deserialize u128 from given argument: out of range",
+        "can't deserialize u256 from given argument: out of range",
       );
     }
     const value = ser.bytesToU256(this.getNextData(size));
