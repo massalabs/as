@@ -13,7 +13,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.1
+**Used version:** 29.5.3
 
 **Many thanks to:** n/a
 
@@ -45,9 +45,17 @@ The following is a list of all the dependencies of this project:
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.24.1
+**Used version:** 0.25.2
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
+
+## [husky](git+https://github.com/typicode/husky.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 8.0.3
+
+**Many thanks to:** [Typicode](typicode@gmail.com)
 
 ## [js-yaml](git+https://github.com/nodeca/js-yaml.git)
 
@@ -57,13 +65,13 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
 
-## [protobufjs](git+https://github.com/protobufjs/protobuf.js.git)
+## [rimraf](git://github.com/isaacs/rimraf.git)
 
-**License:** BSD-3-Clause - perpetual
+**License:** ISC - perpetual
 
-**Used version:** 7.2.4
+**Used version:** 5.0.1
 
-**Many thanks to:** [Daniel Wirtz](dcode+protobufjs@dcode.io)
+**Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
 ## [ts-morph](git+https://github.com/dsherret/ts-morph.git)
 
@@ -89,11 +97,19 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Eemeli Aro](eemeli@gmail.com)
 
+## [@types/debug](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 4.1.8
+
+**Many thanks to:** n/a
+
 ## [@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
 **License:** MIT - perpetual
 
-**Used version:** 18.11.10
+**Used version:** 20.4.8
 
 **Many thanks to:** n/a
 
@@ -109,15 +125,23 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.0
+**Used version:** 29.6.2
 
 **Many thanks to:** n/a
+
+## [protobufjs](git+https://github.com/protobufjs/protobuf.js.git)
+
+**License:** BSD-3-Clause - perpetual
+
+**Used version:** 7.2.4
+
+**Many thanks to:** [Daniel Wirtz](dcode+protobufjs@dcode.io)
 
 ## [ts-jest](git+https://github.com/kulshekhar/ts-jest.git)
 
 **License:** MIT - perpetual
 
-**Used version:** 29.1.0
+**Used version:** 29.1.1
 
 **Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
 
