@@ -76,14 +76,13 @@ export function generateProtoFile(
 import "google/protobuf/descriptor.proto";
 
 extend google.protobuf.FieldOptions {
-optional string custom_type = 50002;
+  optional string custom_type = 50002;
 }
 `;
 
   let imports = fields.indexOf('custom_type') > -1 ? customImports : '';
 
-  let protoFile = `
-syntax = "proto3";
+  let protoFile = `syntax = "proto3";
 ${imports}
 message ${name}Helper {
 ${fields}
@@ -120,9 +119,12 @@ function computeArgument(
   refTable: Map<ASType, ProtoType>,
 ): string {
   let asType = arg.getType();
-  let protoType = refTable.get(asType)!;
+  let protoType = refTable.get(asType);
+  if (!protoType) {
+    throw new Error(`Unsupported type: ${asType}`);
+  }
   let fieldName = arg.getName();
-  let message = generatePayload(fieldName, protoType, prevIndex + 1);
+  let message = generatePayload(fieldName, asType, protoType, prevIndex + 1);
   if (protoType.metaData !== null && protoType.metaData !== undefined) {
     pushCustomTypeUpdate(
       transformer,
@@ -167,13 +169,12 @@ function pushCustomTypeUpdate(
  */
 function generatePayload(
   field: string,
+  as: ASType,
   proto: ProtoType,
   index: number,
 ): string {
   const fieldType = (proto.repeated ? 'repeated ' : '') + proto.name;
-  const optTemplateType = proto.metaData
-    ? ` [(custom_type) = "${proto.name}"];`
-    : ';';
+  const optTemplateType = proto.metaData ? ` [(custom_type) = "${as}"];` : ';';
   return `  ${fieldType} ${field} = ${index}` + optTemplateType;
 }
 

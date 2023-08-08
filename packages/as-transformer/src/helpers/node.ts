@@ -15,8 +15,7 @@ export class MassaFunctionNode {
   static createFromASTNode(node: FunctionDeclaration) {
     Debug.log('Creating MassaFunctionNode from AST node: ' + node.name.text);
     const name = node.name.text;
-    const returnType = (node.signature.returnType as NamedTypeNode).name
-      .identifier.text;
+    const returnType = node.signature.returnType.range.toString();
     const args = node.signature.parameters.map((arg) => {
       return new Argument(
         arg.name.text,

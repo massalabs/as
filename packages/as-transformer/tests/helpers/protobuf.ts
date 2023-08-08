@@ -12,7 +12,9 @@ import "google/protobuf/descriptor.proto";
 
 extend google.protobuf.FieldOptions {
   optional string custom_type = 50002;
-}`;
+}
+`;
+
 describe('generateProtoFile', () => {
   it('should generate a simple Protobuf file with no arguments or returned value', () => {
     const name = 'MyFunction';
@@ -23,7 +25,8 @@ describe('generateProtoFile', () => {
 
 message MyFunctionHelper {
 
-}`;
+}
+`;
 
     const result = generateProtoFile(
       name,
@@ -50,7 +53,8 @@ message MyFunctionHelper {
   int32 arg1 = 1;
   string arg2 = 2;
   bool arg3 = 3;
-}`;
+}
+`;
 
     const result = generateProtoFile(
       name,
@@ -139,7 +143,8 @@ message MyFunctionRHelper {
 
 message Helper {
 
-}`;
+}
+`;
 
     const result = generateProtoFile(
       name,
@@ -164,11 +169,38 @@ message Helper {
     const returnedType = 'void';
     const expectedOutput = `syntax = "proto3";
 ${customTypeImports}
-
-
 message MyFunctionHelper {
   bytes arg1 = 1 [(custom_type) = "u256"];
   bytes arg2 = 2 [(custom_type) = "u256"];
+}
+`;
+
+    const result = generateProtoFile(
+      name,
+      args,
+      returnedType,
+      massaExportTransformer,
+    );
+
+    expect(result).toEqual(expectedOutput);
+  });
+
+  it('should generate a simple Protobuf file from function returning array', () => {
+    const name = 'test';
+    const args: Argument[] = [
+      new Argument('arg1', 'i32', 'test'),
+      new Argument('arg2', 'i32', 'test'),
+    ];
+    const returnedType = 'Int32Array';
+    const expectedOutput = `syntax = "proto3";
+
+message testHelper {
+  int32 arg1 = 1;
+  int32 arg2 = 2;
+}
+
+message testRHelper {
+  repeated int32 value = 1;
 }`;
 
     const result = generateProtoFile(
