@@ -22,7 +22,7 @@
     "husky": "^8.0.3",
     "js-yaml": "^4.1.0",
     "rimraf": "^5.0.1",
-    "ts-morph": "^18.0.0",
+    "ts-morph": "^19.0.0",
     "visitor-as": "^0.11.4",
     "yaml": "^2.3.1"
   },
@@ -38,8 +38,7 @@
     "visitor-as": "^0.11.4"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
-  "types": "./types/index.d.ts"
+  "types": "dist/index.d.ts"
 }
