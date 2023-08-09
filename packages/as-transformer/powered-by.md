@@ -77,7 +77,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 18.0.0
+**Used version:** 19.0.0
 
 **Many thanks to:** David Sherret
 
@@ -109,7 +109,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 20.4.8
+**Used version:** 20.4.9
 
 **Many thanks to:** n/a
 
