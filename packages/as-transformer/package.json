@@ -38,8 +38,7 @@
     "visitor-as": "^0.11.4"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
-  "types": "./types/index.d.ts"
+  "types": "dist/index.d.ts"
 }
