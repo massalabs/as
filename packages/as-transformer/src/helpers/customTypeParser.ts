@@ -20,7 +20,7 @@ export interface MassaCustomType {
  *
  * @returns an array of extracted types.
  */
-function extractTypes(fileContent: string): MassaCustomType[] {
+export function extractTypes(fileContent: string): MassaCustomType[] {
   const types: MassaCustomType[] = [];
   const data = yaml.parse(fileContent);
 
