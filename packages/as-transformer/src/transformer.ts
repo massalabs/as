@@ -98,6 +98,7 @@ export class Transformer extends TransformVisitor {
   ): Source {
     let newParser = new Parser(parser.diagnostics);
     for (let diag of newParser.diagnostics) {
+      // eslint-disable-next-line no-console
       console.error('Massa Transform error: ' + diag.message);
     }
     assert(

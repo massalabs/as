@@ -240,6 +240,7 @@ export class MassaExport {
 
       const scFunc = update.getData().get('funcToPrivate');
       if (scFunc === undefined) {
+        // eslint-disable-next-line no-console
         console.error(
           'There was an error with pushing generated code imports to compilation. update:\n\t',
           update.getContent(),
