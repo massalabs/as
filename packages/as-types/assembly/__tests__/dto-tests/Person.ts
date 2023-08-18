@@ -31,6 +31,11 @@ export class Divinity extends Person implements Serializable {
 
     return new Result(args.offset);
   }
+
+  @inline @operator('==')
+  static eq(a: Divinity, b: Divinity): bool {
+    return a.name == b.name && a.age == b.age;
+  }
 }
 
 export class Hero extends Divinity implements Serializable {
