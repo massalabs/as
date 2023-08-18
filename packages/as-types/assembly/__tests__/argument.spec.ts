@@ -183,6 +183,31 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(11356323656733);
   });
 
+  it('With u16 & i16', () => {
+    const args1 = new Args();
+    args1.add(97 as u16);
+
+    expect(args1.nextU16().unwrap()).toBe(97 as u16);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU16().unwrap()).toBe(97 as u16);
+
+    const args3 = new Args();
+    args3
+      .add(U16.MAX_VALUE)
+      .add(U16.MIN_VALUE)
+      .add(I16.MAX_VALUE)
+      .add(I16.MIN_VALUE);
+    let n1 = args3.nextU16().expect('Cannot get u16');
+    let n2 = args3.nextU16().expect('Cannot get u16');
+    let n3 = args3.nextI16().expect('Cannot get i16');
+    let n4 = args3.nextI16().expect('Cannot get i16');
+    expect<u16>(n1).toBe(U16.MAX_VALUE);
+    expect<u16>(n2).toBe(U16.MIN_VALUE);
+    expect<i16>(n3).toBe(I16.MAX_VALUE);
+    expect<i16>(n4).toBe(I16.MIN_VALUE);
+  });
+
   it('With u32', () => {
     const args1 = new Args();
     args1.add(97 as u32);
