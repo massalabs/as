@@ -488,4 +488,23 @@ describe('Args tests', () => {
     expect(deser[1].age).toBe(45);
     expect(deser[1].name).toBe('Superman');
   });
+
+  it('With array of bytes', () => {
+    let _a1: Array<u8> = [1, 2, 3, 4];
+    let _a2: Array<u8> = [255, 254, 253, 252];
+    let a1 = StaticArray.fromArray(_a1);
+    let a2 = StaticArray.fromArray(_a2);
+    let arr: Array<StaticArray<u8>> = [];
+    arr.push(a1);
+    arr.push(a2);
+    expect(arr.length).toBe(2);
+    let args = new Args().add(arr);
+    let arrDeser = new Args(args.serialize())
+      .nextFixedSizeArray<StaticArray<u8>>()
+      .expect('Cannot get array of bytes');
+
+    expect(arrDeser.length).toBe(2);
+    expect(arrDeser[0]).toBe(arr[0]);
+    expect(arrDeser[1]).toBe(arr[1]);
+  });
 });
