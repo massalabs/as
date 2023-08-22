@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 import { MassaCustomType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
-// import Debug from 'debug';
+// import { debug } from 'console';
 
 enum ProtoType {
   Double = 'double',

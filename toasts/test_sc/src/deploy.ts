@@ -46,6 +46,16 @@ const __dirname = path.dirname(path.dirname(__filename));
         data: readFileSync(path.join(__dirname, 'build', 'main.wasm')), // smart contract bytecode
         coins: fromMAS(0.1), // coins for deployment
         args: new Args().addString('Test'), // arguments for deployment
+        protoPaths: [
+          'build/test1Helper.proto',
+          'build/test2Helper.proto',
+          'build/test3Helper.proto',
+          'build/test4Helper.proto',
+          'build/test5Helper.proto',
+          'build/test6Helper.proto',
+          'build/test7Helper.proto',
+          'build/test8Helper.proto',
+        ],
       } as ISCData,
       // Additional smart contracts can be added here for deployment
     ],
