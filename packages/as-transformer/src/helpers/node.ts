@@ -1,9 +1,9 @@
 import {
   FunctionDeclaration,
   IdentifierExpression,
-  NamedTypeNode,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { Argument } from './protobuf.js';
+// import { debug } from 'console';
 
 export class MassaFunctionNode {
   name: string;
@@ -15,11 +15,7 @@ export class MassaFunctionNode {
     const name = node.name.text;
     const returnType = node.signature.returnType.range.toString();
     const args = node.signature.parameters.map((arg) => {
-      return new Argument(
-        arg.name.text,
-        (arg.type as NamedTypeNode).name.identifier.text,
-        name,
-      );
+      return new Argument(arg.name.text, arg.type.range.toString(), name);
     });
 
     let newNode = new MassaFunctionNode(name, returnType, args);

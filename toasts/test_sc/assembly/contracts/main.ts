@@ -77,7 +77,20 @@ export function test7(arg1: i32, arg2: i32): Array<i32> {
   return [arg1, arg2];
 }
 
+// @ts-ignore: decorator
+@massaExport()
+export function test8(arg1: Array<i32>): i32 {
+  return arg1.length;
+}
+
+// // @ts-ignore: decorator
 // @massaExport()
+// export function test9(arg1: Array<StaticArray<u8>>): i32 {
+//   // export function test9(arg1: StaticArray<u8>[]): i32 {
+//     return arg1.length;
+// }
+
+// // @massaExport()
 // export interface TestInterface {
 //   arg1: i32;
 //   arg2: i64;
