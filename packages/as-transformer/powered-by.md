@@ -121,7 +121,7 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** 
 
-## [jest](git+https://github.com/facebook/jest.git)
+## [jest](git+https://github.com/jestjs/jest.git)
 
 **License:** MIT - perpetual
 
