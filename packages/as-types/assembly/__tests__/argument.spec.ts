@@ -183,6 +183,31 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(11356323656733);
   });
 
+  it('With u16 & i16', () => {
+    const args1 = new Args();
+    args1.add(97 as u16);
+
+    expect(args1.nextU16().unwrap()).toBe(97 as u16);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU16().unwrap()).toBe(97 as u16);
+
+    const args3 = new Args();
+    args3
+      .add(U16.MAX_VALUE)
+      .add(U16.MIN_VALUE)
+      .add(I16.MAX_VALUE)
+      .add(I16.MIN_VALUE);
+    let n1 = args3.nextU16().expect('Cannot get u16');
+    let n2 = args3.nextU16().expect('Cannot get u16');
+    let n3 = args3.nextI16().expect('Cannot get i16');
+    let n4 = args3.nextI16().expect('Cannot get i16');
+    expect<u16>(n1).toBe(U16.MAX_VALUE);
+    expect<u16>(n2).toBe(U16.MIN_VALUE);
+    expect<i16>(n3).toBe(I16.MAX_VALUE);
+    expect<i16>(n4).toBe(I16.MIN_VALUE);
+  });
+
   it('With u32', () => {
     const args1 = new Args();
     args1.add(97 as u32);
@@ -462,5 +487,24 @@ describe('Args tests', () => {
     expect(first.name).toBe('Poseidon?!#');
     expect(deser[1].age).toBe(45);
     expect(deser[1].name).toBe('Superman');
+  });
+
+  it('With array of bytes', () => {
+    let _a1: Array<u8> = [1, 2, 3, 4];
+    let _a2: Array<u8> = [255, 254, 253, 252];
+    let a1 = StaticArray.fromArray(_a1);
+    let a2 = StaticArray.fromArray(_a2);
+    let arr: Array<StaticArray<u8>> = [];
+    arr.push(a1);
+    arr.push(a2);
+    expect(arr.length).toBe(2);
+    let args = new Args().add(arr);
+    let arrDeser = new Args(args.serialize())
+      .nextFixedSizeArray<StaticArray<u8>>()
+      .expect('Cannot get array of bytes');
+
+    expect(arrDeser.length).toBe(2);
+    expect(arrDeser[0]).toBe(arr[0]);
+    expect(arrDeser[1]).toBe(arr[1]);
   });
 });

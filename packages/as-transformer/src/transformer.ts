@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { TransformVisitor, utils } from 'visitor-as';
+import { TransformVisitor, utils } from 'visitor-as/dist/index.js';
+import { Transform } from 'assemblyscript/dist/transform.js';
 import Debug from 'debug';
 import {
   Expression,
@@ -21,6 +22,7 @@ import {
   Update,
   UpdateType,
 } from './transformers/interfaces/Update.js';
+import assert from 'assert';
 
 const callTransformers = [
   new File2ByteArray(),
@@ -43,12 +45,14 @@ export class Transformer extends TransformVisitor {
    *
    * @returns The transformer node.
    */
-  visitFunctionDeclaration(node: FunctionDeclaration): FunctionDeclaration {
+  override visitFunctionDeclaration(
+    node: FunctionDeclaration,
+  ): FunctionDeclaration {
     let massaNode = MassaFunctionNode.createFromASTNode(node);
 
     for (let transformer of functionTransformers) {
       if (transformer.isMatching(massaNode)) {
-        Debug.log('Found function declaration to transform: ' + massaNode.name);
+        // Debug.log('Found function declaration to transform: ' + massaNode.name);
         node = transformer.transform(massaNode);
       }
       massaNode = MassaFunctionNode.createFromASTNode(node);
@@ -65,12 +69,12 @@ export class Transformer extends TransformVisitor {
    * @returns The transformed node if its call expression matches a transformer pattern, otherwise
    * the original node.
    */
-  visitCallExpression(node: CallExpression): Expression {
+  override visitCallExpression(node: CallExpression): Expression {
     const inputText = (node.expression as IdentifierExpression)?.text;
 
     for (let transformer of callTransformers) {
       if (transformer.isMatching(inputText)) {
-        Debug.log('Found call to transform: ' + inputText);
+        // Debug.log('Found call to transform: ' + inputText);
         return transformer.transform(node);
       }
     }
@@ -94,6 +98,7 @@ export class Transformer extends TransformVisitor {
   ): Source {
     let newParser = new Parser(parser.diagnostics);
     for (let diag of newParser.diagnostics) {
+      // eslint-disable-next-line no-console
       console.error('Massa Transform error: ' + diag.message);
     }
     assert(
@@ -105,7 +110,7 @@ export class Transformer extends TransformVisitor {
 
     let newSource = newParser.sources.pop()!;
     // Debug.log('New source: ' + newSource.internalPath);
-    utils.updateSource(this.program, newSource);
+    utils.updateSource((this as Transform).program, newSource);
     // Debug.log("AS-TRM: updated source: '" + newSource.internalPath + "'");
     return newSource;
   }
@@ -136,7 +141,7 @@ export class Transformer extends TransformVisitor {
         ).length > 0
       )
         continue;
-      this.program.sources.push(
+      (this as Transform).program.sources.push(
         parseFile(newSource, new Parser(parser.diagnostics)),
       );
       GlobalUpdates.add(

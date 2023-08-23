@@ -86,6 +86,28 @@ export function fromBytes<T>(arr: StaticArray<u8>): T {
 }
 
 /**
+ * Converts a u16 in a StaticArray<u8>.
+ *
+ * @param val - the number to convert
+ *
+ * @returns the converted StaticArray<u8>
+ */
+export function u16ToBytes(val: u16): StaticArray<u8> {
+  return toBytes(val);
+}
+
+/**
+ * Converts a StaticArray<u8> into a u16.
+ *
+ * @param arr - the array to convert
+ *
+ * @returns the converted u16
+ */
+export function bytesToU16(arr: StaticArray<u8>): u16 {
+  return fromBytes<u16>(arr);
+}
+
+/**
  * Converts a u32 in a StaticArray<u8>.
  *
  * @param val - the number to convert
@@ -127,6 +149,28 @@ export function f32ToBytes(val: f32): StaticArray<u8> {
  */
 export function bytesToF32(arr: StaticArray<u8>): f32 {
   return reinterpret<f32>(bytesToU32(arr));
+}
+
+/**
+ * Converts a i16 in a StaticArray<u8>.
+ *
+ * @param val - the integer to convert
+ *
+ * @returns the converted StaticArray<u8>
+ */
+export function i16ToBytes(val: i16): StaticArray<u8> {
+  return u16ToBytes(val as u16);
+}
+
+/**
+ * Converts a StaticArray<u8> into a i16.
+ *
+ * @param arr - the array to convert
+ *
+ * @returns the converted i16
+ */
+export function bytesToI16(arr: StaticArray<u8>): i16 {
+  return bytesToU16(arr) as i16;
 }
 
 /**

@@ -115,7 +115,7 @@ ${response}
 function computeArgument(
   transformer: MassaExport,
   arg: Argument,
-  prevIndex: u32,
+  prevIndex: number,
   refTable: Map<ASType, ProtoType>,
 ): string {
   let asType = arg.getType();
@@ -198,6 +198,7 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
   ]);
 
   if (protocProcess.status !== 0) {
+    // eslint-disable-next-line no-console
     console.error(
       `Failed to generate AS helpers code for: \n${protoFile} \nwith error: ${protocProcess.stderr}`,
     );

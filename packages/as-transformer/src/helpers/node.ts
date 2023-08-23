@@ -1,7 +1,6 @@
 import {
   FunctionDeclaration,
   IdentifierExpression,
-  NamedTypeNode,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { Argument } from './protobuf.js';
 import Debug from 'debug';
@@ -17,11 +16,7 @@ export class MassaFunctionNode {
     const name = node.name.text;
     const returnType = node.signature.returnType.range.toString();
     const args = node.signature.parameters.map((arg) => {
-      return new Argument(
-        arg.name.text,
-        (arg.type as NamedTypeNode).name.identifier.text,
-        name,
-      );
+      return new Argument(arg.name.text, arg.type.range.toString(), name);
     });
 
     let newNode = new MassaFunctionNode(name, returnType, args);
@@ -38,7 +33,7 @@ export class MassaFunctionNode {
 
 // inspired from https://github.com/as-pect/visitor-as/blob/master/src/utils.ts#L35
 // TODO: check if it's still needed.
-export function hasDecorator(node: FunctionDeclaration, name: string): bool {
+export function hasDecorator(node: FunctionDeclaration, name: string): boolean {
   let decl = node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

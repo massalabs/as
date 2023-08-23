@@ -4,7 +4,7 @@ import {
   Expression,
 } from 'assemblyscript/dist/assemblyscript.js';
 import { RangeTransform } from 'visitor-as/dist/transformRange.js';
-import { SimpleParser } from 'visitor-as';
+import { SimpleParser } from 'visitor-as/dist/index.js';
 import {
   IdentifierExpression,
   StringLiteralExpression,

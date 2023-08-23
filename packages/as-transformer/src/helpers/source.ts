@@ -1,4 +1,5 @@
 import { Parser, Source } from 'assemblyscript/dist/assemblyscript.js';
+import assert from 'assert';
 import { readFileSync } from 'fs';
 
 export function parseFile(filePath: string, parser: Parser): Source {
@@ -16,6 +17,7 @@ export function parseFile(filePath: string, parser: Parser): Source {
     );
   }
   for (let diag of parser.diagnostics) {
+    // eslint-disable-next-line no-console
     console.warn(
       `Massa Transform error:\n msg:'${diag.message}'\nfrom: ${diag.range?.source.internalPath}:${diag.range?.start}`,
     );

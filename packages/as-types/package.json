@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "as-bignum": "^0.2.31",
-    "assemblyscript": "^0.25.0"
+    "assemblyscript": "^0.25.2"
   },
   "files": [
     "assembly",

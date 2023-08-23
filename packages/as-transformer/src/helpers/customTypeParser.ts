@@ -9,7 +9,7 @@ export type ASType = string;
 
 export interface ProtoType {
   name: string;
-  repeated?: bool;
+  repeated?: boolean;
   metaData?: ProtoMetadata;
 }
 

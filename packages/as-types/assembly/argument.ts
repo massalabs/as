@@ -278,7 +278,7 @@ export class Args {
     if (this._offset + size > this.serialized.length) {
       return new Result(
         u256.Zero,
-        "can't deserialize u128 from given argument: out of range",
+        "can't deserialize u256 from given argument: out of range",
       );
     }
     const value = ser.bytesToU256(this.getNextData(size));
@@ -403,6 +403,55 @@ export class Args {
     }
 
     const value = ser.bytesToF32(this.getNextData(size));
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an u16 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize u16 from given argument: out of range".
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized u16 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
+   */
+  nextU16(): Result<u16> {
+    const size: i32 = sizeof<u16>();
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        0,
+        "can't deserialize u16 from given argument: out of range",
+      );
+    }
+
+    const value = ser.bytesToU16(this.getNextData(size));
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an i16 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize i16 from given argument: out of range".
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized i16 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
+   */
+  nextI16(): Result<i16> {
+    const size: i32 = sizeof<i16>();
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        0,
+        "can't deserialize i16 from given argument: out of range",
+      );
+    }
+    const value = ser.bytesToI16(this.getNextData(size));
     return new Result(value);
   }
 
@@ -569,6 +618,8 @@ export class Args {
       this.serialized = this.serialized.concat(arg);
     } else if (arg instanceof u8) {
       this.serialized = this.serialized.concat(ser.u8toByte(<u8>arg));
+    } else if (arg instanceof u16 || arg instanceof i16) {
+      this.serialized = this.serialized.concat(ser.u16ToBytes(<u16>arg));
     } else if (arg instanceof u32 || arg instanceof i32) {
       this.serialized = this.serialized.concat(ser.u32ToBytes(<u32>arg));
     } else if (arg instanceof u64 || arg instanceof i64) {
@@ -594,6 +645,7 @@ export class Args {
       || (arg instanceof Array<f32>) || (arg instanceof Array<f64>)
       || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
       || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
+      || (arg instanceof Array<StaticArray<u8>>)
     ) {
       const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);
