@@ -645,6 +645,7 @@ export class Args {
       || (arg instanceof Array<f32>) || (arg instanceof Array<f64>)
       || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
       || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
+      || (arg instanceof Array<StaticArray<u8>>)
     ) {
       const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);
