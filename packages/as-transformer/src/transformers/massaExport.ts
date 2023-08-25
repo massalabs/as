@@ -4,8 +4,6 @@ import {
   Source,
 } from 'assemblyscript/dist/assemblyscript.js';
 
-// import Debug from 'debug';
-
 import {
   Argument,
   generateASHelpers,
@@ -18,6 +16,9 @@ import { Update, GlobalUpdates, UpdateType } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
 import path from 'path';
+// eslint-disable-next-line
+// @ts-ignore
+import { debug } from 'console';
 
 /**
  * The Massa Export transformer is responsible of exporting standard contract
@@ -359,7 +360,7 @@ function updateSourceFile(
  */
 function addImports(content: string, imports: string[], dir: string): string {
   const generateEventImportRegex =
-    /(?:import\s*{.*generateEvent.*}\s*from\s*("|')@massalabs\/massa-as-sdk("|'))/gm;
+    /^import\s*{[^}]*generateEvent[^}]*}\s*from\s*(['"])@massalabs\/massa-as-sdk\1/gm;
 
   // checking if adding declare of generateEvent is needed or if its already imported by the contract
   if (generateEventImportRegex.exec(content) === null) {
