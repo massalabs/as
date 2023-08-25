@@ -12,8 +12,6 @@ import {
 import { Update, GlobalUpdates } from './interfaces/Update.js';
 import Debug from 'debug';
 
-// import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
-
 /**
  * The MassaExportCalls is a specific transformer that works by replacing a any massa exported function calls
  * by their transformed version.

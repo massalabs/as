@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { deploySC, WalletClient, ISCData } from '@massalabs/massa-sc-deployer';
 import { Args, fromMAS } from '@massalabs/massa-web3';
+import { debug } from 'console';
 
 // Load .env file content into process.env
 dotenv.config();
@@ -38,24 +39,28 @@ const __dirname = path.dirname(path.dirname(__filename));
  * After all deployments, it terminates the process.
  */
 (async () => {
+  const dir = 'build';
+
+  // get the list of '.proto' files in the directory
+  function getProtoFiles(protoDir: string): string[] {
+    const dirPath = path.join(__dirname, protoDir);
+    const files = readdirSync(dirPath);
+    const protoFiles = files
+      .filter((file) => path.extname(file) === '.proto')
+      .map((file) => path.join(dirPath, file));
+
+    return protoFiles;
+  }
+
   await deploySC(
     publicApi, // JSON RPC URL
     deployerAccount, // account deploying the smart contract(s)
     [
       {
-        data: readFileSync(path.join(__dirname, 'build', 'main.wasm')), // smart contract bytecode
+        data: readFileSync(path.join(__dirname, dir, 'main.wasm')), // smart contract bytecode
         coins: fromMAS(0.1), // coins for deployment
         args: new Args().addString('Test'), // arguments for deployment
-        protoPaths: [
-          'build/test1Helper.proto',
-          'build/test2Helper.proto',
-          'build/test3Helper.proto',
-          'build/test4Helper.proto',
-          'build/test5Helper.proto',
-          'build/test6Helper.proto',
-          'build/test7Helper.proto',
-          'build/test8Helper.proto',
-        ],
+        protoPaths: getProtoFiles(dir),
       } as ISCData,
       // Additional smart contracts can be added here for deployment
     ],

@@ -1,17 +1,39 @@
 import { spawnSync } from 'child_process';
-import { ASType, ProtoType, fetchCustomTypes } from './customTypeParser.js';
+import { ASType, ProtoMetadata, ProtoType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
 import * as fs from 'fs';
+import * as path from 'path';
 import yaml from 'yaml';
+// eslint-disable-next-line
+// @ts-ignore
+import { assert, debug } from 'console';
+import { NamedTypeNode, TypeNode } from 'assemblyscript';
+import { MassaFunctionNode } from './node.js';
 
-function readRefTable(): Map<ASType, ProtoType> {
-  const file = fs.readFileSync('./reftable.yml').toString();
-  let parsed = yaml.parse(file);
+export function readRefTable(): Map<ASType, ProtoType> {
+  const __filename = path.resolve(decodeURI(new URL(import.meta.url).pathname));
+  const __dirname = path.dirname(__filename);
 
+  const filePath = path.join(__dirname, '../../config/reftable.yml');
+
+  const file = fs.readFileSync(filePath, 'utf8');
+  const parsed = yaml.parse(file);
   let initial: Map<ASType, ProtoType> = new Map();
   for (const t of parsed) {
-    initial.set(t.as, { name: t.proto, repeated: t.repeated });
+    if (t.serialize && t.deserialize) {
+      let metaData = new ProtoMetadata(
+        t.serialize,
+        t.deserialize,
+      );
+      initial.set(t.as, {
+        name: t.proto, repeated: t.repeated, metaData: metaData,
+      });
+    } else {
+      initial.set(t.as, {
+        name: t.proto, repeated: t.repeated,
+      });
+    }
   }
   let customs: Map<ASType, ProtoType> = fetchCustomTypes();
   let table = new Map([...initial.entries(), ...customs.entries()]);
@@ -19,28 +41,19 @@ function readRefTable(): Map<ASType, ProtoType> {
 }
 
 export class Argument {
-  private name: string;
-  private type: string;
-  private fnName: string;
+  readonly name: string;
+  readonly fnName: string;
+  readonly type: TypeNode;
 
-  constructor(name: string, type: string, fnName: string) {
+  constructor(name: string, fnName: string, type: TypeNode) {
     this.name = name;
-    this.type = type;
     this.fnName = fnName;
-  }
-
-  getName(): string {
-    return this.name;
-  }
-
-  getType(): string {
-    return this.type;
-  }
-
-  getFnName(): string {
-    return this.fnName;
+    this.type = type;
   }
 }
+
+// create a global refTable, so we don't have to read the file every time
+const refTable = readRefTable();
 
 /**
  * Generates the protobuf file data for the passed function signature.
@@ -57,14 +70,11 @@ export class Argument {
  * @returns the protobuf file as a string.
  */
 export function generateProtoFile(
-  name: string,
-  args: Argument[],
-  returnedType: string | undefined,
+  massaFunction: MassaFunctionNode,
   transformer: MassaExport,
 ): string {
-  // NOTE: this is called only once atm
-  // if it not the case anymore move this to the upper call
-  let refTable = readRefTable();
+  const { name, args, returnNode } = massaFunction;
+  const returnType = typeNodeToString(returnNode);
 
   const argumentMessages = args.map((arg, index) => {
     const message = computeArgument(transformer, arg, index, refTable);
@@ -89,12 +99,8 @@ ${fields}
 }
 `;
 
-  if (returnedType && returnedType != 'void' && returnedType != 'null') {
-    const argumentResponse: Argument = new Argument(
-      'value',
-      returnedType,
-      name,
-    );
+  if (returnType != 'void') {
+    const argumentResponse: Argument = new Argument('value', name, returnNode);
 
     const response = computeArgument(
       transformer,
@@ -118,23 +124,49 @@ function computeArgument(
   prevIndex: number,
   refTable: Map<ASType, ProtoType>,
 ): string {
-  let asType = arg.getType();
+  let asType = typeNodeToString(arg.type);
   let protoType = refTable.get(asType);
+
+  // If the type is not found in the refTable, maybe it's an array of a known type
+  // try to find the type of the array
   if (!protoType) {
+    if (isArray(arg.type)) {
+      asType = typeNodeToString(getArrayElementType(arg.type));
+      protoType = refTable.get(asType);
+      protoType = protoType ? { ...protoType, repeated: true } : undefined;
+    }
+  }
+
+  // not a simple array of something, give up
+  if (!protoType) {
+    // debug(arg.node?.type as TypeNode);
+    debugTypeNode(arg.type);
     throw new Error(`Unsupported type: ${asType}`);
   }
-  let fieldName = arg.getName();
-  let message = generatePayload(fieldName, asType, protoType, prevIndex + 1);
-  if (protoType.metaData !== null && protoType.metaData !== undefined) {
-    pushCustomTypeUpdate(
-      transformer,
-      arg.getFnName(),
-      asType,
-      protoType,
-      fieldName,
-    );
+
+  let fieldName = arg.name;
+  let message = generatePayload(
+    fieldName,
+    typeNodeToString(arg.type),
+    protoType,
+    prevIndex + 1,
+  );
+  if (protoType && protoType.metaData) {
+    pushCustomTypeUpdate(transformer, arg.fnName, asType, protoType, fieldName);
   }
   return message;
+}
+
+function debugTypeNode(node: TypeNode) {
+  debug('str:', node.range.toString());
+  debug('main:', (node as NamedTypeNode)?.name.identifier.text);
+  debug(
+    'sub:',
+    (node as NamedTypeNode)?.typeArguments?.map(
+      (t) => (t as NamedTypeNode).name.identifier.text,
+    ),
+  );
+  debug('ext:', (node as NamedTypeNode)?.name.next?.identifier.text);
 }
 
 function pushCustomTypeUpdate(
@@ -167,14 +199,22 @@ function pushCustomTypeUpdate(
  *
  * @returns the protobuf argument as a string.
  */
+/**
+ * Generates a payload string for a given field, AssemblyScript type, protobuf type, and index.
+ * @param field - The name of the field.
+ * @param asFullType - The AssemblyScript type of the field *including Array*.
+ * @param proto - The protobuf type of the field.
+ * @param index - The index of the field.
+ * @returns The payload string.
+ */
 function generatePayload(
   field: string,
-  as: ASType,
+  asFullType: ASType,
   proto: ProtoType,
   index: number,
 ): string {
   const fieldType = (proto.repeated ? 'repeated ' : '') + proto.name;
-  const optTemplateType = proto.metaData ? ` [(custom_type) = "${as}"];` : ';';
+  const optTemplateType = ` [(custom_type) = "${asFullType}"];`;
   return `  ${fieldType} ${field} = ${index}` + optTemplateType;
 }
 
@@ -200,7 +240,34 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
   if (protocProcess.status !== 0) {
     // eslint-disable-next-line no-console
     console.error(
-      `Failed to generate AS helpers code for: \n${protoFile} \nwith error: ${protocProcess.stderr}`,
+      `Failed to generate AS helpers code for: \n` +
+      `${protoFile} \nwith error: ${protocProcess.stderr}`,
     );
   }
+}
+
+export function isArray(node: TypeNode): boolean {
+  // debug(
+  //   typeNodeToString(node),
+  //   (node as NamedTypeNode)?.name.identifier.text.indexOf('Array') > -1,
+  //   (node as NamedTypeNode)?.name.identifier.text === 'Array',
+  // );
+  return (node as NamedTypeNode)?.name.identifier.text === 'Array';
+}
+
+export function getArrayElementType(node: TypeNode): TypeNode {
+  const namedTypeNode = node as NamedTypeNode;
+  if (
+    !namedTypeNode ||
+    !namedTypeNode.typeArguments ||
+    namedTypeNode.typeArguments.length === 0 ||
+    !namedTypeNode.typeArguments[0]
+  ) {
+    throw new Error('Invalid array type node: ' + typeNodeToString(node));
+  }
+  return namedTypeNode.typeArguments[0];
+}
+
+export function typeNodeToString(node: TypeNode): string {
+  return node.range.toString();
 }

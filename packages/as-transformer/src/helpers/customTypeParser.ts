@@ -13,15 +13,17 @@ export interface ProtoType {
   metaData?: ProtoMetadata;
 }
 
-class ProtoMetadata {
-  import: string;
+export class ProtoMetadata {
   serialize: string;
   deserialize: string;
+  import?: string;
 
-  constructor(importPath: string, serialize: string, deserialize: string) {
-    this.import = importPath;
+  constructor(serialize: string, deserialize: string, importPath?: string) {
     this.serialize = serialize;
     this.deserialize = deserialize;
+    if (importPath) {
+      this.import = importPath;
+    }
   }
 }
 
@@ -41,9 +43,9 @@ function extractTypes(fileContent: string): Map<ASType, ProtoType> {
     types.set(type.name, {
       name: type.proto,
       metaData: new ProtoMetadata(
-        type.import,
         type.serialize,
         type.deserialize,
+        type.import,
       ),
     });
   }

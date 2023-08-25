@@ -5,8 +5,8 @@
   proto: int32
 
 - as: Int8Array
-  proto: int32
-  repeated: true
+  proto: bytes
+  repeated: false
 
 - as: i16
   proto: int32
@@ -36,8 +36,8 @@
   proto: uint32
 
 - as: Uint8Array
-  proto: uint32
-  repeated: true
+  proto: bytes
+  repeated: false
 
 - as: u16
   proto: uint32
@@ -80,6 +80,22 @@
 - as: string
   proto: string
 
-- as: Array<string>
-  proto: string
-  repeated: true
+# bytes arrays are special cases because they map to bytes in protobuf
+# so for the moment we handle them like a primitive type
+- as: Array<i8>
+  proto: bytes
+  repeated: false
+  serialize: "changetype<Uint8Array>(\\1)"
+  deserialize: "changetype<Array<i8>>(response.value)"
+
+- as: Array<u8>
+  proto: bytes
+  repeated: false
+
+- as: i8[]
+  proto: bytes
+  repeated: false
+
+- as: u8[]
+  proto: bytes
+  repeated: false
