@@ -19,7 +19,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@as-pect/cli": "^8.0.1",
+        "@as-pect/cli": "^8.1.0",
         "@assemblyscript/loader": "^0.25.2",
         "@massalabs/as-transformer": "../../packages/as-transformer/",
         "@massalabs/as-types": "../../packages/as-types/",
@@ -35,8 +35,8 @@
         "dotenv": "^16.0.3",
         "prettier": "^2.8.1",
         "ts-node": "^10.9.1",
-        "tslib": "^2.4.0",
-        "typescript": "^4.8.4"
+        "tslib": "^2.6.2",
+        "typescript": "^5.2.2"
     },
     "type": "module",
     "prettier": "@massalabs/prettier-config-as",

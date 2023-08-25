@@ -3,12 +3,19 @@ import { ASType, ProtoType, fetchCustomTypes } from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
 import * as fs from 'fs';
+import * as path from 'path';
 import yaml from 'yaml';
+// eslint-disable-next-line
+// @ts-ignore
+import { debug } from 'console';
 
 function readRefTable(): Map<ASType, ProtoType> {
-  const file = fs.readFileSync('./reftable.yml').toString();
-  let parsed = yaml.parse(file);
+  const __filename = path.resolve(decodeURI(new URL(import.meta.url).pathname));
+  const __dirname = path.dirname(__filename);
 
+  const filePath = path.join(__dirname, '../config/reftable.yml');
+  const file = fs.readFileSync(filePath, 'utf8');
+  const parsed = yaml.parse(file);
   let initial: Map<ASType, ProtoType> = new Map();
   for (const t of parsed) {
     initial.set(t.as, { name: t.proto, repeated: t.repeated });
