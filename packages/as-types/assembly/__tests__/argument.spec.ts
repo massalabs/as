@@ -463,7 +463,6 @@ describe('Args tests', () => {
       args.nextFixedSizeArray<boolean>().unwrap(),
     ).toStrictEqual(emptyArray);
   });
-
   it('With array of string', () => {
     const array = ["I'm", 'a', 'string', 'array', 'of', 'strings'];
     const serialized = new Args().add(array).serialize();
@@ -471,7 +470,16 @@ describe('Args tests', () => {
     const unserialized = args.nextStringArray().unwrap();
     expect<string[]>(unserialized).toStrictEqual(array);
   });
-
+  it('With 2 arrays of string', () => {
+    const array1 = ["I'm", 'the', '1st'];
+    const array2 = ["I'm", 'a', '2nd'];
+    const serialized = new Args().add(array1).add(array2).serialize();
+    const args = new Args(serialized);
+    const unserialized1 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized1).toStrictEqual(array1);
+    const unserialized2 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized2).toStrictEqual(array2);
+  });
   it('With array of Serializable', () => {
     const arrayOfSerializable = [
       new Divinity(14, 'Poseidon?!#'),
