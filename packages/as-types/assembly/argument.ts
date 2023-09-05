@@ -192,7 +192,8 @@ export class Args {
       value.push(ser.bytesToString(this.getNextData(strLen)));
     }
 
-    this._offset += bufferSize;
+    // Note: no need to update this._offset at this point, previous call to getNextData already did
+    // this._offset += bufferSize;
     return new Result(value);
   }
 
