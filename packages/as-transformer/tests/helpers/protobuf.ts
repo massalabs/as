@@ -3,10 +3,7 @@ import { generateProtoFile } from '../../src/helpers/protobuf';
 import { MassaExport } from '../../src/transformers/massaExport';
 import { MassaFunctionNode } from '../../src/helpers/node';
 
-import {
-  Parser,
-  FunctionDeclaration,
-} from 'assemblyscript';
+import { Parser, FunctionDeclaration } from 'assemblyscript';
 
 // eslint-disable-next-line
 // @ts-ignore

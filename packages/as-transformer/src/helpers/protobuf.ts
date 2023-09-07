@@ -1,5 +1,10 @@
 import { spawnSync } from 'child_process';
-import { ASType, ProtoMetadata, ProtoType, fetchCustomTypes } from './customTypeParser.js';
+import {
+  ASType,
+  ProtoMetadata,
+  ProtoType,
+  fetchCustomTypes,
+} from './customTypeParser.js';
 import { MassaExport } from '../transformers/massaExport.js';
 import { Update, UpdateType } from '../transformers/interfaces/Update.js';
 import * as fs from 'fs';
@@ -22,16 +27,16 @@ export function readRefTable(): Map<ASType, ProtoType> {
   let initial: Map<ASType, ProtoType> = new Map();
   for (const t of parsed) {
     if (t.serialize && t.deserialize) {
-      let metaData = new ProtoMetadata(
-        t.serialize,
-        t.deserialize,
-      );
+      let metaData = new ProtoMetadata(t.serialize, t.deserialize);
       initial.set(t.as, {
-        name: t.proto, repeated: t.repeated, metaData: metaData,
+        name: t.proto,
+        repeated: t.repeated,
+        metaData: metaData,
       });
     } else {
       initial.set(t.as, {
-        name: t.proto, repeated: t.repeated,
+        name: t.proto,
+        repeated: t.repeated,
       });
     }
   }
@@ -241,7 +246,7 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
     // eslint-disable-next-line no-console
     console.error(
       `Failed to generate AS helpers code for: \n` +
-      `${protoFile} \nwith error: ${protocProcess.stderr}`,
+        `${protoFile} \nwith error: ${protocProcess.stderr}`,
     );
   }
 }
