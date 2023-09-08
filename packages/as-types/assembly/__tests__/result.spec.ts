@@ -22,19 +22,19 @@ describe('Result3 tests', () => {
     let d1 = new Divinity(14, 'Poseidon?!#');
     let d2 = new Divinity(42, 'Zeus');
     let res1: Result3<Divinity> = new Result3(d1);
-    let res2 = new Result3<Divinity>(new Divinity());
     let res3 = Result3.toOk<Divinity>(d2);
     expect<Divinity>(res1.unwrap()).toBe(d1);
     expect<Divinity>(res3.unwrap()).toBe(d2);
 
     let sRes1 = SResult3.fromResult(res1);
     expect<Divinity>(sRes1.unwrap()).toBe(d1);
+    let res2 = new Result3<Divinity>(new Divinity());
     let sRes2 = SResult3.fromResult(res2);
-    expect<Divinity>(sRes1.unwrap()).toBe(d1);
+    expect<Divinity>(sRes2.unwrap()).toBe(new Divinity());
 
     let _Res1 = SResult3.toResult(sRes1);
     expect<Divinity>(_Res1.unwrap()).toBe(d1);
-    expect<Divinity>(_Res1.expect('expect this & that')).toBe(d1);
+    expect<Divinity>(_Res1.expect('expect to get divinity Poseidon')).toBe(d1);
     let _Res2 = SResult3.toResult(sRes2);
     expect<Divinity>(_Res2.unwrap()).toBe(new Divinity());
   });
