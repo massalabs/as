@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message testArrayU8Helper {
+  bytes arg1 = 1 [(custom_type) = "Array<u8>"];
+}
+
+message testArrayU8RHelper {
+  bytes value = 1 [(custom_type) = "Array<u8>"];
+}

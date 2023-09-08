@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message testSquareArrayU128Helper {
+  repeated bytes arg1 = 1 [(custom_type) = "u128[]"];
+}
+
+message testSquareArrayU128RHelper {
+  repeated bytes value = 1 [(custom_type) = "u128[]"];
+}

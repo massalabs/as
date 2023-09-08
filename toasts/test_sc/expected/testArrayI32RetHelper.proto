@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message testArrayI32RetHelper {
+  int32 arg1 = 1 [(custom_type) = "i32"];
+  int32 arg2 = 2 [(custom_type) = "i32"];
+}
+
+message testArrayI32RetRHelper {
+  repeated int32 value = 1 [(custom_type) = "Array<i32>"];
+}

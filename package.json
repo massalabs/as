@@ -38,7 +38,7 @@
   "devDependencies": {
     "@as-pect/cli": "=8.0.1",
     "@massalabs/eslint-config": "^0.0.10",
-    "@massalabs/massa-as-sdk": "^2.3.0",
+    "@massalabs/massa-as-sdk": "^2.5.1",
     "@massalabs/prettier-config-as": "^0.0.2",
     "@types/debug": "^4.1.8",
     "as-proto": "^1.3.0",

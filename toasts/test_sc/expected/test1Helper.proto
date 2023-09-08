@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message test1Helper {
+  bytes arg = 1 [(custom_type) = "u128"];
+}
+
+message test1RHelper {
+  bytes value = 1 [(custom_type) = "u128"];
+}

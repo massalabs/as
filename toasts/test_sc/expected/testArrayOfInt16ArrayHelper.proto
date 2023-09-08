@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message testArrayOfInt16ArrayHelper {
+  repeated int32 arg1 = 1 [(custom_type) = "Array<Int16Array>"];
+}
+
+message testArrayOfInt16ArrayRHelper {
+  repeated int32 value = 1 [(custom_type) = "Array<Int16Array>"];
+}

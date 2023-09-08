@@ -24,7 +24,7 @@
         "@massalabs/as-transformer": "../../packages/as-transformer/",
         "@massalabs/as-types": "../../packages/as-types/",
         "@massalabs/eslint-config": "^0.0.9",
-        "@massalabs/massa-as-sdk": "^2.3.0",
+        "@massalabs/massa-as-sdk": "^2.5.1",
         "@massalabs/massa-sc-compiler": "^0.1.0",
         "@massalabs/massa-sc-deployer": "^1.0.2",
         "@massalabs/massa-web3": "^2.0.0",

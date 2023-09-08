@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  optional string custom_type = 50002;
+}
+
+message test5Helper {
+  int32 arg1 = 1 [(custom_type) = "i32"];
+  int32 arg2 = 2 [(custom_type) = "i32"];
+}
