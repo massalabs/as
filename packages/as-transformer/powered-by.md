@@ -17,14 +17,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [@types/js-yaml](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 4.0.5
-
-**Many thanks to:** n/a
-
 ## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
 
 **License:** MIT - perpetual
@@ -57,14 +49,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** [Typicode](typicode@gmail.com)
 
-## [js-yaml](git+https://github.com/nodeca/js-yaml.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 4.1.0
-
-**Many thanks to:** [Vladimir Zapparov](dervus.grim@gmail.com)
-
 ## [rimraf](git://github.com/isaacs/rimraf.git)
 
 **License:** ISC - perpetual
@@ -96,14 +80,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 2.3.1
 
 **Many thanks to:** [Eemeli Aro](eemeli@gmail.com)
-
-## [@types/debug](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 4.1.8
-
-**Many thanks to:** n/a
 
 ## [@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
