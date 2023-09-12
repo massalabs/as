@@ -1,36 +1,52 @@
 import * as yaml from 'yaml';
 import * as fs from 'fs';
 import * as path from 'path';
+import { debug } from 'console';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
-export interface MassaCustomType {
+export type ASType = string;
+
+export interface ProtoType {
   name: string;
-  proto: string;
-  import: string;
+  repeated?: boolean;
+  metaData?: ProtoMetadata;
+}
+
+export class ProtoMetadata {
   serialize: string;
   deserialize: string;
+  import?: string;
+
+  constructor(serialize: string, deserialize: string, importPath?: string) {
+    this.serialize = serialize;
+    this.deserialize = deserialize;
+    if (importPath) {
+      this.import = importPath;
+    }
+  }
 }
 
 /**
  * Extract each custom type found in the given file content.
- * @see MassaCustomType
+ * @see ProtoType
  *
- * @param fileContent - the yaml fiel content to parse.
+ * @param fileContent - the yaml file content to parse.
  *
- * @returns an array of extracted types.
+ * @returns a map of extracted types.
  */
-export function extractTypes(fileContent: string): MassaCustomType[] {
-  const types: MassaCustomType[] = [];
+function extractTypes(fileContent: string): Map<ASType, ProtoType> {
+  const types: Map<ASType, ProtoType> = new Map();
   const data = yaml.parse(fileContent);
 
   for (const type of data) {
-    types.push({
-      name: type.name,
-      proto: type.proto,
-      import: type.import,
-      serialize: type.serialize,
-      deserialize: type.deserialize,
+    types.set(type.name, {
+      name: type.proto,
+      metaData: new ProtoMetadata(
+        type.serialize,
+        type.deserialize,
+        type.import,
+      ),
     });
   }
   return types;
@@ -55,6 +71,7 @@ function scanForTypes(dir = './node_modules/'): string[] {
     if (stat.isDirectory()) {
       results.push(...scanForTypes(filePath));
     } else if (file.includes(MASSA_TYPE_EXTENSION)) {
+      debug('Found custom type file', filePath);
       results.push(filePath);
     }
   }
@@ -65,15 +82,16 @@ function scanForTypes(dir = './node_modules/'): string[] {
 /**
  * This function is used to recover any accessible and defined custom protobuf types present in the current project.
  *
- * @returns an array of object defining each types.
+ * @returns a map of objects defining each type.
  */
-export function fetchCustomTypes(): MassaCustomType[] {
+export function fetchCustomTypes(): Map<ASType, ProtoType> {
   let files = scanForTypes();
-  let types: MassaCustomType[] = [];
+  let types: Map<ASType, ProtoType> = new Map();
 
   for (const file of files) {
     let data = fs.readFileSync(file).toString();
-    types.push(...extractTypes(data));
+    let ntypes = extractTypes(data);
+    types = new Map([...types.entries(), ...ntypes.entries()]);
   }
   return types;
 }

@@ -1,32 +1,40 @@
 import {
   FunctionDeclaration,
   IdentifierExpression,
-} from 'assemblyscript/dist/assemblyscript.js';
+  TypeNode,
+} from 'assemblyscript';
+
 import { Argument } from './protobuf.js';
-// import { debug } from 'console';
+// eslint-disable-next-line
+// @ts-ignore
+import { debug } from 'console';
 
 export class MassaFunctionNode {
   name: string;
-  returnType: string;
+  returnNode: TypeNode;
   args: Argument[];
   node: FunctionDeclaration | undefined;
 
-  static createFromASTNode(node: FunctionDeclaration) {
+  static createFromASTNode(node: FunctionDeclaration): MassaFunctionNode {
+    if (!node) {
+      throw new Error('Node FunctionDeclaration is undefined');
+    }
+    // debug('Creating MassaFunctionNode from AST node: ' + node.name.text);
     const name = node.name.text;
-    const returnType = node.signature.returnType.range.toString();
+    const returnNode = node.signature.returnType;
     const args = node.signature.parameters.map((arg) => {
-      return new Argument(arg.name.text, arg.type.range.toString(), name);
+      return new Argument(arg.name.text, name, arg.type);
     });
 
-    let newNode = new MassaFunctionNode(name, returnType, args);
+    let newNode = new MassaFunctionNode(name, returnNode, args);
     newNode.node = node;
     return newNode;
   }
 
-  constructor(name: string, returnType: string, args: Argument[]) {
+  constructor(name: string, returnNode: TypeNode, args: Argument[]) {
     this.name = name;
     this.args = args;
-    this.returnType = returnType;
+    this.returnNode = returnNode;
   }
 }
 

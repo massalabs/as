@@ -10,9 +10,7 @@ import {
   StringLiteralExpression,
 } from 'types:assemblyscript/src/ast';
 import { Update, GlobalUpdates } from './interfaces/Update.js';
-import * as Debug from 'debug';
-
-// import { IExpressionTransformer } from './interfaces/IExpressionTransformer';
+import Debug from 'debug';
 
 /**
  * The MassaExportCalls is a specific transformer that works by replacing a any massa exported function calls

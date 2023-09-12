@@ -15,7 +15,8 @@
         }
     },
     "options": {
+        "bindings": "esm",
         "exportRuntime": true,
-        "bindings": "esm"
+        "sourceMap": true
     }
 }

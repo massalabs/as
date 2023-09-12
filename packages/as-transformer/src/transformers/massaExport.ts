@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  FunctionDeclaration,
-  Source,
-} from 'assemblyscript/dist/assemblyscript.js';
+import { FunctionDeclaration, Source, TypeNode } from 'assemblyscript';
+
+// eslint-disable-next-line
+// @ts-ignore
+import { debug } from 'console';
 
 import {
-  Argument,
   generateASHelpers,
   generateProtoFile,
+  isArray,
+  typeNodeToString,
+  getArrayElementType,
 } from '../helpers/protobuf.js';
 
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-// import { IFunctionTransformer } from './interfaces/IFunctionTransformer.js';
 import { Update, GlobalUpdates, UpdateType } from './interfaces/Update.js';
 import { MassaFunctionNode, hasDecorator } from '../helpers/node.js';
 import { getDependencies } from '../helpers/typescript.js';
@@ -34,21 +36,6 @@ export class MassaExport {
   asHelpersPath = './build';
 
   updates: Update[] = [];
-  functionName = '';
-  returnType: string | undefined = undefined;
-  args: Argument[] = [];
-
-  private _setFunctionSignatureData(node: MassaFunctionNode) {
-    this.functionName = node.name;
-    this.returnType = node.returnType;
-    this.args = node.args;
-  }
-
-  private _resetFunctionSignatureData() {
-    this.functionName = '';
-    this.returnType = undefined;
-    this.args = [];
-  }
 
   resetUpdates(): void {
     this.updates = [];
@@ -82,29 +69,22 @@ export class MassaExport {
    * It doesn't change the function AST, it rather stores the generated wrappers to apply them all at once in the file
    * after it as generated all the wrappers for the current file.
    *
-   * @param node - The AST {@link FunctionDeclaration} node containing the function to export.
+   * @param massaFunction - The AST {@link FunctionDeclaration} node containing the function to export.
    *
    * @returns The unchanged node.
    */
-  transform(node: MassaFunctionNode): FunctionDeclaration {
-    // extracting function signature from node
-    this._setFunctionSignatureData(node);
-
+  transform(massaFunction: MassaFunctionNode): FunctionDeclaration {
     // generate proto content
-    const protoContent = generateProtoFile(
-      this.functionName,
-      this.args,
-      this.returnType,
-      this,
-    );
-    const wrapperContent = this._generateWrapper();
-    const imports = this._generateImports();
+    const protoContent = generateProtoFile(massaFunction, this);
+    const wrapperContent = generateWrapper(massaFunction, this.updates);
+    const imports = generateImports(massaFunction);
+
     const update = new Update(
       UpdateType.FunctionDeclaration,
       wrapperContent,
       new Map([
         ['imports', imports],
-        ['funcToPrivate', [node.name]],
+        ['funcToPrivate', [massaFunction.name]],
         ['protoContent', protoContent.split('\n')],
       ]),
       'MassaExport',
@@ -113,111 +93,10 @@ export class MassaExport {
     // why push in 2 different places?
     this.updates.push(update);
     GlobalUpdates.add(update);
-    this._resetFunctionSignatureData();
     // Debug.log(
     //   "MassaExport Function: generated '" + node.name + "' function's wrapper",
     // );
-    return node.node!;
-  }
-
-  /**
-   * Generates the wrapper function that will be exported by the smart contract.
-   *
-   * @remarks
-   * The wrapper function will be exported by the smart contract and will be responsible to decode the
-   * arguments, call the original function and encode the response.
-   *
-   * @param name - The name of the function.
-   * @param args - The arguments of the function.
-   * @param returnedType - The return type of the function.
-   *
-   * @returns - The wrapper function as a string.
-   */
-  private _generateWrapper(): string {
-    const customArgs = this.updates.filter(
-      (update) =>
-        update.getFrom().includes('custom-proto') &&
-        update.getData().has('fnName') &&
-        update.getData().get('fnName')?.includes(this.functionName),
-    );
-
-    const argDecodings = this.args
-      .map((arg) => {
-        let argument = `args.${arg.getName()}`;
-
-        // checking if the argument is a custom type to use proper deserializer
-        let carg = customArgs.find(
-          (carg) => carg.getContent() === arg.getName(),
-        );
-        if (carg !== undefined) {
-          // Debug.log('Found custom arg', carg);
-          const deser = carg.getData().get('deser');
-          argument = deser![0]!.toString().replace('\\1', argument);
-        }
-
-        return argument;
-      })
-      .join(', ');
-
-    let wrapper = `export function ${
-      this.functionName
-    }(_args: StaticArray<u8>): ${
-      this.returnType && this.returnType !== 'void' ? 'StaticArray<u8>' : 'void'
-    } {\n`;
-
-    if (this.args.length > 0) {
-      wrapper += `  const args = decode${this.functionName}Helper(Uint8Array.wrap(changetype<ArrayBuffer>(_args)));\n`;
-    }
-    let call = `_ms_${this.functionName}_(${
-      this.args.length > 0 ? argDecodings : ''
-    })`;
-    if (this.returnType && this.returnType !== 'void') {
-      // checking if the return type is a custom type to use proper serializer
-      let carg = customArgs.find((carg) => carg.getContent() === 'value');
-      if (carg !== undefined) {
-        const ser = carg.getData().get('ser');
-        call = ser![0]!.toString().replace('\\1', call);
-      }
-      /* eslint-disable max-len */
-      wrapper += `  const response = encode${this.functionName}RHelper(new ${this.functionName}RHelper(${call}));\n\n`;
-
-      wrapper +=
-        '  generateEvent(' +
-        `\`Result${this.functionName}:` +
-        "'${massa_transformer_base64_encode(response)}'`);\n";
-      wrapper += `  return changetype<StaticArray<u8>>(response.buffer);\n`;
-    } else {
-      wrapper += '  ' + call + ';\n';
-    }
-
-    wrapper += '}';
-
-    return wrapper;
-  }
-
-  /**
-   * Generates the imports for the wrapper AS Helpers functions
-   *
-   * @param name - The name of the function.
-   * @param args - The arguments of the function.
-   * @param returnedType - The return type of the function.
-   *
-   * @returns - The imports as a string array.
-   */
-  private _generateImports(): string[] {
-    let imports: string[] = [];
-    let name = this.functionName;
-    if (this.args.length > 0) {
-      imports.push(`import { decode${name}Helper } from "./${name}Helper";`);
-    }
-
-    if (this.returnType && this.returnType !== 'void') {
-      imports.push(
-        `import { ${name}RHelper, encode${name}RHelper } from "./${name}RHelper";`,
-      );
-    }
-
-    return imports;
+    return massaFunction.node!;
   }
 
   /**
@@ -250,6 +129,7 @@ export class MassaExport {
       }
       // Adding filters corresponding to the imports of the AS helpers used in the generated wrappers
       let path = 'build/' + dir.replace(source.simplePath, '') + scFunc[0]!;
+
       depsFilter.push(path);
     }
 
@@ -302,6 +182,220 @@ export class MassaExport {
     writeFileSync(`${newPath}.ts`, content);
     return content;
   }
+}
+
+/**
+ * Generates the wrapper function that will be exported by the smart contract.
+ *
+ * @remarks
+ * The wrapper function will be exported by the smart contract and will be responsible to decode the
+ * arguments, call the original function and encode the response.
+ *
+ * @param name - The name of the function.
+ * @param args - The arguments of the function.
+ * @param returnedType - The return type of the function.
+ *
+ * @returns - The wrapper function as a string.
+ */
+export function generateWrapper(
+  massaFunction: MassaFunctionNode,
+  updates: Update[],
+): string {
+  const { name, args, returnNode } = massaFunction;
+  const returnType = typeNodeToString(returnNode);
+
+  const customArgs = updates.filter(
+    (update) =>
+      update.getFrom().includes('custom-proto') &&
+      update.getData().has('fnName') &&
+      update.getData().get('fnName')?.includes(name),
+  );
+
+  const argDecodings = args
+    .map((arg) => {
+      let argument = `args.${arg.name}`;
+
+      // checking if the argument is a custom type to use proper deserializer
+      let carg = customArgs.find((carg) => carg.getContent() === arg.name);
+      if (carg) {
+        const deser = carg.getData().get('deser');
+
+        // array of custom type
+        if (isArray(arg.type)) {
+          const cType = carg.getData().get('type');
+          // apply deser to all elements of the array
+          argument = `${argument}.map<${cType}>((el) => ${deser![0]!
+            .toString()
+            .replace('\\1', 'el')})`;
+        } else {
+          // single element of custom type
+          argument = deser![0]!.toString().replace('\\1', argument);
+        }
+      }
+
+      // casting back array if needed
+      argument = castBackArgType(arg.type, argument);
+
+      return argument;
+    })
+    .join(', ');
+
+  let wrapper = `export function ${name}(_args: ArrayBuffer): ${
+    returnType !== 'void' ? 'ArrayBuffer' : 'void'
+  } {\n`;
+
+  if (args.length > 0) {
+    wrapper +=
+      `  const args = decode${name}Helper(` + `Uint8Array.wrap(_args));\n`;
+  }
+  let call = `_ms_${name}_(${args.length > 0 ? argDecodings : ''})`;
+
+  if (returnType !== 'void') {
+    // casting back array if needed
+    call = castBackFnRetType(returnNode, call);
+
+    // checking if the return type is a custom type to use proper serializer
+    let customArg = customArgs.find((carg) => carg.getContent() === 'value');
+    if (customArg) {
+      const ser = customArg.getData().get('ser');
+      // array of custom type
+      if (isArray(returnNode)) {
+        // apply ser to all elements of the array
+        // we assume that custom types are serialized to u8 arrays hence the
+        // .map<Uint8Array>
+        call = `${call}.map<Uint8Array>((el) => ${ser![0]!
+          .toString()
+          .replace('\\1', 'el')})`;
+      } else {
+        // single element of custom type
+        call = ser![0]!.toString().replace('\\1', call);
+      }
+    }
+
+    wrapper +=
+      `  const response = encode${name}RHelper(` +
+      `new ${name}RHelper(${call}));\n\n`;
+
+    wrapper +=
+      '  generateEvent(' +
+      `\`Result${name}:` +
+      "'${massa_transformer_base64_encode(response)}'`);\n";
+    wrapper += `  return response.buffer;\n`;
+  } else {
+    wrapper += '  ' + call + ';\n';
+  }
+
+  wrapper += '}';
+
+  return wrapper;
+}
+
+/**
+ * Generates the imports for the wrapper AS Helpers functions
+ *
+ * @param name - The name of the function.
+ * @param args - The arguments of the function.
+ * @param returnedType - The return type of the function.
+ *
+ * @returns - The imports as a string array.
+ */
+export function generateImports(massaFunction: MassaFunctionNode): string[] {
+  const { name, returnNode, args } = massaFunction;
+  const returnType = typeNodeToString(returnNode);
+
+  const imports: string[] = [];
+  if (args.length > 0) {
+    imports.push(`import { decode${name}Helper } from "./${name}Helper";`);
+  }
+
+  if (returnType !== 'void') {
+    imports.push(
+      `import { ${name}RHelper, encode${name}RHelper } from "./${name}RHelper";`,
+    );
+  }
+
+  return imports;
+}
+
+// checking if the argument is an array to use proper deserializer
+// TODO: check if the array is of number type (aka i16, i32, i64, u16, u32, u64)
+// it is possible that the changetype is not needed / not wanted for types other than numbers
+// TODO: check if the array is of custom type
+function castBackArgType(type: TypeNode, argument: string): string {
+  const typeStr = typeNodeToString(type);
+
+  const typedArrayNames = [
+    'Uint8Array',
+    'Int8Array',
+    'Uint16Array',
+    'Int16Array',
+    'Uint32Array',
+    'Int32Array',
+    'Uint64Array',
+    'Int64Array',
+  ];
+
+  if (isArray(type) || typedArrayNames.includes(typeStr)) {
+    return `changetype<${typeStr}>(${argument})`;
+  }
+
+  return argument;
+}
+
+function castBackFnRetType(retType: TypeNode, retVal: string): string {
+  if (isArray(retType)) {
+    const elmType = typeNodeToString(getArrayElementType(retType));
+    switch (elmType) {
+      case 'i8':
+      case 'u8':
+        return `changetype<Uint8Array>(${retVal})`;
+      // needed because protobuf doesn't support i16 and u16
+      case 'i16':
+      case 'Int16Array':
+      case 'Int32Array':
+        return `changetype<Array<i32>>(${retVal})`;
+      case 'u16':
+      case 'Uint16Array':
+      case 'Uint32Array':
+        return `changetype<Array<u32>>(${retVal})`;
+
+      case 'Int8Array': // WARNING protobuf treats u8 and i8 as byte (unsigned) so...
+        return `changetype<Uint8Array[]>(${retVal})`;
+
+      case 'Int64Array':
+        return `changetype<Array<i64>>(${retVal})`;
+      case 'Uint64Array':
+        return `changetype<Array<u64>>(${retVal})`;
+
+      default:
+        // retVal = `changetype<${retType}>(${retVal})`;
+        return retVal;
+    }
+  }
+
+  // handle special case with Uint8Array and Int8Array
+  switch (typeNodeToString(retType)) {
+    case 'Uint8Array':
+    case 'Int8Array': // WARNING protobuf treats u8 and i8 as byte (unsigned) so...
+      return `changetype<Uint8Array>(${retVal})`;
+    case 'Uint16Array':
+      return `changetype<Array<u32>>(${retVal})`;
+    case 'Int16Array':
+      return `changetype<Array<i32>>(${retVal})`;
+    case 'Uint32Array':
+      return `changetype<Array<u32>>(${retVal})`;
+    case 'Int32Array':
+      return `changetype<Array<i32>>(${retVal})`;
+    case 'Uint64Array':
+      return `changetype<Array<u64>>(${retVal})`;
+    case 'Int64Array':
+      return `changetype<Array<i64>>(${retVal})`;
+
+    default:
+      break;
+  }
+
+  return retVal;
 }
 
 /**
