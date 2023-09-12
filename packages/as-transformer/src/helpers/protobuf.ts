@@ -252,11 +252,6 @@ export function generateASHelpers(protoFile: string, outputPath: string): void {
 }
 
 export function isArray(node: TypeNode): boolean {
-  // debug(
-  //   typeNodeToString(node),
-  //   (node as NamedTypeNode)?.name.identifier.text.indexOf('Array') > -1,
-  //   (node as NamedTypeNode)?.name.identifier.text === 'Array',
-  // );
   return (node as NamedTypeNode)?.name.identifier.text === 'Array';
 }
 

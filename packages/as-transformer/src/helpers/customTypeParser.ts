@@ -1,7 +1,7 @@
 import * as yaml from 'yaml';
 import * as fs from 'fs';
 import * as path from 'path';
-import Debug from 'debug';
+import { debug } from 'console';
 
 export const MASSA_TYPE_EXTENSION = '.massa-type.yml';
 
@@ -71,7 +71,7 @@ function scanForTypes(dir = './node_modules/'): string[] {
     if (stat.isDirectory()) {
       results.push(...scanForTypes(filePath));
     } else if (file.includes(MASSA_TYPE_EXTENSION)) {
-      Debug.log('Found custom type file', filePath);
+      debug('Found custom type file', filePath);
       results.push(filePath);
     }
   }

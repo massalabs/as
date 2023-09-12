@@ -8,7 +8,7 @@
     "prebuild": "rimraf dist",
     "postbuild": "cp -r config dist/config",
     "build": "tsc",
-    "test": "jest",
+    "test": "mkdir -p 'node_modules/' && cp tests/bignum.massa-type.yml 'node_modules/' &&  NODE_OPTIONS=--experimental-vm-modules jest",
     "doc": "typedoc src/index.ts --name as-transformer --out docs/as-transformer/html --tsconfig tsconfig.json"
   },
   "author": "",

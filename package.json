@@ -25,7 +25,7 @@
     "test:ci": "asp --summary --config as-pect-ci.config.js",
     "test:proba": "asp --summary --config as-pect-proba.config.js",
     "test:types": "asp --summary --config as-pect-types.config.js",
-    "test:ts": "cd packages/as-transformer && NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:ts": "cd packages/as-transformer && npm run test",
     "prettier": "as-prettier \"packages/**/*.ts\" --check",
     "prettier:fix": "as-prettier \"packages/**/*.ts\" --write",
     "lint": "eslint .",
@@ -56,6 +56,7 @@
     "asc": "^2.0.3",
     "asp": "^0.0.2",
     "debug": "^4.3.4",
+    "eslint": "^8.49.0",
     "npm": "^9.8.1"
   }
 }

@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import { generateProtoFile } from '../../src/helpers/protobuf';
 import { MassaExport } from '../../src/transformers/massaExport';
 import { MassaFunctionNode } from '../../src/helpers/node';
@@ -161,20 +161,19 @@ export function parseFunction(testFn: string) {
 }
 
 function generateBignumYml() {
-  const customTypeYml = `
-- type:
-  name: u256
-  proto: bytes
-  import: "as-bignum/assembly"
-  serialize: "\\\\1.toUint8Array()"
-  deserialize: "u256.fromUint8ArrayLE(\\\\1)"
-- type:
-  name: u128
-  proto: bytes
-  import: "as-bignum/assembly"
-  serialize: "\\\\1.toUint8Array()"
-  deserialize: "u128.fromUint8ArrayLE(\\\\1)"
-`;
-
-  fs.writeFileSync('./node_modules/' + 'bignum.massa-type.yml', customTypeYml);
+  //   const customTypeYml = `
+  // - type:
+  //   name: u256
+  //   proto: bytes
+  //   import: "as-bignum/assembly"
+  //   serialize: "\\\\1.toUint8Array()"
+  //   deserialize: "u256.fromUint8ArrayLE(\\\\1)"
+  // - type:
+  //   name: u128
+  //   proto: bytes
+  //   import: "as-bignum/assembly"
+  //   serialize: "\\\\1.toUint8Array()"
+  //   deserialize: "u128.fromUint8ArrayLE(\\\\1)"
+  // `;
+  //   fs.writeFileSync('./node_modules/' + 'bignum.massa-type.yml', customTypeYml);
 }
