@@ -22,9 +22,9 @@
   "scripts": {
     "build": "npm run build --ws --if-present",
     "test": "asp && npm run test:ts",
-    "test:ci": "asp --summary --config as-pect-ci.config.js",
-    "test:proba": "asp --summary --config as-pect-proba.config.js",
-    "test:types": "asp --summary --config as-pect-types.config.js",
+    "test:ci": "asp --summary --config as-pect/as-pect-ci.config.js && npm run test:ts",
+    "test:proba": "asp --summary --config as-pect/as-pect-proba.config.js",
+    "test:types": "asp --summary --config as-pect/as-pect-types.config.js",
     "test:ts": "cd packages/as-transformer && npm run test",
     "prettier": "as-prettier \"packages/**/*.ts\" --check",
     "prettier:fix": "as-prettier \"packages/**/*.ts\" --write",
