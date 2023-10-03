@@ -150,7 +150,13 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = ser.bytesToFixedSizeArray<T>(buffer);
+    let value: T[] = [];
+    if (isBoolean<T>() || isInteger<T>() || isFloat<T>()) {
+      // Optimized implementation for native types
+      value = ser.bytesToNativeTypeArray<T>(buffer);
+    } else {
+      value = ser.bytesToFixedSizeArray<T>(buffer);
+    }
 
     return new Result(value);
   }
@@ -283,6 +289,30 @@ export class Args {
       );
     }
     const value = ser.bytesToU256(this.getNextData(size));
+    return new Result(value);
+  }
+
+  /**
+   * Deserializes an i256 from a serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize i256 from given argument: out of range".
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized i256 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   *
+   */
+  nextI256(): Result<i256> {
+    const size: i32 = 32;
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        i256.Zero,
+        "can't deserialize i256 from given argument: out of range",
+      );
+    }
+    const value = ser.bytesToI256(this.getNextData(size));
     return new Result(value);
   }
 
@@ -644,9 +674,15 @@ export class Args {
       || (arg instanceof Array<u32>) || (arg instanceof Array<i32>)
       || (arg instanceof Array<u64>) || (arg instanceof Array<i64>)
       || (arg instanceof Array<f32>) || (arg instanceof Array<f64>)
-      || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
-      || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
-      || (arg instanceof Array<StaticArray<u8>>)
+    ) {
+      const content = ser.nativeTypeArrayToBytes(arg);
+      this.add<u32>(content.length);
+      this.serialized = this.serialized.concat(content);
+    } else if (
+      arg instanceof Array<i128> ||
+      arg instanceof Array<u128> ||
+      arg instanceof Array<u256> ||
+      arg instanceof Array<i256>
     ) {
       const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);
@@ -681,9 +717,8 @@ export class Args {
    * @param arg - the argument to add
    * @returns the modified Arg instance
    */
-  addSerializableObjectArray<T extends ArrayLike<Serializable>>(arg: T): Args {
-    // @ts-ignore
-    const content = ser.serializableObjectsArrayToBytes(arg);
+  addSerializableObjectArray<T extends Serializable>(arg: T[]): Args {
+    const content = ser.serializableObjectsArrayToBytes<T>(arg);
     this.add<u32>(content.length);
     this.serialized = this.serialized.concat(content);
     return this;

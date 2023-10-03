@@ -1,6 +1,5 @@
 import { Result } from './../../result';
 import { Args } from '../../argument';
-import { Result } from '../../result';
 import { Serializable } from '../../serializable';
 
 export class Person {
