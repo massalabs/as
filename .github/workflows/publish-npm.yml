@@ -23,12 +23,13 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
-      - name: Publish on npm
-        run: |
-          npm pkg delete scripts.prepare
-          npm ci
-          npm run build
-          npm publish --ws --access public
+      - name: Extract tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
+      - run: ./scripts/publish.sh ${{ steps.get_tag.outputs.TAG }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
