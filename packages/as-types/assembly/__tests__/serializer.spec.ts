@@ -28,6 +28,7 @@ import {
 } from '../serialization';
 import { i128, u128, u256 } from 'as-bignum/assembly';
 import {
+  bytesToI128,
   bytesToU128,
   bytesToU256,
   i128ToBytes,
@@ -100,6 +101,18 @@ describe('Serialization tests', () => {
   it('ser/deser random u128 value', () => {
     const val: u128 = u128.fromString('123456789012345678901234567890');
     expect(bytesToU128(u128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser random i128 value', () => {
+    const val = i128.fromString('-123456789012345678901234567890');
+    expect(bytesToI128(i128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser random i128 max value', () => {
+    const val = i128.Max;
+    expect(bytesToI128(i128ToBytes(val))).toBe(val);
+  });
+  it('ser/deser random i128 min value', () => {
+    const val = i128.Min;
+    expect(bytesToI128(i128ToBytes(val))).toBe(val);
   });
   it('ser/deser u256.Max', () => {
     const val: u256 = u256.Max;
