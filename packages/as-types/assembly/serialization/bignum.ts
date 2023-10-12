@@ -10,7 +10,7 @@ import { i256 } from 'as-bignum/assembly/integer/i256';
  * @returns the converted u128
  */
 export function bytesToU128(arr: StaticArray<u8>): u128 {
-  return u128.from(wrapStaticArray(arr));
+  return u128.fromUint8ArrayLE(wrapStaticArray(arr));
 }
 
 /**
@@ -21,7 +21,7 @@ export function bytesToU128(arr: StaticArray<u8>): u128 {
  * @returns the converted i128
  */
 export function bytesToI128(arr: StaticArray<u8>): i128 {
-  return i128.from(wrapStaticArray(arr));
+  return i128.fromUint8ArrayLE(wrapStaticArray(arr));
 }
 
 /**
