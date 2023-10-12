@@ -26,9 +26,9 @@ for packageDir in packages/*; do
     if [[ "$ref" == *"$PACKAGE_NAME"* ]]; then
       # Check if the package version is already published
       if [[ "$ref" == "buildnet" ]]; then
-        CURRENT_VERSION=$(npm view "$PACKAGE_NAME@buildnet" version 2>/dev/null || true)
+        CURRENT_VERSION=$(npm view "$PACKAGE_NAME@buildnet" version)
       else
-        CURRENT_VERSION=$(npm view "$PACKAGE_NAME" version 2>/dev/null || true)
+        CURRENT_VERSION=$(npm view "$PACKAGE_NAME" version)
       fi
 
       if [ "$CURRENT_VERSION" == "$PUBLISH_VERSION" ]; then
