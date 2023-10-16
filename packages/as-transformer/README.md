@@ -56,7 +56,7 @@ This transformer allows the creation of function without having to worry about t
 
 By adding the decorator `@massaExport` the transformer will generate a wrapper that takes care of it.
 
-Exemple:
+Example:
 ```typescript
 @massaExport()
 export function sayHello(accountName: string) : string {

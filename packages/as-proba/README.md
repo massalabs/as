@@ -10,7 +10,7 @@ This library provides useful *AssemblyScript* objects and functions :
 
 - **randomInt**, a method to generate a random number between given limits
 
-- **Sampler**, an object wich allows you to generate samples based on the probability distribution you built
+- **Sampler**, an object which allows you to generate samples based on the probability distribution you built
 
 The complete documentation of all available functions and objects can be found here:
 
@@ -24,7 +24,7 @@ Therefore it is easier for attackers to predict the output and exploit weaknesse
 
 ## Install
 
-Packages are independant you can choose to install what you need
+Packages are independent you can choose to install what you need
 
 ```sh
 npm i --save-dev @massalabs/as-proba
