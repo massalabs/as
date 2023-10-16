@@ -1,6 +1,5 @@
 import { i128, u128, u256 } from 'as-bignum/assembly';
 import { wrapStaticArray } from './staticArrays';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 /**
  * Converts a StaticArray<u8> into a u128.
@@ -58,17 +57,6 @@ export function bytesToU256(arr: StaticArray<u8>): u256 {
 }
 
 /**
- * Converts a StaticArray<u8> into a i256.
- *
- * @param arr - the array to convert
- *
- * @returns the converted i256
- */
-export function bytesToI256(arr: StaticArray<u8>): i256 {
-  return changetype<i256>(bytesToU256(arr));
-}
-
-/**
  * Converts a u256 in a StaticArray<u8>.
  *
  * @param val - the integer to convert
@@ -77,15 +65,4 @@ export function bytesToI256(arr: StaticArray<u8>): i256 {
  */
 export function u256ToBytes(val: u256): StaticArray<u8> {
   return val.toStaticBytes();
-}
-
-/**
- * Converts a i256 in a StaticArray<u8>.
- *
- * @param val - the integer to convert
- *
- * @returns the converted StaticArray<u8>
- */
-export function i256ToBytes(val: i256): StaticArray<u8> {
-  return changetype<u256>(val).toStaticBytes();
 }

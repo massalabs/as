@@ -32,11 +32,9 @@ import {
   bytesToU128,
   bytesToU256,
   i128ToBytes,
-  i256ToBytes,
   u128ToBytes,
   u256ToBytes,
 } from '../serialization/bignum';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 describe('Serialization tests', () => {
   it('ser/deser with emojis', () => {
@@ -256,9 +254,11 @@ describe('Serialization tests', () => {
   it('ser/deser array of i128', () => {
     const array = [
       i128.from(22),
-      i128.from(3),
+      i128.Max,
       i128.from(-1234),
       new i128(-444, 666),
+      new i128(444, -666),
+      i128.Min,
       i128.from(555),
     ];
     const eltSize = offsetof<i128>();
@@ -307,33 +307,6 @@ describe('Serialization tests', () => {
     }
 
     expect<u256[]>(bytesToFixedSizeArray<u256>(ser)).toStrictEqual(array);
-  });
-
-  it('ser/deser array of i256', () => {
-    const array = [
-      new i256(444, 666, 555, 2222),
-      new i256(0, 1, 2, 3),
-      new i256(u64.MAX_VALUE, 666, 555, 2222),
-      new i256(444, 666, 555, u64.MAX_VALUE),
-    ];
-    const eltSize = offsetof<i256>();
-
-    const ser = fixedSizeArrayToBytes(array);
-
-    expect(ser.length).toBe(<i32>eltSize * array.length);
-
-    for (let i = 0; i < array.length; i++) {
-      const offset = <usize>i * eltSize;
-      expect(
-        memory.compare(
-          changetype<usize>(ser) + offset,
-          changetype<usize>(i256ToBytes(array[i])),
-          eltSize,
-        ),
-      ).toBe(0);
-    }
-
-    expect<i256[]>(bytesToFixedSizeArray<i256>(ser)).toStrictEqual(array);
   });
 
   it('ser/deser array of serializable', () => {

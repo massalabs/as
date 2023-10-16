@@ -2,7 +2,6 @@ import { i128, u128, u256 } from 'as-bignum/assembly';
 import { Result } from './result';
 import { Serializable } from './serializable';
 import * as ser from './serialization';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 /**
  * Args for remote function call.
@@ -289,30 +288,6 @@ export class Args {
       );
     }
     const value = ser.bytesToU256(this.getNextData(size));
-    return new Result(value);
-  }
-
-  /**
-   * Deserializes an i256 from a serialized array starting from the current offset.
-   *
-   * @remarks
-   * If the deserialization failed, it returns a Result containing 0 and an error message:
-   * "can't deserialize i256 from given argument: out of range".
-   *
-   * @returns a Result object:
-   * - Containing the next deserialized i256 starting from the current offset
-   * - Containing 0 and an error message if the deserialization failed
-   *
-   */
-  nextI256(): Result<i256> {
-    const size: i32 = 32;
-    if (this._offset + size > this.serialized.length) {
-      return new Result(
-        i256.Zero,
-        "can't deserialize i256 from given argument: out of range",
-      );
-    }
-    const value = ser.bytesToI256(this.getNextData(size));
     return new Result(value);
   }
 
@@ -661,7 +636,7 @@ export class Args {
       this.serialized = this.serialized.concat(ser.f64ToBytes(<f64>arg));
     } else if (arg instanceof u128 || arg instanceof i128) {
       this.serialized = this.serialized.concat(ser.u128ToBytes(<u128>arg));
-    } else if (arg instanceof u256 || arg instanceof i256) {
+    } else if (arg instanceof u256) {
       this.serialized = this.serialized.concat(ser.u256ToBytes(<u256>arg));
       // @ts-ignore
     } else if (arg instanceof Serializable) {
@@ -681,8 +656,7 @@ export class Args {
     } else if (
       arg instanceof Array<i128> ||
       arg instanceof Array<u128> ||
-      arg instanceof Array<u256> ||
-      arg instanceof Array<i256>
+      arg instanceof Array<u256>
     ) {
       const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);

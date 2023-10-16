@@ -4,7 +4,6 @@ import { Amount } from '../amount';
 import { Currency } from '../currency';
 import { Divinity, Hero } from './dto-tests/Person';
 import { i128, u128, u256 } from 'as-bignum/assembly';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -437,22 +436,6 @@ describe('Args tests', () => {
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<u256>().unwrap();
     expect<u256[]>(unserialized).toStrictEqual(array);
-  });
-
-  it('With array of i256', () => {
-    // i256 is almost empty :-/
-    const array = [
-      new i256(1, -666, 555, 3),
-      new i256(444, 2, 555, 2222),
-      new i256(-4, 666, 3, 7890),
-      new i256(5, 666, -555, 4),
-      new i256(309343, 666, 555, -2222),
-    ];
-    const serialized = new Args().add(array).serialize();
-    expect(serialized.length).toBe(array.length * offsetof<u256>() + 4);
-    const args = new Args(serialized);
-    const unserialized = args.nextFixedSizeArray<i256>().unwrap();
-    expect<i256[]>(unserialized).toStrictEqual(array);
   });
 
   it('With array of one u8', () => {
