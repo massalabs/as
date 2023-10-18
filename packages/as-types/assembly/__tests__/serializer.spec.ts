@@ -41,6 +41,11 @@ describe('Serialization tests', () => {
     const str = 'Hello world 🙂';
     expect(bytesToString(stringToBytes(str))).toBe(str);
   });
+  throws('Unpaired surrogate (invalid utf8 sequence)', () => {
+    const bytes = u256ToBytes(u256.Max);
+    const str = bytesToString(bytes);
+    stringToBytes(str);
+  });
   it('ser/deser Ascii', () => {
     const str =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
