@@ -1,19 +1,19 @@
 {
   "name": "@massalabs/as-proba",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Massa AS probability libs",
-  "types": "assembly/index.ts",
   "type": "module",
-  "scripts": {
-    "doc": "typedoc assembly/index.ts --name as-proba --out docs/as-proba/html --tsconfig assembly/tsconfig.json"
-  },
-  "author": "",
   "license": "ISC",
-  "dependencies": {
-    "assemblyscript": "^0.25.2"
-  },
+  "author": "",
   "files": [
     "assembly",
     "index.ts"
-  ]
+  ],
+  "types": "assembly/index.ts",
+  "scripts": {
+    "doc": "typedoc assembly/index.ts --name as-proba --out docs/as-proba/html --tsconfig assembly/tsconfig.json"
+  },
+  "dependencies": {
+    "assemblyscript": "^0.27.15"
+  }
 }
