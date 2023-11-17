@@ -2,7 +2,7 @@
   "author": "",
   "dependencies": {
     "as-bignum": "^0.2.31",
-    "assemblyscript": "^0.27.9"
+    "assemblyscript": "^0.27.18"
   },
   "description": "Massa AS types lib",
   "files": [

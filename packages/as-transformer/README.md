@@ -16,8 +16,6 @@ To install this module, run the following command at your project root directory
 npm install -D @massalabs/as-transformer
 ```
 
-The protobuf transformer needs protobuf compiler, [protoc](https://grpc.io/docs/protoc-installation/), to be installed.
-
 ## Usage
 
 Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.

@@ -1,14 +1,12 @@
 {
   "name": "@massalabs/as-transformer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Massa AS transformer",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
     "prebuild": "rimraf dist",
-    "postbuild": "cp -r config dist/config",
     "build": "tsc",
-    "test": "mkdir -p 'node_modules/' && cp tests/bignum.massa-type.yml 'node_modules/' &&  NODE_OPTIONS=--experimental-vm-modules jest",
     "doc": "typedoc src/index.ts --name as-transformer --out docs/as-transformer/html --tsconfig tsconfig.json"
   },
   "author": "",
@@ -16,22 +14,15 @@
   "dependencies": {
     "@massalabs/as-types": "^1.1.0",
     "@types/jest": "^29.5.1",
-    "as-proto": "^1.3.0",
-    "as-proto-gen": "^1.3.0",
-    "assemblyscript": "^0.25.2",
+    "assemblyscript": "^0.27.18",
     "husky": "^8.0.3",
-    "rimraf": "^5.0.1",
+    "rimraf": "^5.0.5",
     "ts-morph": "^19.0.0",
-    "visitor-as": "^0.11.4",
     "yaml": "^2.3.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
     "@types/node": "^20.4.7",
-    "@types/protobufjs": "^6.0.0",
-    "jest": "^29.5.0",
-    "protobufjs": "^7.2.4",
-    "ts-jest": "^29.1.0",
     "typescript": "^5.1.6",
     "visitor-as": "^0.11.4"
   },
