@@ -49,6 +49,14 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** David Sherret
 
+## [visitor-as](git+https://github.com/as-pect/visitor-as.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 0.11.4
+
+**Many thanks to:** Willem Wyndham
+
 ## [yaml](git+https://github.com/eemeli/yaml.git)
 
 **License:** ISC - perpetual
@@ -72,12 +80,4 @@ The following is a list of all the dependencies of this project:
 **Used version:** 5.1.6
 
 **Many thanks to:** Microsoft Corp.
-
-## [visitor-as](git+https://github.com/as-pect/visitor-as.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 0.11.4
-
-**Many thanks to:** Willem Wyndham
 
