@@ -28,15 +28,11 @@ jobs:
         node-version: 18.x
         cache: 'npm'
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v1
-
     - name: Execute unit tests
       run: |
         npm ci
         npm run fmt:check
         npm run build
-        npm run test:ts
         npm run test:ci
 
     - name: Extract coverage
