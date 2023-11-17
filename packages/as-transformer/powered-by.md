@@ -17,27 +17,11 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 1.3.0
-
-**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
-
-## [as-proto-gen](git+https://github.com/piotr-oles/as-proto.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 1.3.0
-
-**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
-
 ## [assemblyscript](git+https://github.com/AssemblyScript/assemblyscript.git)
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.25.2
+**Used version:** 0.27.18
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
 
@@ -53,7 +37,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** ISC - perpetual
 
-**Used version:** 5.0.1
+**Used version:** 5.0.5
 
 **Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
@@ -64,14 +48,6 @@ The following is a list of all the dependencies of this project:
 **Used version:** 19.0.0
 
 **Many thanks to:** David Sherret
-
-## [visitor-as](git+https://github.com/as-pect/visitor-as.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 0.11.4
-
-**Many thanks to:** Willem Wyndham
 
 ## [yaml](git+https://github.com/eemeli/yaml.git)
 
@@ -89,38 +65,6 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** n/a
 
-## [@types/protobufjs](https://github.com/dcodeIO/ProtoBuf.js)
-
-**License:** MIT - perpetual
-
-**Used version:** 6.0.0
-
-**Many thanks to:** 
-
-## [jest](git+https://github.com/jestjs/jest.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 29.6.2
-
-**Many thanks to:** n/a
-
-## [protobufjs](git+https://github.com/protobufjs/protobuf.js.git)
-
-**License:** BSD-3-Clause - perpetual
-
-**Used version:** 7.2.4
-
-**Many thanks to:** [Daniel Wirtz](dcode+protobufjs@dcode.io)
-
-## [ts-jest](git+https://github.com/kulshekhar/ts-jest.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 29.1.1
-
-**Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
-
 ## [typescript](git+https://github.com/Microsoft/TypeScript.git)
 
 **License:** Apache-2.0 - perpetual
@@ -128,4 +72,12 @@ The following is a list of all the dependencies of this project:
 **Used version:** 5.1.6
 
 **Many thanks to:** Microsoft Corp.
+
+## [visitor-as](git+https://github.com/as-pect/visitor-as.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 0.11.4
+
+**Many thanks to:** Willem Wyndham
 
