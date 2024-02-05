@@ -1,6 +1,4 @@
-import { Result, Result } from '../result';
-import { Divinity } from './dto-tests/Person';
-import { Args } from '../argument';
+import { Result } from '../result';
 
 describe('Result tests', () => {
   it('Test: create ok', () => {

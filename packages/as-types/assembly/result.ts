@@ -6,8 +6,6 @@
  * or {@link isOk} or {@link isErr} to check if the result is successful.
  *
  */
-import { Args } from './argument';
-import { Serializable } from './serializable';
 
 export class Result<T> {
   /**
@@ -21,10 +19,10 @@ export class Result<T> {
 
   /**
    * Creates a new `Result` object with a successful outcome.
-   * 
+   *
    * @param t - The value to be wrapped in a `Result` object.
    * @returns A new `Result` object with a successful outcome.
-   * 
+   *
    */
   static fromOk<T>(t: T): Result<T> {
     return new Result<T>(t, null);
@@ -32,11 +30,11 @@ export class Result<T> {
 
   /**
    * Creates a new `Result` object with a failed outcome.
-   * 
+   *
    * @param t - The value to be wrapped in a `Result` object.
    * @param e - The error message to be wrapped in a `Result` object.
    * @returns A new `Result` object with a failed outcome.
-   * 
+   *
    */
   static fromErr<T>(t: T, e: string): Result<T> {
     return new Result<T>(t, e);
