@@ -5,7 +5,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.2.31
+**Used version:** 0.2.40
 
 **Many thanks to:** [MaxGraey](maxgraey@gmail.com)
 
@@ -13,7 +13,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.25.0
+**Used version:** 0.27.18
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
 

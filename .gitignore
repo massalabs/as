@@ -2,7 +2,6 @@ node_modules
 *.lock
 build
 pnpm-lock.yaml
-.vscode
 logs
 as-tral
 *.lockb
@@ -11,3 +10,7 @@ as-tral
 *.wat
 *.map
 packages/**/docs
+
+# IDE
+.idea
+.vscode

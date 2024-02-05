@@ -11,7 +11,7 @@ import { Result } from '../result';
 import { Serializable } from '../serializable';
 
 /**
- * Convert an array of type parameter to StaticArray<u8>
+ * Convert an array of native numbers to StaticArray<u8>
  *
  * @remarks
  * This will perform a deep copy only for native types.
@@ -31,7 +31,7 @@ import { Serializable } from '../serializable';
  *
  * @returns The converted StaticArray<u8> (byte array) representation of the native type array.
  */
-export function fixedSizeArrayToBytes<T>(source: T[]): StaticArray<u8> {
+export function nativeTypeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   const sourceLength = source.length;
 
   let targetLength = (<usize>sourceLength) << alignof<T>();
@@ -44,6 +44,99 @@ export function fixedSizeArrayToBytes<T>(source: T[]): StaticArray<u8> {
   memory.copy(changetype<usize>(target), source.dataStart, targetLength);
 
   return target;
+}
+
+/**
+ * Deserialize a byte array into a native type array.
+ *
+ * @remarks
+ * This function is inspired by the AssemblyScript standard library array implementation.
+ *
+ * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ * | AssemblyScript array implementation}
+ *
+ * @param source - The byte array to convert into a native type array.
+ *
+ * @returns The converted native type array representation of the byte array.
+ */
+export function bytesToNativeTypeArray<T>(source: StaticArray<u8>): T[] {
+  let bufferSize = source.length;
+  const array = instantiate<T[]>(bufferSize >> alignof<T>());
+  memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
+
+  return array;
+}
+
+/**
+ * Convert an array of object to StaticArray<u8>
+ *
+ * @remarks
+ * This will perform a deep copy only for native types.
+ * inspired by https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
+ *
+ *
+ * @privateRemarks
+ * A new StaticArray<u8> is allocated in memory and the content of every elements is copied to
+ * the newly allocated array.
+ *
+ *
+ * @param source - the array to convert
+ * @param eltSize - The element size in bytes.
+ *
+ * @returns The converted StaticArray<u8> (byte array) representation of the array.
+ */
+export function fixedSizeArrayToBytes<T>(source: T[]): StaticArray<u8> {
+  const eltSize = offsetof<T>();
+  if (!eltSize) {
+    ERROR('fixedSizeArrayToBytes: unsupported array type');
+  }
+  const sourceLength = <usize>source.length;
+  const targetLength = sourceLength * eltSize;
+  let target = changetype<StaticArray<u8>>(
+    // @ts-ignore: Cannot find name '__new'
+    __new(targetLength, idof<StaticArray<u8>>()),
+  );
+  for (let i = 0; i < <i32>sourceLength; i++) {
+    const offset = <usize>i * eltSize;
+    memory.copy(
+      changetype<usize>(target) + offset,
+      changetype<usize>(source[i]),
+      eltSize,
+    );
+  }
+
+  return target;
+}
+
+/**
+ * Deserialize a byte array into a fixed size elements array.
+ *
+ * @param source - The byte array to convert into a fixed size elements array.
+ * @param eltSize - The element size in bytes.
+ *
+ * @returns The converted type array representation of the byte array.
+ */
+export function bytesToFixedSizeArray<T>(source: StaticArray<u8>): T[] {
+  const eltSize = offsetof<T>();
+  if (!eltSize) {
+    ERROR('bytesToFixedSizeArray: unsupported array type');
+  }
+  const bufferSize = source.length;
+  const nbElements = bufferSize / <i32>eltSize;
+
+  const array = instantiate<T[]>(nbElements);
+  for (let i = 0; i < nbElements; i++) {
+    const offset = <usize>i * eltSize;
+
+    const elt = instantiate<T>();
+    memory.copy(
+      changetype<usize>(elt),
+      changetype<usize>(source) + offset,
+      eltSize,
+    );
+    array[i] = elt;
+  }
+  return array;
 }
 
 /**
@@ -63,52 +156,14 @@ export function fixedSizeArrayToBytes<T>(source: T[]): StaticArray<u8> {
 export function serializableObjectsArrayToBytes<T extends Serializable>(
   source: T[],
 ): StaticArray<u8> {
-  const nbElements = source.length;
-  const pointers = new Array<usize>(nbElements);
-  const sizes = new Array<usize>(nbElements);
-  let totalLength = 0;
+  let target: StaticArray<u8> = [];
 
-  for (let i = 0; i < nbElements; i++) {
+  for (let i = 0; i < source.length; i++) {
     const bytes: StaticArray<u8> = source[i].serialize();
-
-    pointers[i] = changetype<usize>(bytes);
-    sizes[i] = bytes.length;
-    totalLength += bytes.length;
-  }
-
-  const target = changetype<StaticArray<u8>>(
-    // @ts-ignore: Cannot find name '__new'
-    __new(totalLength, idof<StaticArray<u8>>()),
-  );
-
-  let offset: usize = 0;
-  for (let i = 0; i < nbElements; i++) {
-    memory.copy(changetype<usize>(target) + offset, pointers[i], sizes[i]);
-    offset += sizes[i];
+    target = target.concat(bytes);
   }
 
   return target;
-}
-
-/**
- * Deserialize a byte array into a native type array.
- *
- * @remarks
- * This function is inspired by the AssemblyScript standard library array implementation.
- *
- * @see {@link https://github.com/AssemblyScript/assemblyscript/blob/main/std/assembly/array.ts#L69-L81
- * | AssemblyScript array implementation}
- *
- * @param source - The byte array to convert into a native type array.
- *
- * @returns The converted native type array representation of the byte array.
- */
-export function bytesToFixedSizeArray<T>(source: StaticArray<u8>): T[] {
-  let bufferSize = source.length;
-  const array = instantiate<T[]>(bufferSize >> alignof<T>());
-  memory.copy(array.dataStart, changetype<usize>(source), bufferSize);
-
-  return array;
 }
 
 /**
