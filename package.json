@@ -21,11 +21,10 @@
   },
   "scripts": {
     "build": "npm run build --ws --if-present",
-    "test": "asp && npm run test:ts",
-    "test:ci": "asp --summary --config as-pect-ci.config.js",
-    "test:proba": "asp --summary --config as-pect-proba.config.js",
-    "test:types": "asp --summary --config as-pect-types.config.js",
-    "test:ts": "cd packages/as-transformer && jest",
+    "test": "asp",
+    "test:ci": "asp --summary --config as-pect/as-pect-ci.config.js",
+    "test:proba": "asp --summary --config as-pect/as-pect-proba.config.js",
+    "test:types": "asp --summary --config as-pect/as-pect-types.config.js",
     "prettier": "as-prettier \"packages/**/*.ts\" --check",
     "prettier:fix": "as-prettier \"packages/**/*.ts\" --write",
     "lint": "eslint .",
@@ -38,11 +37,9 @@
   "devDependencies": {
     "@as-pect/cli": "=8.0.1",
     "@massalabs/eslint-config": "^0.0.10",
-    "@massalabs/massa-as-sdk": "^2.3.0",
+    "@massalabs/massa-as-sdk": "^2.5.1",
     "@massalabs/prettier-config-as": "^0.0.2",
     "@types/debug": "^4.1.8",
-    "as-proto": "^1.3.0",
-    "as-proto-gen": "^1.3.0",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.4",
     "ts-morph": "^19.0.0",
@@ -56,6 +53,7 @@
     "asc": "^2.0.3",
     "asp": "^0.0.2",
     "debug": "^4.3.4",
-    "npm": "^9.6.3"
+    "eslint": "^8.49.0",
+    "npm": "^9.8.1"
   }
 }

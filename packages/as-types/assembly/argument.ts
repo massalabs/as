@@ -2,7 +2,6 @@ import { i128, u128, u256 } from 'as-bignum/assembly';
 import { Result } from './result';
 import { Serializable } from './serializable';
 import * as ser from './serialization';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 /**
  * Args for remote function call.
@@ -150,7 +149,13 @@ export class Args {
 
     const buffer = this.getNextData(bufferSize);
 
-    const value = ser.bytesToFixedSizeArray<T>(buffer);
+    let value: T[] = [];
+    if (isBoolean<T>() || isInteger<T>() || isFloat<T>()) {
+      // Optimized implementation for native types
+      value = ser.bytesToNativeTypeArray<T>(buffer);
+    } else {
+      value = ser.bytesToFixedSizeArray<T>(buffer);
+    }
 
     return new Result(value);
   }
@@ -192,7 +197,8 @@ export class Args {
       value.push(ser.bytesToString(this.getNextData(strLen)));
     }
 
-    this._offset += bufferSize;
+    // Note: no need to update this._offset at this point, previous call to getNextData already did
+    // this._offset += bufferSize;
     return new Result(value);
   }
 
@@ -630,7 +636,7 @@ export class Args {
       this.serialized = this.serialized.concat(ser.f64ToBytes(<f64>arg));
     } else if (arg instanceof u128 || arg instanceof i128) {
       this.serialized = this.serialized.concat(ser.u128ToBytes(<u128>arg));
-    } else if (arg instanceof u256 || arg instanceof i256) {
+    } else if (arg instanceof u256) {
       this.serialized = this.serialized.concat(ser.u256ToBytes(<u256>arg));
       // @ts-ignore
     } else if (arg instanceof Serializable) {
@@ -643,9 +649,14 @@ export class Args {
       || (arg instanceof Array<u32>) || (arg instanceof Array<i32>)
       || (arg instanceof Array<u64>) || (arg instanceof Array<i64>)
       || (arg instanceof Array<f32>) || (arg instanceof Array<f64>)
-      || (arg instanceof Array<u128>) || (arg instanceof Array<i128>)
-      || (arg instanceof Array<u256>) || (arg instanceof Array<i256>)
-      || (arg instanceof Array<StaticArray<u8>>)
+    ) {
+      const content = ser.nativeTypeArrayToBytes(arg);
+      this.add<u32>(content.length);
+      this.serialized = this.serialized.concat(content);
+    } else if (
+      arg instanceof Array<i128> ||
+      arg instanceof Array<u128> ||
+      arg instanceof Array<u256>
     ) {
       const content = ser.fixedSizeArrayToBytes(arg);
       this.add<u32>(content.length);
@@ -680,9 +691,8 @@ export class Args {
    * @param arg - the argument to add
    * @returns the modified Arg instance
    */
-  addSerializableObjectArray<T extends ArrayLike<Serializable>>(arg: T): Args {
-    // @ts-ignore
-    const content = ser.serializableObjectsArrayToBytes(arg);
+  addSerializableObjectArray<T extends Serializable>(arg: T[]): Args {
+    const content = ser.serializableObjectsArrayToBytes<T>(arg);
     this.add<u32>(content.length);
     this.serialized = this.serialized.concat(content);
     return this;

@@ -1,20 +1,21 @@
 {
-  "name": "@massalabs/as-types",
-  "version": "1.1.0",
+  "author": "",
+  "dependencies": {
+    "as-bignum": "^0.2.31",
+    "assemblyscript": "^0.27.18"
+  },
   "description": "Massa AS types lib",
-  "types": "assembly/index.ts",
-  "type": "module",
+  "files": [
+    "assembly",
+    "index.ts",
+    "types"
+  ],
+  "license": "ISC",
+  "name": "@massalabs/as-types",
   "scripts": {
     "doc": "typedoc assembly/index.ts --name as-types --out docs/as-types/html --tsconfig assembly/tsconfig.json"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "as-bignum": "^0.2.31",
-    "assemblyscript": "^0.25.2"
-  },
-  "files": [
-    "assembly",
-    "index.ts"
-  ]
+  "type": "module",
+  "types": "assembly/index.ts",
+  "version": "2.0.0"
 }

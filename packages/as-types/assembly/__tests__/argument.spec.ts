@@ -4,7 +4,6 @@ import { Amount } from '../amount';
 import { Currency } from '../currency';
 import { Divinity, Hero } from './dto-tests/Person';
 import { i128, u128, u256 } from 'as-bignum/assembly';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -403,6 +402,7 @@ describe('Args tests', () => {
       u128.from(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<u128>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<u128>().unwrap();
     expect<u128[]>(unserialized).toStrictEqual(array);
@@ -417,6 +417,7 @@ describe('Args tests', () => {
       i128.from(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<i128>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<i128>().unwrap();
     expect<i128[]>(unserialized).toStrictEqual(array);
@@ -431,29 +432,18 @@ describe('Args tests', () => {
       u256.fromU64(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<u256>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<u256>().unwrap();
     expect<u256[]>(unserialized).toStrictEqual(array);
   });
 
-  it('With array of i256', () => {
-    const array = [
-      new i256(1, -666, 555, 3),
-      new i256(444, 2, 555, 2222),
-      new i256(-4, 666, 3, 7890),
-      new i256(5, 666, -555, 4),
-      new i256(309343, 666, 555, -2222),
-    ];
-    const serialized = new Args().add(array).serialize();
-    const args = new Args(serialized);
-    const unserialized = args.nextFixedSizeArray<i256>().unwrap();
-    expect<i256[]>(unserialized).toStrictEqual(array);
-  });
-
   it('With array of one u8', () => {
-    const arrayU8 = [<u8>54];
-    const args = new Args(new Args().add(arrayU8).serialize());
-    expect<u8[]>(args.nextFixedSizeArray<u8>().unwrap()).toStrictEqual(arrayU8);
+    const array = [<u8>54, <u8>0, <u8>0xff];
+    const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * sizeof<u8>() + 4);
+    const args = new Args(serialized);
+    expect<u8[]>(args.nextFixedSizeArray<u8>().unwrap()).toStrictEqual(array);
   });
 
   it('With empty array of boolean', () => {
@@ -471,7 +461,16 @@ describe('Args tests', () => {
     const unserialized = args.nextStringArray().unwrap();
     expect<string[]>(unserialized).toStrictEqual(array);
   });
-
+  it('With 2 arrays of string', () => {
+    const array1 = ["I'm", 'the', '1st'];
+    const array2 = ["I'm", 'a', '2nd'];
+    const serialized = new Args().add(array1).add(array2).serialize();
+    const args = new Args(serialized);
+    const unserialized1 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized1).toStrictEqual(array1);
+    const unserialized2 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized2).toStrictEqual(array2);
+  });
   it('With array of Serializable', () => {
     const arrayOfSerializable = [
       new Divinity(14, 'Poseidon?!#'),
@@ -487,24 +486,5 @@ describe('Args tests', () => {
     expect(first.name).toBe('Poseidon?!#');
     expect(deser[1].age).toBe(45);
     expect(deser[1].name).toBe('Superman');
-  });
-
-  it('With array of bytes', () => {
-    let _a1: Array<u8> = [1, 2, 3, 4];
-    let _a2: Array<u8> = [255, 254, 253, 252];
-    let a1 = StaticArray.fromArray(_a1);
-    let a2 = StaticArray.fromArray(_a2);
-    let arr: Array<StaticArray<u8>> = [];
-    arr.push(a1);
-    arr.push(a2);
-    expect(arr.length).toBe(2);
-    let args = new Args().add(arr);
-    let arrDeser = new Args(args.serialize())
-      .nextFixedSizeArray<StaticArray<u8>>()
-      .expect('Cannot get array of bytes');
-
-    expect(arrDeser.length).toBe(2);
-    expect(arrDeser[0]).toBe(arr[0]);
-    expect(arrDeser[1]).toBe(arr[1]);
   });
 });
