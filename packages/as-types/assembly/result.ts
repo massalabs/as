@@ -17,7 +17,30 @@ export class Result<T> {
    * @param error - error message for non-passing case
    *
    */
-  constructor(private value: T, public error: string | null = null) {}
+  constructor(protected value: T, protected error: string | null = null) {}
+
+  /**
+   * Creates a new `Result` object with a successful outcome.
+   * 
+   * @param t - The value to be wrapped in a `Result` object.
+   * @returns A new `Result` object with a successful outcome.
+   * 
+   */
+  static fromOk<T>(t: T): Result<T> {
+    return new Result<T>(t, null);
+  }
+
+  /**
+   * Creates a new `Result` object with a failed outcome.
+   * 
+   * @param t - The value to be wrapped in a `Result` object.
+   * @param e - The error message to be wrapped in a `Result` object.
+   * @returns A new `Result` object with a failed outcome.
+   * 
+   */
+  static fromErr<T>(t: T, e: string): Result<T> {
+    return new Result<T>(t, e);
+  }
 
   /**
    * Determines if the `Result` represents a successful outcome.
@@ -93,85 +116,70 @@ export class Result<T> {
   }
 }
 
-export class Result3<T> {
-  protected data: T | null = null;
-  protected error: string | null = null;
-
-  constructor(data: T | null = null, error: string | null = null) {
-    if (data) {
-      this.data = data;
-    } else if (error) {
-      // Default (if data is null & error is null) is to create an Err variant
-      this.error = error ? error : '';
-    }
-  }
-
-  static toOk<T>(t: T): Result3<T> {
-    return new Result3(t, null);
-  }
-
-  static toErr<T>(e: string): Result3<T> {
-    return new Result3<T>(null, e);
-  }
-
-  isOk(): bool {
-    return !this.error;
-  }
-
-  isErr(): bool {
-    return !this.isOk();
-  }
-
-  unwrap(): T {
-    if (!this.isOk()) {
-      assert(false, this.error!);
-    }
-
-    return <T>this.data;
-  }
-
-  expect(msg: string): T {
-    if (this.isErr()) {
-      assert(false, `${msg}: ${this.error!}`);
-    }
-
-    return <T>this.data;
-  }
-}
-
-export class SResult3<T extends Serializable>
-  extends Result3<T>
+export class SerializableResult<T extends Serializable>
+  extends Result<T>
   implements Serializable
 {
-  static fromResult<T extends Serializable>(arg: Result3<T>): SResult3<T> {
+  /**
+   * Create a new `SerializableResult` object from a `Result` with a value type that implements `Serializable`.
+   * @param arg - The `Result` object to be converted to a `SerializableResult` object.
+   * @returns A new `SerializableResult` object.
+   */
+  static fromResult<T extends Serializable>(arg: Result<T>): SerializableResult<T> {
     if (arg.isOk()) {
-      return new SResult3(arg.data, null);
+      return new SerializableResult(arg.value, null);
     } else {
-      return new SResult3<T>(null, arg.error);
+      return new SerializableResult<T>(arg.value, arg.error);
     }
   }
 
-  static toResult<T extends Serializable>(arg: SResult3<T>): Result3<T> {
+  /**
+   * Create a new `Result` object from a `SerializableResult` object.
+   * 
+   * @param arg - The `SerializableResult` object to be converted to a `Result` object.
+   * @returns A new `Result` object.
+   * 
+   */
+  static toResult<T extends Serializable>(arg: SerializableResult<T>): Result<T> {
     if (arg.isOk()) {
-      return new Result3(arg.data, null);
+      return new Result(arg.value, null);
     } else {
-      return new Result3<T>(null, arg.error);
+      return new Result<T>(arg.value, arg.error);
     }
   }
 
-  static toOk<T extends Serializable>(t: T): SResult3<T> {
-    return new SResult3(t, null);
+  /**
+   * Initializes a `SerializableResult` object.
+   * 
+   * @param value - The value to be wrapped in a `SerializableResult` object.
+   * @returns A new `SerializableResult` object with a successful outcome.
+   * 
+   */
+  static fromOk<T extends Serializable>(t: T): SerializableResult<T> {
+    return new SerializableResult<T>(t, null);
   }
 
-  static toErr<T extends Serializable>(e: string): SResult3<T> {
-    return new SResult3(null, e);
+  /**
+   * Initializes a `SerializableResult` object.
+   * 
+   * @param t - The value to be wrapped in a `SerializableResult` object.
+   * @param e - The error message to be wrapped in a `SerializableResult` object.
+   * @returns A new `SerializableResult` object with a failed outcome.
+   * 
+   */
+  static fromErr<T extends Serializable>(t: T, e: string): SerializableResult<T> {
+    return new SerializableResult<T>(t, e);
   }
 
+  /**
+   * Serialize the `SerializableResult` object.
+   * @returns Bytes array representation of the `SerializableResult` object.
+   */
   serialize(): StaticArray<u8> {
     if (this.isOk()) {
       return new Args()
         .add<u8>(0)
-        .add<T>(<T>this.data)
+        .add<T>(<T>this.value)
         .serialize();
     } else {
       // Note: do not ser error msg as it is unused
@@ -179,12 +187,19 @@ export class SResult3<T extends Serializable>
     }
   }
 
+  /**
+   * Deserialize the `SerializableResult` object.
+   * 
+   * @param data - The bytes array to be deserialized.
+   * @param offset - The position in the bytes array to start reading from.
+   * @returns A `Result` object containing either the new offset of the byte array or an error.
+   */
   public deserialize(data: StaticArray<u8>, offset: i32 = 0): Result<i32> {
     const args = new Args(data, offset);
     let kind = args.nextU8().expect('Cannot get kind (u8)');
     if (kind == 0) {
       // Ok
-      this.data = args.nextSerializable<T>().expect('Cannot get next ser. T');
+      this.value = args.nextSerializable<T>().expect('Cannot get next ser. T');
     } else {
       // Err
       this.error = 'ERROR';
