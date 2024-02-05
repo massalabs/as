@@ -1,11 +1,11 @@
 # Dependencies Report
 
 The following is a list of all the dependencies of this project:
-## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-1.0.0.tgz)
+## [@massalabs/as-types](https://registry.npmjs.org/@massalabs/as-types/-/as-types-1.1.0.tgz)
 
 **License:** ISC - perpetual
 
-**Used version:** 1.0.1
+**Used version:** 1.1.0
 
 **Many thanks to:** 
 
@@ -13,39 +13,39 @@ The following is a list of all the dependencies of this project:
 
 **License:** MIT - perpetual
 
-**Used version:** 29.5.1
+**Used version:** 29.5.3
 
 **Many thanks to:** n/a
-
-## [as-proto](git+https://github.com/piotr-oles/as-proto.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 1.3.0
-
-**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
-
-## [as-proto-gen](git+https://github.com/piotr-oles/as-proto.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 1.3.0
-
-**Many thanks to:** [Piotr Oleś](piotrek.oles@gmail.com)
 
 ## [assemblyscript](git+https://github.com/AssemblyScript/assemblyscript.git)
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.24.1
+**Used version:** 0.27.18
 
 **Many thanks to:** [Daniel Wirtz](dcode+assemblyscript@dcode.io)
+
+## [husky](git+https://github.com/typicode/husky.git)
+
+**License:** MIT - perpetual
+
+**Used version:** 8.0.3
+
+**Many thanks to:** [Typicode](typicode@gmail.com)
+
+## [rimraf](git://github.com/isaacs/rimraf.git)
+
+**License:** ISC - perpetual
+
+**Used version:** 5.0.5
+
+**Many thanks to:** [Isaac Z. Schlueter](i@izs.me> (http://blog.izs.me/)
 
 ## [ts-morph](git+https://github.com/dsherret/ts-morph.git)
 
 **License:** MIT - perpetual
 
-**Used version:** 18.0.0
+**Used version:** 19.0.0
 
 **Many thanks to:** David Sherret
 
@@ -57,27 +57,27 @@ The following is a list of all the dependencies of this project:
 
 **Many thanks to:** Willem Wyndham
 
+## [yaml](git+https://github.com/eemeli/yaml.git)
+
+**License:** ISC - perpetual
+
+**Used version:** 2.3.1
+
+**Many thanks to:** [Eemeli Aro](eemeli@gmail.com)
+
 ## [@types/node](https://github.com/DefinitelyTyped/DefinitelyTyped.git)
 
 **License:** MIT - perpetual
 
-**Used version:** 18.11.10
+**Used version:** 20.4.9
 
 **Many thanks to:** n/a
 
-## [jest](git+https://github.com/facebook/jest.git)
+## [typescript](git+https://github.com/Microsoft/TypeScript.git)
 
-**License:** MIT - perpetual
+**License:** Apache-2.0 - perpetual
 
-**Used version:** 29.5.0
+**Used version:** 5.1.6
 
-**Many thanks to:** n/a
-
-## [ts-jest](git+https://github.com/kulshekhar/ts-jest.git)
-
-**License:** MIT - perpetual
-
-**Used version:** 29.1.0
-
-**Many thanks to:** [Kulshekhar Kabra](kulshekhar@users.noreply.github.com> (https://github.com/kulshekhar)
+**Many thanks to:** Microsoft Corp.
 

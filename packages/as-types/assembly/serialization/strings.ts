@@ -12,7 +12,9 @@ export function stringToBytes(str: string): StaticArray<u8> {
   if (!str.length) {
     return [];
   }
-  return changetype<StaticArray<u8>>(String.UTF8.encode(str));
+  return changetype<StaticArray<u8>>(
+    String.UTF8.encode(str, false, String.UTF8.ErrorMode.ERROR),
+  );
 }
 
 /**

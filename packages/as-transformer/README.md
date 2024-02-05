@@ -16,8 +16,6 @@ To install this module, run the following command at your project root directory
 npm install -D @massalabs/as-transformer
 ```
 
-The protobuf transformer needs protobuf compiler, [protoc](https://grpc.io/docs/protoc-installation/), to be installed.
-
 ## Usage
 
 Tell your editor where to find the transformer types in a typing file. For example `assembly/types.d.ts`.
@@ -56,7 +54,7 @@ This transformer allows the creation of function without having to worry about t
 
 By adding the decorator `@massaExport` the transformer will generate a wrapper that takes care of it.
 
-Exemple:
+Example:
 ```typescript
 @massaExport()
 export function sayHello(accountName: string) : string {
@@ -78,6 +76,9 @@ export function sayHello(args: StaticArray<u8>) : StaticArray<u8> {
 
 At the moment only the smart contract main file can use this transformer.
 Any functions outside this file, that are imported and re-exported can not use this decorator.
+
+⚠️ @massaExport cannot be used with the constructor function.
+This is because the deployer uses "Args" to interact with functions during deployment. This problem should be solved soon.
 
 
 ## Contributing

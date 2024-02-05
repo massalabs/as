@@ -32,7 +32,7 @@ Using non-secure random functions is the only way to have onchain randomness but
 
 ## Install
 
-Packages are independant you can choose to install what you need
+Packages are independent you can choose to install what you need
 
 ```sh
 npm i --save-dev @massalabs/as-types

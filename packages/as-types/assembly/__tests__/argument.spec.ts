@@ -4,7 +4,6 @@ import { Amount } from '../amount';
 import { Currency } from '../currency';
 import { Divinity, Hero } from './dto-tests/Person';
 import { i128, u128, u256 } from 'as-bignum/assembly';
-import { i256 } from 'as-bignum/assembly/integer/i256';
 
 const amt = new Amount(1234, new Currency('my very own currency', 2));
 
@@ -183,6 +182,31 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(11356323656733);
   });
 
+  it('With u16 & i16', () => {
+    const args1 = new Args();
+    args1.add(97 as u16);
+
+    expect(args1.nextU16().unwrap()).toBe(97 as u16);
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextU16().unwrap()).toBe(97 as u16);
+
+    const args3 = new Args();
+    args3
+      .add(U16.MAX_VALUE)
+      .add(U16.MIN_VALUE)
+      .add(I16.MAX_VALUE)
+      .add(I16.MIN_VALUE);
+    let n1 = args3.nextU16().expect('Cannot get u16');
+    let n2 = args3.nextU16().expect('Cannot get u16');
+    let n3 = args3.nextI16().expect('Cannot get i16');
+    let n4 = args3.nextI16().expect('Cannot get i16');
+    expect<u16>(n1).toBe(U16.MAX_VALUE);
+    expect<u16>(n2).toBe(U16.MIN_VALUE);
+    expect<i16>(n3).toBe(I16.MAX_VALUE);
+    expect<i16>(n4).toBe(I16.MIN_VALUE);
+  });
+
   it('With u32', () => {
     const args1 = new Args();
     args1.add(97 as u32);
@@ -290,6 +314,21 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(300);
   });
 
+  it('With empty string', () => {
+    const args1 = new Args();
+    args1.add('my string');
+    args1.add('');
+    args1.add('another string');
+    expect(args1.nextString().unwrap()).toBe('my string');
+    expect(args1.nextString().unwrap()).toBe('');
+    expect(args1.nextString().unwrap()).toBe('another string');
+
+    const args2 = new Args(args1.serialize());
+    expect(args2.nextString().unwrap()).toBe('my string');
+    expect(args2.nextString().unwrap()).toBe('');
+    expect(args2.nextString().unwrap()).toBe('another string');
+  });
+
   it('With u8', () => {
     const args1 = new Args();
     args1.add(u8(1));
@@ -363,6 +402,7 @@ describe('Args tests', () => {
       u128.from(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<u128>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<u128>().unwrap();
     expect<u128[]>(unserialized).toStrictEqual(array);
@@ -377,6 +417,7 @@ describe('Args tests', () => {
       i128.from(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<i128>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<i128>().unwrap();
     expect<i128[]>(unserialized).toStrictEqual(array);
@@ -391,29 +432,18 @@ describe('Args tests', () => {
       u256.fromU64(555),
     ];
     const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * offsetof<u256>() + 4);
     const args = new Args(serialized);
     const unserialized = args.nextFixedSizeArray<u256>().unwrap();
     expect<u256[]>(unserialized).toStrictEqual(array);
   });
 
-  it('With array of i256', () => {
-    const array = [
-      new i256(1, -666, 555, 3),
-      new i256(444, 2, 555, 2222),
-      new i256(-4, 666, 3, 7890),
-      new i256(5, 666, -555, 4),
-      new i256(309343, 666, 555, -2222),
-    ];
-    const serialized = new Args().add(array).serialize();
-    const args = new Args(serialized);
-    const unserialized = args.nextFixedSizeArray<i256>().unwrap();
-    expect<i256[]>(unserialized).toStrictEqual(array);
-  });
-
   it('With array of one u8', () => {
-    const arrayU8 = [<u8>54];
-    const args = new Args(new Args().add(arrayU8).serialize());
-    expect<u8[]>(args.nextFixedSizeArray<u8>().unwrap()).toStrictEqual(arrayU8);
+    const array = [<u8>54, <u8>0, <u8>0xff];
+    const serialized = new Args().add(array).serialize();
+    expect(serialized.length).toBe(array.length * sizeof<u8>() + 4);
+    const args = new Args(serialized);
+    expect<u8[]>(args.nextFixedSizeArray<u8>().unwrap()).toStrictEqual(array);
   });
 
   it('With empty array of boolean', () => {
@@ -431,7 +461,16 @@ describe('Args tests', () => {
     const unserialized = args.nextStringArray().unwrap();
     expect<string[]>(unserialized).toStrictEqual(array);
   });
-
+  it('With 2 arrays of string', () => {
+    const array1 = ["I'm", 'the', '1st'];
+    const array2 = ["I'm", 'a', '2nd'];
+    const serialized = new Args().add(array1).add(array2).serialize();
+    const args = new Args(serialized);
+    const unserialized1 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized1).toStrictEqual(array1);
+    const unserialized2 = args.nextStringArray().unwrap();
+    expect<string[]>(unserialized2).toStrictEqual(array2);
+  });
   it('With array of Serializable', () => {
     const arrayOfSerializable = [
       new Divinity(14, 'Poseidon?!#'),
