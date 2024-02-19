@@ -93,7 +93,6 @@ export class Amount implements Serializable {
    *    - the addition would overflow of the 'u64.MAX_VALUE' limit.
    *
    */
-  @operator('+')
   add(other: Amount): Result<Amount> {
     if (this.currency != other.currency) {
       return new Result(
@@ -124,7 +123,6 @@ export class Amount implements Serializable {
    *    - the currency is not the same between the two amounts.
    *    - the subtraction would underflow .
    */
-  @operator('-')
   subtract(other: Amount): Result<Amount> {
     if (this.currency != other.currency) {
       return new Result(
