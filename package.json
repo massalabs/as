@@ -50,6 +50,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "as-bignum": "^0.3.0",
     "asc": "^2.0.3",
     "asp": "^0.0.2",
     "debug": "^4.3.4",
