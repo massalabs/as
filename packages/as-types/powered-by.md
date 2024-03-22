@@ -5,7 +5,7 @@ The following is a list of all the dependencies of this project:
 
 **License:** Apache-2.0 - perpetual
 
-**Used version:** 0.2.40
+**Used version:** 0.3.0
 
 **Many thanks to:** [MaxGraey](maxgraey@gmail.com)
 
