@@ -15,7 +15,30 @@ export class Result<T> {
    * @param error - error message for non-passing case
    *
    */
-  constructor(private value: T, public error: string | null = null) {}
+  constructor(protected value: T, protected error: string | null = null) {}
+
+  /**
+   * Creates a new `Result` object with a successful outcome.
+   *
+   * @param t - The value to be wrapped in a `Result` object.
+   * @returns A new `Result` object with a successful outcome.
+   *
+   */
+  static fromOk<T>(t: T): Result<T> {
+    return new Result<T>(t, null);
+  }
+
+  /**
+   * Creates a new `Result` object with a failed outcome.
+   *
+   * @param t - The value to be wrapped in a `Result` object.
+   * @param e - The error message to be wrapped in a `Result` object.
+   * @returns A new `Result` object with a failed outcome.
+   *
+   */
+  static fromErr<T>(t: T, e: string): Result<T> {
+    return new Result<T>(t, e);
+  }
 
   /**
    * Determines if the `Result` represents a successful outcome.
