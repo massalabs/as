@@ -316,6 +316,30 @@ export class Args {
   }
 
   /**
+   * Deserializes an I128 from a serialized array starting from the current offset.
+   * 
+   * @remarks
+   * If the deserialization failed, it returns a Result containing 0 and an error message:
+   * "can't deserialize i128 from given argument: out of range".
+   * 
+   * @returns a Result object:
+   * - Containing the next deserialized I128 starting from the current offset
+   * - Containing 0 and an error message if the deserialization failed
+   * 
+   */
+  nextI128(): Result<i128> {
+    const size: i32 = 16;
+    if (this._offset + size > this.serialized.length) {
+      return new Result(
+        i128.Zero,
+        "can't deserialize i128 from given argument: out of range",
+      );
+    }
+    const value = ser.bytesToI128(this.getNextData(size));
+    return new Result(value);
+  }
+
+  /**
    * Deserializes an U64 from a serialized array starting from the current offset.
    *
    * @remarks
@@ -634,7 +658,9 @@ export class Args {
       this.serialized = this.serialized.concat(ser.f32ToBytes(<f32>arg));
     } else if (arg instanceof f64) {
       this.serialized = this.serialized.concat(ser.f64ToBytes(<f64>arg));
-    } else if (arg instanceof u128 || arg instanceof i128) {
+    } else if (arg instanceof i128) {
+      this.serialized = this.serialized.concat(ser.i128ToBytes(<i128>arg));
+    } else if (arg instanceof u128) {
       this.serialized = this.serialized.concat(ser.u128ToBytes(<u128>arg));
     } else if (arg instanceof u256) {
       this.serialized = this.serialized.concat(ser.u256ToBytes(<u256>arg));

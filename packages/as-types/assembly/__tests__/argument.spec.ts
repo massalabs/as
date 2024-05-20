@@ -101,6 +101,19 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(113);
   });
 
+  it('With i128', () => {
+    const val1 = i128.Max;
+    const val2 = i128.add(i128.fromU64(U64.MAX_VALUE), i128.fromU64(1));
+    const val3 = i128.Zero;
+
+    const serialized = new Args().add(val1).add(val2).add(val3).serialize();
+
+    const args = new Args(serialized);
+    expect(args.nextI128().unwrap()).toBe(val1);
+    expect(args.nextI128().unwrap()).toBe(val2);
+    expect(args.nextI128().unwrap()).toBe(val3);
+  });
+
   it('With u128', () => {
     const val1 = u128.Max;
     const val2 = u128.add(u128.fromU64(U64.MAX_VALUE), u128.fromU64(1));
