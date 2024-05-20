@@ -317,15 +317,15 @@ export class Args {
 
   /**
    * Deserializes an I128 from a serialized array starting from the current offset.
-   * 
+   *
    * @remarks
    * If the deserialization failed, it returns a Result containing 0 and an error message:
    * "can't deserialize i128 from given argument: out of range".
-   * 
+   *
    * @returns a Result object:
    * - Containing the next deserialized I128 starting from the current offset
    * - Containing 0 and an error message if the deserialization failed
-   * 
+   *
    */
   nextI128(): Result<i128> {
     const size: i32 = 16;
@@ -617,6 +617,100 @@ export class Args {
     );
     this._offset += size;
     return data;
+  }
+
+  /**
+   * Deserializes the next argument from the serialized array starting from the current offset.
+   *
+   * @remarks
+   * If the deserialization failed, it returns an error message:
+   * "args doesn't know how to deserialize the given type."
+   *
+   * @returns a Result object:
+   * - Containing the next deserialized argument starting from the current offset
+   * - Containing an error message if the deserialization failed
+   *
+   */
+  next<T>(): Result<T> {
+    if (isBoolean<T>()) {
+      return this.nextBool() as Result<T>;
+    } else if (isInteger<T>()) {
+      if (isSigned<T>()) {
+        if (sizeof<T>() === sizeof<i16>()) {
+          return this.nextI16() as Result<T>;
+        } else if (sizeof<T>() === sizeof<i32>()) {
+          return this.nextI32() as Result<T>;
+        } else if (sizeof<T>() === sizeof<i64>()) {
+          return this.nextI64() as Result<T>;
+        }
+      } else {
+        if (sizeof<T>() === sizeof<u8>()) {
+          return this.nextU8() as Result<T>;
+        } else if (sizeof<T>() === sizeof<u16>()) {
+          return this.nextU16() as Result<T>;
+        } else if (sizeof<T>() === sizeof<u32>()) {
+          return this.nextU32() as Result<T>;
+        } else if (sizeof<T>() === sizeof<u64>()) {
+          return this.nextU64() as Result<T>;
+        }
+      }
+    } else if (isFloat<T>()) {
+      if (sizeof<T>() === sizeof<f32>()) {
+        return this.nextF32() as Result<T>;
+      } else {
+        return this.nextF64() as Result<T>;
+      }
+    } else if (isString<T>()) {
+      return this.nextString() as Result<T>;
+    } else if (isArray<T>()) {
+      if (idof<T>() === idof<Array<u8>>()) {
+        return this.nextFixedSizeArray<u8>() as Result<T>;
+      } else if (idof<T>() === idof<Array<string>>()) {
+        return this.nextStringArray() as Result<T>;
+      } else if (idof<T>() === idof<Array<i128>>()) {
+        return this.nextFixedSizeArray<i128>() as Result<T>;
+      } else if (idof<T>() === idof<Array<u128>>()) {
+        return this.nextFixedSizeArray<u128>() as Result<T>;
+      } else if (idof<T>() === idof<Array<u256>>()) {
+        return this.nextFixedSizeArray<u256>() as Result<T>;
+      } else if (idof<T>() === idof<Array<i32>>()) {
+        return this.nextFixedSizeArray<i32>() as Result<T>;
+      } else if (idof<T>() === idof<Array<u32>>()) {
+        return this.nextFixedSizeArray<u32>() as Result<T>;
+      } else if (idof<T>() === idof<Array<i64>>()) {
+        return this.nextFixedSizeArray<i64>() as Result<T>;
+      } else if (idof<T>() === idof<Array<u64>>()) {
+        return this.nextFixedSizeArray<u64>() as Result<T>;
+      } else if (idof<T>() === idof<Array<f32>>()) {
+        return this.nextFixedSizeArray<f32>() as Result<T>;
+      } else if (idof<T>() === idof<Array<f64>>()) {
+        return this.nextFixedSizeArray<f64>() as Result<T>;
+      } else if (idof<T>() === idof<Array<bool>>()) {
+        return this.nextFixedSizeArray<bool>() as Result<T>;
+      }
+      // TODO: Add support for Serializable's arrays
+    } else if (isManaged<T>()) {
+      if (idof<T>() === idof<string>()) {
+        return this.nextString() as Result<T>;
+      } else if (idof<T>() === idof<Uint8Array>()) {
+        return this.nextUint8Array() as Result<T>;
+      } else if (idof<T>() === idof<StaticArray<u8>>()) {
+        return this.nextBytes() as Result<T>;
+      } else if (idof<T>() === idof<i128>()) {
+        return this.nextI128() as Result<T>;
+      } else if (idof<T>() === idof<u128>()) {
+        return this.nextU128() as Result<T>;
+      } else if (idof<T>() === idof<u256>()) {
+        return this.nextU256() as Result<T>;
+      } else {
+        const object = instantiate<T>();
+        if (object instanceof Serializable) {
+          return this.nextSerializable<T>() as Result<T>;
+        }
+      }
+    }
+
+    ERROR("args doesn't know how to deserialize the given type.");
   }
 
   // Setter
