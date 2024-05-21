@@ -101,6 +101,19 @@ describe('Args tests', () => {
     expect(args2.nextU64().unwrap()).toBe(113);
   });
 
+  it('With i128', () => {
+    const val1 = i128.Max;
+    const val2 = i128.add(i128.fromU64(U64.MAX_VALUE), i128.fromU64(1));
+    const val3 = i128.Zero;
+
+    const serialized = new Args().add(val1).add(val2).add(val3).serialize();
+
+    const args = new Args(serialized);
+    expect(args.nextI128().unwrap()).toBe(val1);
+    expect(args.nextI128().unwrap()).toBe(val2);
+    expect(args.nextI128().unwrap()).toBe(val3);
+  });
+
   it('With u128', () => {
     const val1 = u128.Max;
     const val2 = u128.add(u128.fromU64(U64.MAX_VALUE), u128.fromU64(1));
@@ -486,5 +499,268 @@ describe('Args tests', () => {
     expect(first.name).toBe('Poseidon?!#');
     expect(deser[1].age).toBe(45);
     expect(deser[1].name).toBe('Superman');
+  });
+});
+
+describe('Args next<T>', () => {
+  it('handles u8', () => {
+    const args = new Args(new Args().add(1 as u8).serialize());
+    expect(args.next<u8>().unwrap()).toBe(1);
+  });
+
+  it('handles u16', () => {
+    const args = new Args(new Args().add(2 as u16).serialize());
+    expect(args.next<u16>().unwrap()).toBe(2);
+  });
+
+  it('handles u32', () => {
+    const args = new Args(new Args().add(3 as u32).serialize());
+    expect(args.next<u32>().unwrap()).toBe(3);
+  });
+
+  it('handles u64', () => {
+    const args = new Args(new Args().add(4 as u64).serialize());
+    expect(args.next<u64>().unwrap()).toBe(4);
+  });
+
+  it('handles i16', () => {
+    const args = new Args(new Args().add(-5 as i16).serialize());
+    expect(args.next<i16>().unwrap()).toBe(-5);
+  });
+
+  it('handles i32', () => {
+    const args = new Args(new Args().add(-6 as i32).serialize());
+    expect(args.next<i32>().unwrap()).toBe(-6);
+  });
+
+  it('handles i64', () => {
+    const args = new Args(new Args().add(-7 as i64).serialize());
+    expect(args.next<i64>().unwrap()).toBe(-7);
+  });
+
+  it('handles f32', () => {
+    const args = new Args(new Args().add(8.8 as f32).serialize());
+    expect(args.next<f32>().unwrap()).toBe(8.8);
+  });
+
+  it('handles f64', () => {
+    const args = new Args(new Args().add(9.9 as f64).serialize());
+    expect(args.next<f64>().unwrap()).toBe(9.9);
+  });
+
+  it('handles bool', () => {
+    const args = new Args(new Args().add(true).serialize());
+    expect(args.next<bool>().unwrap()).toBe(true);
+  });
+
+  it('handles u128', () => {
+    const args = new Args(new Args().add(u128.Max).serialize());
+    expect(args.next<u128>().unwrap()).toBe(u128.Max);
+  });
+
+  it('handles i128', () => {
+    const args = new Args(new Args().add(i128.Max).serialize());
+    expect(args.next<i128>().unwrap()).toBe(i128.Max);
+  });
+
+  it('handles u256', () => {
+    const args = new Args(new Args().add(u256.Max).serialize());
+    expect(args.next<u256>().unwrap()).toBe(u256.Max);
+  });
+
+  it('handles string', () => {
+    const args = new Args(new Args().add('hello').serialize());
+    expect(args.next<string>().unwrap()).toBe('hello');
+  });
+
+  it('handles Uint8Array', () => {
+    const array = new Uint8Array(2);
+    array.set([65, 88]);
+    const args = new Args(new Args().add(array).serialize());
+    expect(args.next<Uint8Array>().unwrap()).toStrictEqual(array);
+  });
+
+  it('handles StaticArray<u8>', () => {
+    const array = new StaticArray<u8>(2);
+    array[0] = 65;
+    array[1] = 88;
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<StaticArray<u8>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<u8>', () => {
+    const array = [65, 88] as u8[];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<u8>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<i32>', () => {
+    const array = [65, 88] as i32[];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<i32>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<i128>', () => {
+    const array = [i128.from(65), i128.from(88)];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<i128>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect<i128>(resultArray[0]).toBe(array[0]);
+    expect<i128>(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<u128>', () => {
+    const array = [u128.from(65), u128.from(88)];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<u128>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect<u128>(resultArray[0]).toBe(array[0]);
+    expect<u128>(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<u256>', () => {
+    const array = [u256.from(65), u256.from(88)];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<u256>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect<u256>(resultArray[0]).toBe(array[0]);
+    expect<u256>(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<f32>', () => {
+    const array = [65.5, 88.8] as f32[];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<f32>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<f64>', () => {
+    const array = [65.5, 88.8] as f64[];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<f64>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<bool>', () => {
+    const array = [true, false];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<bool>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles Array<string>', () => {
+    const array = ['hello', 'world'];
+    const args = new Args(new Args().add(array).serialize());
+    const resultArray = args.next<Array<string>>().unwrap();
+    expect(resultArray.length).toBe(array.length);
+    expect(resultArray[0]).toBe(array[0]);
+    expect(resultArray[1]).toBe(array[1]);
+  });
+
+  it('handles multiple types', () => {
+    const args = new Args(
+      new Args()
+        .add(1 as u8)
+        .add(2 as u16)
+        .add(3 as u32)
+        .add(4 as u64)
+        .add(-5 as i16)
+        .add(-6 as i32)
+        .add(-7 as i64)
+        .add(8.8 as f32)
+        .add(9.9 as f64)
+        .add(true)
+        .add(u128.Max)
+        .add(i128.Max)
+        .add(u256.Max)
+        .add('hello')
+        .serialize(),
+    );
+    expect(args.next<u8>().unwrap()).toBe(1);
+    expect(args.next<u16>().unwrap()).toBe(2);
+    expect(args.next<u32>().unwrap()).toBe(3);
+    expect(args.next<u64>().unwrap()).toBe(4);
+    expect(args.next<i16>().unwrap()).toBe(-5);
+    expect(args.next<i32>().unwrap()).toBe(-6);
+    expect(args.next<i64>().unwrap()).toBe(-7);
+    expect(args.next<f32>().unwrap()).toBe(8.8);
+    expect(args.next<f64>().unwrap()).toBe(9.9);
+    expect(args.next<bool>().unwrap()).toBe(true);
+    expect(args.next<u128>().unwrap()).toBe(u128.Max);
+    expect(args.next<i128>().unwrap()).toBe(i128.Max);
+    expect(args.next<u256>().unwrap()).toBe(u256.Max);
+    expect(args.next<string>().unwrap()).toBe('hello');
+  });
+
+  it('handles Serializable', () => {
+    const age = 42 as i32;
+    const name = 'Wolverine';
+    const person = new Divinity(age, name);
+    const args = new Args(new Args().add(person).serialize());
+    const person2 = args.next<Divinity>().unwrap();
+    expect(person2.age).toBe(age);
+    expect(person2.name).toBe(name);
+  });
+
+  it('handles SerializableObjectArray', () => {
+    const arrayOfSerializable = [
+      new Divinity(42, 'Batman'),
+      new Divinity(84, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+    const deser = args.next<Array<Divinity>, Divinity>().unwrap();
+    expect(deser).toHaveLength(2);
+    expect(deser[0].age).toBe(42);
+    expect(deser[0].name).toBe('Batman');
+    expect(deser[1].age).toBe(84);
+    expect(deser[1].name).toBe('Superman');
+  });
+
+  it('handles SerializableObjectArray with empty array', () => {
+    const emptyArray: Divinity[] = [];
+    const args = new Args(
+      new Args().addSerializableObjectArray(emptyArray).serialize(),
+    );
+    expect(args.next<Array<Divinity>, Divinity>().unwrap()).toStrictEqual(
+      emptyArray,
+    );
+  });
+
+  it('handles StringArray and SerializableObjectArray', () => {
+    const arrayOfStrings = ['hello', 'world'];
+    const arrayOfSerializable = [
+      new Divinity(42, 'Batman'),
+      new Divinity(84, 'Superman'),
+    ];
+
+    const args = new Args(
+      new Args()
+        .add(arrayOfStrings)
+        .addSerializableObjectArray(arrayOfSerializable)
+        .serialize(),
+    );
+
+    const strings = args.next<Array<string>>().unwrap();
+    expect(strings).toStrictEqual(arrayOfStrings);
+
+    const deserialized = args.next<Array<Divinity>, Divinity>().unwrap();
+    expect(deserialized).toStrictEqual(arrayOfSerializable);
   });
 });
