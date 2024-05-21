@@ -632,7 +632,7 @@ export class Args {
    * - Containing an error message if the deserialization failed
    *
    */
-  next<T>(): Result<T> {
+  next<T, U = void>(): Result<T> {
     if (isBoolean<T>()) {
       return this.nextBool() as Result<T>;
     } else if (isInteger<T>()) {
@@ -688,6 +688,11 @@ export class Args {
         return this.nextFixedSizeArray<f64>() as Result<T>;
       } else if (idof<T>() === idof<Array<bool>>()) {
         return this.nextFixedSizeArray<bool>() as Result<T>;
+      } else {
+        const object = instantiate<U>();
+        if (object instanceof Serializable) {
+          return this.nextSerializableObjectArray<U>() as Result<T>;
+        }
       }
       // TODO: Add support for Serializable's arrays
     } else if (isManaged<T>()) {

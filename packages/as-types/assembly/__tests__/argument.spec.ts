@@ -492,7 +492,7 @@ describe('Args tests', () => {
     const args = new Args(
       new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
     );
-    const deser = args.nextSerializableObjectArray<Divinity>().unwrap();
+    const deser = args.next<Array<Divinity>, Divinity>().unwrap();
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);
