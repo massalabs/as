@@ -625,7 +625,6 @@ export class Args {
    * @remarks
    * If the deserialization failed, it returns an error message:
    * "args doesn't know how to deserialize the given type."
-   * For now, Arrays of Serializable objects are not supported. Please use `nextSerializableObjectArray` instead.
    *
    * @returns a Result object:
    * - Containing the next deserialized argument starting from the current offset
@@ -694,7 +693,6 @@ export class Args {
           return this.nextSerializableObjectArray<U>() as Result<T>;
         }
       }
-      // TODO: Add support for Serializable's arrays
     } else if (isManaged<T>()) {
       if (idof<T>() === idof<string>()) {
         return this.nextString() as Result<T>;
