@@ -620,14 +620,17 @@ export class Args {
   }
 
   /**
-   * Deserializes the next argument from the serialized array starting from the current offset.
+   * Deserializes the next object from the serialized array starting from the current offset.
    *
    * @remarks
    * If the deserialization failed, it returns an error message:
    * "args doesn't know how to deserialize the given type."
    *
+   * @typeParam T - The type of the object to deserialize
+   * @typeParam U - The type of the object to instantiate if the object is an array of serializable objects
+   *
    * @returns a Result object:
-   * - Containing the next deserialized argument starting from the current offset
+   * - Containing the next deserialized object starting from the current offset
    * - Containing an error message if the deserialization failed
    *
    */
