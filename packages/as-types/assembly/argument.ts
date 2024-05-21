@@ -625,6 +625,7 @@ export class Args {
    * @remarks
    * If the deserialization failed, it returns an error message:
    * "args doesn't know how to deserialize the given type."
+   * For now, Arrays of Serializable objects are not supported. Please use `nextSerializableObjectArray` instead.
    *
    * @returns a Result object:
    * - Containing the next deserialized argument starting from the current offset
