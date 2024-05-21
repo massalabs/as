@@ -492,7 +492,7 @@ describe('Args tests', () => {
     const args = new Args(
       new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
     );
-    const deser = args.next<Array<Divinity>, Divinity>().unwrap();
+    const deser = args.nextSerializableObjectArray<Divinity>().unwrap();
     const first = deser[0];
     expect(deser).toHaveLength(2);
     expect(first.age).toBe(14);
@@ -717,19 +717,50 @@ describe('Args next<T>', () => {
     expect(person2.name).toBe(name);
   });
 
-  // it ('handles SerializableObjectArray', () => {
-  //   const arrayOfSerializable = [
-  //     new Divinity(42, 'Batman'),
-  //     new Divinity(84, 'Superman'),
-  //   ];
-  //   const args = new Args(
-  //     new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
-  //   );
-  //   const deser = args.next<Array<Divinity>>().unwrap();
-  //   expect(deser).toHaveLength(2);
-  //   expect(deser[0].age).toBe(42);
-  //   expect(deser[0].name).toBe('Batman');
-  //   expect(deser[1].age).toBe(84);
-  //   expect(deser[1].name).toBe('Superman');
-  // });
+  it('handles SerializableObjectArray', () => {
+    const arrayOfSerializable = [
+      new Divinity(42, 'Batman'),
+      new Divinity(84, 'Superman'),
+    ];
+    const args = new Args(
+      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+    );
+    const deser = args.next<Array<Divinity>, Divinity>().unwrap();
+    expect(deser).toHaveLength(2);
+    expect(deser[0].age).toBe(42);
+    expect(deser[0].name).toBe('Batman');
+    expect(deser[1].age).toBe(84);
+    expect(deser[1].name).toBe('Superman');
+  });
+
+  it('handles SerializableObjectArray with empty array', () => {
+    const emptyArray: Divinity[] = [];
+    const args = new Args(
+      new Args().addSerializableObjectArray(emptyArray).serialize(),
+    );
+    expect(args.next<Array<Divinity>, Divinity>().unwrap()).toStrictEqual(
+      emptyArray,
+    );
+  });
+
+  it('handles StringArray and SerializableObjectArray', () => {
+    const arrayOfStrings = ['hello', 'world'];
+    const arrayOfSerializable = [
+      new Divinity(42, 'Batman'),
+      new Divinity(84, 'Superman'),
+    ];
+
+    const args = new Args(
+      new Args()
+        .add(arrayOfStrings)
+        .addSerializableObjectArray(arrayOfSerializable)
+        .serialize(),
+    );
+
+    const strings = args.next<Array<string>>().unwrap();
+    expect(strings).toStrictEqual(arrayOfStrings);
+
+    const deserialized = args.next<Array<Divinity>, Divinity>().unwrap();
+    expect(deserialized).toStrictEqual(arrayOfSerializable);
+  });
 });
