@@ -764,3 +764,34 @@ describe('Args next<T>', () => {
     expect(deserialized).toStrictEqual(arrayOfSerializable);
   });
 });
+
+describe('Args mustNext<T>', () => {
+  it('handles u8,stringArray,u256', () => {
+    const args = new Args(
+      new Args()
+        .add(123 as u8)
+        .add(['hello', 'world'])
+        .add(u256.Max)
+        .serialize(),
+    );
+
+    expect(args.mustNext<u8>('byte')).toBe(123);
+    expect(args.mustNext<Array<string>>('array')).toStrictEqual([
+      'hello',
+      'world',
+    ]);
+    expect(args.mustNext<u256>('u256')).toBe(u256.Max);
+  });
+
+  throws('fail to deserialize', () => {
+    const args = new Args(
+      new Args()
+        .add(123 as u8)
+        .add(['hello', 'world'])
+        .add(u256.Max)
+        .serialize(),
+    );
+
+    args.mustNext<Array<string>>('array');
+  });
+});
