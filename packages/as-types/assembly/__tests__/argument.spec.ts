@@ -723,7 +723,9 @@ describe('Args next<T>', () => {
       new Divinity(84, 'Superman'),
     ];
     const args = new Args(
-      new Args().addSerializableObjectArray(arrayOfSerializable).serialize(),
+      new Args()
+        .add<Array<Divinity>, Divinity>(arrayOfSerializable)
+        .serialize(),
     );
     const deser = args.next<Array<Divinity>, Divinity>().unwrap();
     expect(deser).toHaveLength(2);
@@ -736,7 +738,7 @@ describe('Args next<T>', () => {
   it('handles SerializableObjectArray with empty array', () => {
     const emptyArray: Divinity[] = [];
     const args = new Args(
-      new Args().addSerializableObjectArray(emptyArray).serialize(),
+      new Args().add<Array<Divinity>, Divinity>(emptyArray).serialize(),
     );
     expect(args.next<Array<Divinity>, Divinity>().unwrap()).toStrictEqual(
       emptyArray,
@@ -753,7 +755,7 @@ describe('Args next<T>', () => {
     const args = new Args(
       new Args()
         .add(arrayOfStrings)
-        .addSerializableObjectArray(arrayOfSerializable)
+        .add<Array<Divinity>, Divinity>(arrayOfSerializable)
         .serialize(),
     );
 
