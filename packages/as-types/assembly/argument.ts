@@ -732,9 +732,11 @@ export class Args {
    * "args doesn't know how to serialize the given type."
    *
    * @param arg - the argument to add
+   * @typeParam T - The type of the object to deserialize
+   * @typeParam U - The type of the object to instantiate if the object is an array of serializable objects
    * @returns the modified Arg instance
    */
-  add<T>(arg: T): Args {
+  add<T, U = void>(arg: T): Args {
     if (arg instanceof bool) {
       this.serialized = this.serialized.concat(ser.boolToByte(<bool>arg));
     } else if (arg instanceof String) {
@@ -801,6 +803,11 @@ export class Args {
       }
       this.add<u32>(totalLength);
       this.serialized = this.serialized.concat(serialized);
+    } else if (isArray<T>()) {
+      const object = instantiate<U>();
+      if (object instanceof Serializable) {
+        return this.addSerializableObjectArray<U>(arg);
+      }
     } else {
       ERROR("args doesn't know how to serialize the given type.");
     }
