@@ -783,7 +783,7 @@ describe('Args mustNext<T>', () => {
     expect(args.mustNext<u256>('u256')).toBe(u256.Max);
   });
 
-  throws('fail to deserialize', () => {
+  throws('fails to deserialize', () => {
     const args = new Args(
       new Args()
         .add(123 as u8)
