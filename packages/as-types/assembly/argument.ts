@@ -720,6 +720,22 @@ export class Args {
     ERROR("args doesn't know how to deserialize the given type.");
   }
 
+  /**
+   * Deserialize the next object from the serialized array starting from the current offset.
+   *
+   * @typeParam T - The type of the object to deserialize
+   * @typeParam U - The type of the object to instantiate if the object is an array of serializable objects
+   *
+   * @param field - The field name of the object to deserialize
+   *
+   * @returns the next deserialized object starting from the current offset
+   *
+   * @throws an error message if the deserialization failed: "Can't deserialize " + field
+   */
+  mustNext<T, U = void>(field: string): T {
+    return this.next<T, U>().expect(`Can't deserialize ${field}.`);
+  }
+
   // Setter
 
   /**
