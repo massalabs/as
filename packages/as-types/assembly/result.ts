@@ -74,6 +74,15 @@ export class Result<T> {
   }
 
   /**
+   * Gets the value of the Result or returns the generic type default value.
+   *
+   * @returns The value of the Result if it is successful, otherwise returns the default value of the generic type.
+   */
+  unwrapOrDefault(): NonNullable<T> {
+    return this.getValue();
+  }
+
+  /**
    * Get the value of the Result
    *
    * @remarks This method retrieves the value of the Result and also handles nullable types.
