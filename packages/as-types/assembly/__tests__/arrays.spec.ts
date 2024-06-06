@@ -3,12 +3,16 @@ import { staticArrayToUint8Array } from '../serialization';
 describe('arrays', () => {
   test('staticArrayToUint8Array', () => {
     const staticArray = StaticArray.fromArray<u8>([0, 1, 2, 3, 4]);
-    const typedArray = staticArrayToUint8Array(myArray);
+    const typedArray = staticArrayToUint8Array(staticArray);
 
-    expect(result instanceof Uint8Array).toBe(true);
-    expect(result.length).toBe(myArray.length);
-    for (let i = 0; i < myArray.length; i++) {
-      expect(result[i]).toBe(myArray[i]);
+    expect(typedArray instanceof Uint8Array).toBe(true);
+    expect(typedArray.length).toBe(typedArray.length);
+
+    for (let i = 0; i < staticArray.length; i++) {
+      expect(typedArray[i]).toBe(staticArray[i]);
     }
+
+    typedArray[0] = 10;
+    expect(typedArray[0]).toBe(<u8>10);
   });
 });
