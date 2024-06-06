@@ -201,3 +201,22 @@ export function bytesToSerializableObjectArray<T extends Serializable>(
 
   return new Result(array);
 }
+
+/**
+ * Convert a Uint8Array to a StaticArray<u8>
+ *
+ * @param arr - The Uint8Array to convert
+ *
+ * @returns The converted StaticArray<u8> representation of the Uint8Array.
+ */
+export function staticArrayToUint8Array(
+  staticArray: StaticArray<u8>,
+): Uint8Array {
+  const arr = new Uint8Array(staticArray.length);
+  memory.copy(
+    changetype<usize>(arr.buffer),
+    changetype<usize>(staticArray),
+    arr.length,
+  );
+  return arr;
+}
