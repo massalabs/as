@@ -2,11 +2,13 @@ import { staticArrayToUint8Array } from '../serialization';
 
 describe('arrays', () => {
   test('staticArrayToUint8Array', () => {
-    const myArray = new StaticArray<u8>(5);
-    for (let i: u8 = 0; i < 5; i++) {
-      myArray[i] = i;
-    }
+    const myArray = StaticArray.fromArray<u8>([0, 1, 2, 3, 4]);
     const result = staticArrayToUint8Array(myArray);
+
     expect(result instanceof Uint8Array).toBe(true);
+    expect(result.length).toBe(myArray.length);
+    for (let i = 0; i < myArray.length; i++) {
+      expect(result[i]).toBe(myArray[i]);
+    }
   });
 });
