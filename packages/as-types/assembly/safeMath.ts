@@ -59,7 +59,7 @@ export class SafeMath {
    * overflow.
    *
    * @remarks
-   * This function is used to safely mutilply two unsigned 64-bit integers without causing an overflow.
+   * This function is used to safely multiply two unsigned 64-bit integers without causing an overflow.
    *
    * @param a - The first operand for multiplication.
    * @param b - The second operand for multiplication.
